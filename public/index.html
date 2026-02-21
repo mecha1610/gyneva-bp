@@ -493,11 +493,27 @@ table.dt tr:hover td{background:#f8fafb}
 .sim-summary-yr h4{font-size:.78rem;font-weight:700;color:var(--p);margin-bottom:.4rem}
 .sim-summary-yr ul{list-style:none;font-size:.8rem;line-height:1.7;color:var(--txt)}
 .sim-summary-yr ul li::before{content:'\2022';color:var(--txtL);margin-right:.4rem}
+.sim-top-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem;margin-bottom:1.2rem}
+.sim-compare{border-radius:var(--r);padding:.8rem 1rem;margin-bottom:1.2rem;background:rgba(26,74,122,.03);border:1px solid rgba(26,74,122,.1);display:none}
+.sim-compare.show{display:block}
+.sim-compare h4{font-size:.76rem;font-weight:700;color:var(--p);margin-bottom:.5rem}
+.sim-compare-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.5rem}
+.sim-compare-item{text-align:center;padding:.4rem;border-radius:8px;background:var(--card)}
+.sim-compare-item .scl{font-size:.68rem;color:var(--txtL);margin-bottom:.15rem}
+.sim-compare-item .scv{font-size:.88rem;font-weight:800}
+.sim-compare-item .scv.up{color:var(--acc)}
+.sim-compare-item .scv.down{color:var(--danger)}
+.sim-compare-item .scv.neutral{color:var(--txtL)}
+.sim-phase{font-size:.63rem;font-weight:600;padding:.12rem .4rem;border-radius:10px;margin-left:.4rem}
+.sim-phase.start{background:rgba(225,112,85,.1);color:#e17055}
+.sim-phase.grow{background:rgba(253,203,110,.15);color:#7d5a12}
+.sim-phase.cruise{background:rgba(0,184,148,.1);color:var(--acc)}
 
 @media(max-width:768px){
   .sim-year-tabs{flex-wrap:nowrap;overflow-x:auto}
   .sim-tab{min-width:0;padding:.5rem .3rem;font-size:.72rem}
   .sim-summary-grid{grid-template-columns:1fr}
+  .sim-top-kpis{grid-template-columns:1fr 1fr}
   .rev-profile-bar{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch}
   .rev-detail-grid{grid-template-columns:1fr}
 }
@@ -679,9 +695,9 @@ table.dt tr:hover td{background:#f8fafb}
 
 <!-- ====== SIMULATOR ====== -->
 <div class="section" id="simulator">
-  <div class="verdict orange">
+  <div class="verdict orange" id="simVerdict">
     <div class="ic">&#9881;&#65039;</div>
-    <div><strong>Simulateur de sc&eacute;narios.</strong> Modifiez les hypoth&egrave;ses ci-dessous et observez l'impact en temps r&eacute;el sur le chiffre d'affaires, le r&eacute;sultat net et la tr&eacute;sorerie. Les valeurs de base du business plan sont pr&eacute;-remplies.</div>
+    <div id="simVerdictText"><strong>Simulateur de sc&eacute;narios.</strong> Modifiez les hypoth&egrave;ses ci-dessous et observez l'impact en temps r&eacute;el sur le chiffre d'affaires, le r&eacute;sultat net et la tr&eacute;sorerie. Les valeurs de base du business plan sont pr&eacute;-remplies.</div>
   </div>
   <!-- Scenario save/load -->
   <div class="sim-actions">
@@ -689,6 +705,16 @@ table.dt tr:hover td{background:#f8fafb}
     <button class="btn" onclick="toggleScenarioList()">&#128194; Charger sc&eacute;nario</button>
   </div>
   <div class="scenario-list" id="scenarioList"></div>
+  <div class="sim-top-kpis" id="simTopKpis">
+    <div class="kpi blue"><div class="lb">CA total 3 ans</div><div class="vl" id="simTopCa3">&mdash;</div><div class="sb" id="simTopCa3Sub">Simulation</div></div>
+    <div class="kpi blue"><div class="lb">R&eacute;sultat total 3 ans</div><div class="vl" id="simTopRes3">&mdash;</div><div class="sb" id="simTopRes3Sub">Simulation</div></div>
+    <div class="kpi blue"><div class="lb">BFR minimum</div><div class="vl" id="simTopBfr">&mdash;</div><div class="sb" id="simTopBfrSub">Tr&eacute;sorerie min</div></div>
+    <div class="kpi blue"><div class="lb">Tr&eacute;so finale (M36)</div><div class="vl" id="simTopTreso">&mdash;</div><div class="sb" id="simTopTresoSub">Cumul M36</div></div>
+  </div>
+  <div class="sim-compare" id="simCompare">
+    <h4>&#128200; &Eacute;cart vs. base</h4>
+    <div class="sim-compare-grid" id="simCompareGrid"></div>
+  </div>
   <div class="sim-layout">
     <!-- CONTROLS PANEL -->
     <div class="sim-panel">
@@ -2369,6 +2395,79 @@ function simDelta(simVal, baseVal){
   return '<span class="sim-delta '+(d>0?'up':'down')+'">'+(d>0?'+':'')+d.toFixed(0)+'%</span>';
 }
 
+function updateSimVerdict(){
+  if(!SIM||!D)return;
+  const el=id=>document.getElementById(id);
+  const vd=el('simVerdict'),vt=el('simVerdictText');
+  if(!vd||!vt)return;
+  const margin3=SIM.caY3>0?Math.round(SIM.resY3/SIM.caY3*100):0;
+  const bfrMin=SIM.bfrMin;
+  const growth=SIM.caY1>0?((SIM.caY3/SIM.caY1-1)*100):0;
+  let payback=36,cumR=0;
+  for(let m=0;m<36;m++){cumR+=SIM.result[m];if(cumR>0&&SIM.result[m]>0){payback=m+1;break;}}
+  let score=0;
+  score+=margin3>=20?3:margin3>=10?2:margin3>=5?1:0;
+  score+=bfrMin>=0?3:bfrMin>=-100000?2:bfrMin>=-250000?1:0;
+  score+=growth>=100?3:growth>=50?2:growth>0?1:0;
+  score+=payback<=12?3:payback<=18?2:payback<=24?1:0;
+  if(score>=9){
+    vd.className='verdict green';
+    vt.innerHTML='<strong>Sc\u00e9nario viable.</strong> Marge Y3 de '+margin3+'%, payback en '+payback+' mois, tr\u00e9sorerie finale de '+fmtCHF(SIM.tresoFinal)+'. Les indicateurs sont au vert.';
+  } else if(score>=5){
+    vd.className='verdict orange';
+    vt.innerHTML='<strong>Sc\u00e9nario sous conditions.</strong> Marge de '+margin3+'%, BFR min '+fmtCHF(bfrMin)+'. '+(bfrMin<-100000?'Attention au besoin de financement relais. ':'')+(payback>18?'Le payback \u00e0 '+payback+' mois est \u00e9lev\u00e9. ':'')+'Explorez les leviers d\'optimisation.';
+  } else {
+    vd.className='verdict red';
+    vt.innerHTML='<strong>Sc\u00e9nario \u00e0 risque.</strong> Marge de '+margin3+'%, BFR de '+fmtCHF(bfrMin)+', payback '+payback+' mois. R\u00e9visez les hypoth\u00e8ses (volume, \u00e9quipe, charges).';
+  }
+}
+
+function updateSimTopKpis(){
+  if(!SIM||!D)return;
+  const el=id=>document.getElementById(id);
+  const caTotal=SIM.caY1+SIM.caY2+SIM.caY3;
+  const resTotal=SIM.resY1+SIM.resY2+SIM.resY3;
+  const baseCaTotal=D.caY1+D.caY2+D.caY3;
+  const baseResTotal=D.resY1+D.resY2+D.resY3;
+  el('simTopCa3').textContent=fmt(caTotal);
+  el('simTopCa3Sub').innerHTML='Base '+fmt(baseCaTotal)+' '+simDelta(caTotal,baseCaTotal);
+  el('simTopCa3').parentElement.className='kpi '+(caTotal>=baseCaTotal*0.9?'green':'orange');
+  el('simTopRes3').textContent=fmt(resTotal);
+  el('simTopRes3Sub').innerHTML='Base '+fmt(baseResTotal)+' '+simDelta(resTotal,baseResTotal);
+  el('simTopRes3').parentElement.className='kpi '+(resTotal>0?'green':resTotal>-100000?'orange':'red');
+  el('simTopBfr').textContent=fmtCHF(Math.round(SIM.bfrMin));
+  el('simTopBfrSub').textContent='Pire cas sur 36 mois';
+  el('simTopBfr').parentElement.className='kpi '+(SIM.bfrMin>=0?'green':SIM.bfrMin>=-150000?'orange':'red');
+  el('simTopTreso').textContent=fmtCHF(Math.round(SIM.tresoFinal));
+  el('simTopTresoSub').textContent='Cumul fin M36';
+  el('simTopTreso').parentElement.className='kpi '+(SIM.tresoFinal>0?'green':'red');
+}
+
+function updateSimCompare(){
+  if(!SIM||!D)return;
+  const el=id=>document.getElementById(id);
+  const panel=el('simCompare'),grid=el('simCompareGrid');
+  if(!panel||!grid)return;
+  const params=getSimParams();
+  const isBase=params.consult===BASE.consult&&params.fee===BASE.fee&&params.days===BASE.days&&params.assoc===BASE.assoc&&params.indep===BASE.indep&&params.interne===BASE.interne&&params.start===BASE.start&&params.occup===BASE.occup&&params.cashPct===BASE.cashPct&&params.delay===BASE.delay&&params.factoring===BASE.factoring&&params.extra===BASE.extra&&params.rc===BASE.rc&&(params.retro||40)===BASE.retro;
+  if(isBase){panel.classList.remove('show');return;}
+  panel.classList.add('show');
+  const items=[
+    {label:'CA total 3 ans',sim:SIM.caY1+SIM.caY2+SIM.caY3,base:D.caY1+D.caY2+D.caY3},
+    {label:'R\u00e9sultat total',sim:SIM.resY1+SIM.resY2+SIM.resY3,base:D.resY1+D.resY2+D.resY3},
+    {label:'BFR min',sim:SIM.bfrMin,base:D.bfrWorst},
+    {label:'Tr\u00e9so M36',sim:SIM.tresoFinal,base:D.cashflow[35]},
+    {label:'CA Y1',sim:SIM.caY1,base:D.caY1},
+    {label:'CA Y3',sim:SIM.caY3,base:D.caY3}
+  ];
+  grid.innerHTML=items.map(item=>{
+    const diff=item.sim-item.base;
+    const pctDiff=item.base?Math.round((diff/Math.abs(item.base))*100):0;
+    const cls=Math.abs(pctDiff)<1?'neutral':diff>0?'up':'down';
+    return '<div class="sim-compare-item"><div class="scl">'+item.label+'</div><div class="scv '+cls+'">'+(diff>=0?'+':'')+fmt(diff)+' ('+(pctDiff>=0?'+':'')+pctDiff+'%)</div></div>';
+  }).join('');
+}
+
 function runSim(){
   const el=id=>document.getElementById(id);
   const params = getSimParams();
@@ -2386,7 +2485,7 @@ function runSim(){
   const simResY1=sim.resY1, simResY2=sim.resY2, simResY3=sim.resY3;
   const simResAdj=sim.resAdj, simPerAssoc=sim.perAssoc;
 
-  SIM={ca:simCA,result:simResult,cashflow:simCashflow,caY1:simCaY1,caY2:simCaY2,caY3:simCaY3,resY1:simResY1,resY2:simResY2,resY3:simResY3};
+  SIM={ca:simCA,result:simResult,cashflow:simCashflow,caY1:simCaY1,caY2:simCaY2,caY3:simCaY3,resY1:simResY1,resY2:simResY2,resY3:simResY3,bfrMin:Math.min(...simCashflow),tresoFinal:simCashflow[35]};
 
   // Populate year overview timeline
   el('simOvCaY1').textContent='CA '+fmt(simCaY1);
@@ -2417,11 +2516,15 @@ function runSim(){
       'Par associ\u00e9 : '+fmtCHF(simPerAssoc),
       'Tr\u00e9so finale : '+fmtCHF(simCashflow[35])]}
   ];
-  el('simSummary').innerHTML=summaryData.map(s=>
-    '<div class="sim-summary-yr '+s.cls+'"><h4>Ann\u00e9e '+s.year+' \u2014 CA '+fmt(s.ca)+' | R\u00e9s. '+fmt(s.res)+'</h4><ul>'+
+  const simPhases=['<span class="sim-phase start">D\u00e9marrage</span>','<span class="sim-phase grow">Croissance</span>','<span class="sim-phase cruise">Croisi\u00e8re</span>'];
+  el('simSummary').innerHTML=summaryData.map((s,i)=>
+    '<div class="sim-summary-yr '+s.cls+'"><h4>Ann\u00e9e '+s.year+simPhases[i]+' \u2014 CA '+fmt(s.ca)+' | R\u00e9s. '+fmt(s.res)+'</h4><ul>'+
     s.notes.map(n=>'<li>'+n+'</li>').join('')+'</ul></div>'
   ).join('');
 
+  updateSimVerdict();
+  updateSimTopKpis();
+  updateSimCompare();
   updateSimYearDetail();
   updateSimCharts();
 }
