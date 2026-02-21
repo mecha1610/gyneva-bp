@@ -1,9 +1,9 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import * as XLSX from 'xlsx';
-import { setCors, checkRateLimit, allowMethods, requireAuth } from '../_lib/middleware.js';
-import { badRequest, serverError } from '../_lib/errors.js';
-import { EXCEL_ROW_MAP, EXCEL_SCALAR_MAP, getExcelMonthColumns } from '../../lib/constants.js';
-import type { BusinessPlanData } from '../../lib/types.js';
+import { setCors, checkRateLimit, allowMethods, requireAuth } from '../_lib/middleware';
+import { badRequest, serverError } from '../_lib/errors';
+import { EXCEL_ROW_MAP, EXCEL_SCALAR_MAP, getExcelMonthColumns } from '../../lib/constants';
+import type { BusinessPlanData } from '../../lib/types';
 
 // Helper: get cell value from worksheet
 function cellVal(ws: XLSX.WorkSheet, row: number, col: number): number {

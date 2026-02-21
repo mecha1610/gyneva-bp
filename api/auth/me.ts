@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { setCors, checkRateLimit, allowMethods, requireAuth } from '../_lib/middleware.js';
-import { serverError } from '../_lib/errors.js';
+import { setCors, checkRateLimit, allowMethods, requireAuth } from '../_lib/middleware';
+import { serverError } from '../_lib/errors';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (setCors(req, res)) return;

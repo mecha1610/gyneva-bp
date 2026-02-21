@@ -1,5 +1,5 @@
-import type { BusinessPlanData, CashflowScenarios, DerivedMetrics, SimulatorParams } from './types.js';
-import { CASH_SHARE_BASE, FACT_COST } from './constants.js';
+import type { BusinessPlanData, CashflowScenarios, DerivedMetrics, SimulatorParams } from './types';
+import { CASH_SHARE_BASE, FACT_COST } from './constants';
 
 /**
  * Compute cashflow scenarios: factoring, 3-month LAMal delay, 1-month LAMal delay.

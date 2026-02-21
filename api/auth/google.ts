@@ -1,9 +1,9 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { z } from 'zod';
-import { prisma } from '../_lib/db.js';
-import { verifyGoogleToken, isEmailAllowed, createSession, setSessionCookie } from '../_lib/auth.js';
-import { setCors, checkRateLimit, allowMethods } from '../_lib/middleware.js';
-import { badRequest, serverError, errorResponse } from '../_lib/errors.js';
+import { prisma } from '../_lib/db';
+import { verifyGoogleToken, isEmailAllowed, createSession, setSessionCookie } from '../_lib/auth';
+import { setCors, checkRateLimit, allowMethods } from '../_lib/middleware';
+import { badRequest, serverError, errorResponse } from '../_lib/errors';
 
 const bodySchema = z.object({
   credential: z.string().min(1),

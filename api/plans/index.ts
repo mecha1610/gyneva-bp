@@ -1,9 +1,9 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { z } from 'zod';
-import { prisma } from '../_lib/db.js';
-import { setCors, checkRateLimit, allowMethods, requireAuth } from '../_lib/middleware.js';
-import { badRequest, serverError } from '../_lib/errors.js';
-import { DEFAULT_BUSINESS_PLAN_DATA } from '../../lib/constants.js';
+import { prisma } from '../_lib/db';
+import { setCors, checkRateLimit, allowMethods, requireAuth } from '../_lib/middleware';
+import { badRequest, serverError } from '../_lib/errors';
+import { DEFAULT_BUSINESS_PLAN_DATA } from '../../lib/constants';
 
 // Validation: 36-element number array
 const arr36 = z.array(z.number()).length(36);

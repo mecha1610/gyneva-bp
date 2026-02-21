@@ -1,5 +1,5 @@
 import type { VercelResponse } from '@vercel/node';
-import type { ApiError } from '../../lib/types.js';
+import type { ApiError } from '../../lib/types';
 
 export function errorResponse(
   res: VercelResponse,

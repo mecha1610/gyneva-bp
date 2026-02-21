@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { prisma } from '../../_lib/db.js';
-import { setCors, checkRateLimit, allowMethods, requireAuth } from '../../_lib/middleware.js';
-import { badRequest, notFound, serverError, errorResponse } from '../../_lib/errors.js';
+import { prisma } from '../../_lib/db';
+import { setCors, checkRateLimit, allowMethods, requireAuth } from '../../_lib/middleware';
+import { badRequest, notFound, serverError, errorResponse } from '../../_lib/errors';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (setCors(req, res)) return;

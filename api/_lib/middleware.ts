@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import type { User } from '@prisma/client';
-import { getSessionUser } from './auth.js';
-import { errorResponse } from './errors.js';
+import { getSessionUser } from './auth';
+import { errorResponse } from './errors';
 
 // ===== CORS =====
 

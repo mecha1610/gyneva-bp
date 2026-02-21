@@ -1,8 +1,8 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { z } from 'zod';
-import { prisma } from '../_lib/db.js';
-import { setCors, checkRateLimit, allowMethods, requireAuth } from '../_lib/middleware.js';
-import { badRequest, notFound, serverError, errorResponse } from '../_lib/errors.js';
+import { prisma } from '../_lib/db';
+import { setCors, checkRateLimit, allowMethods, requireAuth } from '../_lib/middleware';
+import { badRequest, notFound, serverError, errorResponse } from '../_lib/errors';
 
 const paramsSchema = z.object({
   consult: z.number().int().min(8).max(24),

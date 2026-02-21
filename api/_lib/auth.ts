@@ -2,7 +2,7 @@ import { OAuth2Client } from 'google-auth-library';
 import { randomBytes } from 'crypto';
 import { serialize, parse } from 'cookie';
 import type { IncomingMessage, ServerResponse } from 'http';
-import { prisma } from './db.js';
+import { prisma } from './db';
 import type { User } from '@prisma/client';
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;

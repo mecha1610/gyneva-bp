@@ -1,4 +1,4 @@
-import type { BusinessPlanData, SimulatorParams } from './types.js';
+import type { BusinessPlanData, SimulatorParams } from './types';
 
 // ===== Business Constants =====
 

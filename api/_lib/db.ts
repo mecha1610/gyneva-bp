@@ -1,11 +1,7 @@
-import { Pool, neonConfig } from '@neondatabase/serverless';
+import { Pool } from '@neondatabase/serverless';
 import { PrismaNeon } from '@prisma/adapter-neon';
 import { PrismaClient } from '@prisma/client';
 
-// Enable WebSocket connections for Neon serverless
-neonConfig.webSocketConstructor = globalThis.WebSocket;
-
-// Singleton pattern for Prisma client in serverless environment
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
 function createPrismaClient(): PrismaClient {
