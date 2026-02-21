@@ -2,6 +2,22 @@
 
 All notable changes to the GYNEVA Business Plan application are documented here.
 
+## [0.11.0] - 2026-02-21
+
+### Added
+- **Year selector**: period buttons (Tous/Y1/Y2/Y3) to focus cashflow analysis on a specific year
+- **4 dynamic KPIs**: tresorerie finale (end of period), BFR minimum (color-coded by severity), mois critique (first negative month in LAMal 3m scenario), ratio entrees/sorties (inflows vs outflows)
+- **Dynamic verdict**: adapts to BFR severity — maitrisee (>=-50k, green), attention (-50k to -150k, orange), risque eleve (<-150k, red)
+- **Dynamic scenario cards**: 4 cards (LAMal 3m, cash+LAMal 3m, cash+LAMal 1m, Factoring) with per-period BFR, critical month, first negative month, risk tags (eleve/modere/securise), worst/best border highlighting
+- **Year highlight plugin** (`cfYearPlugin`): translucent band + label on line chart for selected year
+- **Monthly waterfall chart** (`cCashWaterfall`): bar chart showing net cashflow per month (green positive, red negative) with year highlighting via opacity
+
+### Changed
+- Cashflow chart managed by `updateCashflow()` instead of inline construction in `updateCharts()`
+- `updateUI()` no longer updates vCashMin/vCashOpt/scWorst/scCash3m/scCash1m/scFact (delegated to `updateCashflow()`)
+- Chart destroy loop excludes `cashflow` and `cashWaterfall` keys (lifecycle managed by `updateCashflow()`)
+- OVERLAY support preserved on scenario comparison line chart
+
 ## [0.10.0] - 2026-02-21
 
 ### Added
