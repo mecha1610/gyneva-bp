@@ -9,7 +9,7 @@ import type { BusinessPlanData } from '../../lib/types';
 function cellVal(ws: XLSX.WorkSheet, row: number, col: number): number {
   const addr = XLSX.utils.encode_cell({ r: row - 1, c: col - 1 });
   const cell = ws[addr];
-  return cell ? (typeof cell.v === 'number' ? cell.v : 0) : 0;
+  return cell ? (typeof cell.v === 'number' ? Math.round(cell.v) : 0) : 0;
 }
 
 // Helper: get row of values at specified columns
@@ -20,14 +20,35 @@ function getRow(ws: XLSX.WorkSheet, row: number, cols: number[]): number[] {
   });
 }
 
-function parseExcelWorksheet(ws: XLSX.WorkSheet): BusinessPlanData {
+// Check if a row exists within worksheet range
+function rowInRange(ws: XLSX.WorkSheet, row: number): boolean {
+  const range = ws['!ref'];
+  if (!range) return false;
+  const decoded = XLSX.utils.decode_range(range);
+  return (row - 1) >= decoded.s.r && (row - 1) <= decoded.e.r;
+}
+
+function parseExcelWorksheet(ws: XLSX.WorkSheet): { data: BusinessPlanData; warnings: string[] } {
+  const warnings: string[] = [];
   const mCols = getExcelMonthColumns();
+
+  // Validate critical rows exist in range
+  const criticalRows = [
+    { name: 'CA (chiffre d\'affaires)', row: EXCEL_ROW_MAP.ca },
+    { name: 'Résultat', row: EXCEL_ROW_MAP.result },
+    { name: 'Cashflow', row: EXCEL_ROW_MAP.cashflow },
+  ];
+  for (const { name, row } of criticalRows) {
+    if (!rowInRange(ws, row)) {
+      warnings.push(`Ligne critique "${name}" (row ${row}) hors de la plage du worksheet`);
+    }
+  }
 
   const fteAdminBase = getRow(ws, EXCEL_ROW_MAP.fteAdmin, mCols);
   const fteAdminExtra = getRow(ws, EXCEL_ROW_MAP.fteAdminExtra, mCols);
   const fteAdmin = fteAdminBase.map((v, i) => v + (fteAdminExtra[i] || 0));
 
-  return {
+  const data: BusinessPlanData = {
     ca: getRow(ws, EXCEL_ROW_MAP.ca, mCols),
     caAssoc: getRow(ws, EXCEL_ROW_MAP.caAssoc, mCols),
     caIndep: getRow(ws, EXCEL_ROW_MAP.caIndep, mCols),
@@ -51,6 +72,20 @@ function parseExcelWorksheet(ws: XLSX.WorkSheet): BusinessPlanData {
     revSpec: cellVal(ws, EXCEL_SCALAR_MAP.revSpec.row, EXCEL_SCALAR_MAP.revSpec.col),
     capex: cellVal(ws, EXCEL_SCALAR_MAP.capex.row, EXCEL_SCALAR_MAP.capex.col),
   };
+
+  // Detect rows that are entirely zero
+  const rowLabels: Record<string, string> = {
+    ca: 'CA total', caAssoc: 'CA associés', caIndep: 'CA indépendants',
+    caInterne: 'CA internes', result: 'Résultat', cashflow: 'Cashflow',
+  };
+  for (const [key, label] of Object.entries(rowLabels)) {
+    const arr = data[key as keyof BusinessPlanData] as number[];
+    if (Array.isArray(arr) && arr.every(v => v === 0)) {
+      warnings.push(`"${label}" contient uniquement des zéros — vérifiez le fichier source`);
+    }
+  }
+
+  return { data, warnings };
 }
 
 export const config = {
@@ -78,13 +113,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const buffer = Buffer.from(file, 'base64');
     const workbook = XLSX.read(buffer, { type: 'buffer' });
-    const ws = workbook.Sheets['Backend'];
+
+    // Find "Backend" sheet, or fallback to first sheet if only one exists
+    let ws = workbook.Sheets['Backend'];
+    let sheetUsed = 'Backend';
 
     if (!ws) {
-      return badRequest(res, 'Sheet "Backend" not found in workbook');
+      const sheetNames = workbook.SheetNames;
+      if (sheetNames.length === 1) {
+        ws = workbook.Sheets[sheetNames[0]];
+        sheetUsed = sheetNames[0];
+      } else {
+        return badRequest(
+          res,
+          `Feuille "Backend" introuvable. Feuilles disponibles : ${sheetNames.map(s => `"${s}"`).join(', ')}`,
+        );
+      }
     }
 
-    const data = parseExcelWorksheet(ws);
+    const { data, warnings } = parseExcelWorksheet(ws);
 
     // Validate: all arrays should have 36 elements
     const arrayKeys = [
@@ -100,8 +147,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
     }
 
+    if (sheetUsed !== 'Backend') {
+      warnings.unshift(`Feuille "Backend" absente — utilisation de "${sheetUsed}" (seule feuille disponible)`);
+    }
+
     return res.status(200).json({
       data,
+      warnings,
       filename: filename || 'imported.xlsx',
       message: 'Excel parsed successfully',
     });

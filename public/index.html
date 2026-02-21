@@ -126,6 +126,45 @@ table.dt tr:hover td{background:#f8fafb}
 .dropzone input{position:absolute;inset:0;opacity:0;cursor:pointer}
 .dropzone.loaded{border-color:var(--acc);background:rgba(0,184,148,.04);border-style:solid}
 
+/* === IMPORT SUMMARY === */
+.import-summary{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:1.2rem 1.4rem;margin-bottom:1.2rem;display:none;animation:fadeIn .3s ease}
+.import-summary.show{display:block}
+.import-summary h3{font-size:.85rem;color:var(--p);font-weight:700;margin-bottom:.8rem;display:flex;align-items:center;gap:.5rem}
+.import-summary .no-change{font-size:.84rem;color:var(--txtL);padding:.5rem 0}
+.diff-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.6rem}
+.diff-item{display:flex;justify-content:space-between;align-items:center;padding:.5rem .7rem;border-radius:8px;background:#f8fafb;font-size:.8rem}
+.diff-item .diff-label{color:var(--txtL);font-weight:500}
+.diff-item .diff-values{display:flex;align-items:center;gap:.4rem;font-variant-numeric:tabular-nums}
+.diff-item .diff-old{color:var(--txtL);text-decoration:line-through;font-size:.75rem}
+.diff-item .diff-new{color:var(--p);font-weight:700}
+.diff-item .diff-arrow{color:var(--txtL);font-size:.7rem}
+.diff-pct{font-size:.68rem;font-weight:600;padding:.1rem .45rem;border-radius:10px;margin-left:.3rem}
+.diff-pct.up{background:rgba(0,184,148,.1);color:#00b894}
+.diff-pct.down{background:rgba(214,48,49,.1);color:var(--danger)}
+.import-warnings{margin-top:.8rem;padding:.6rem .8rem;background:rgba(253,203,110,.1);border:1px solid rgba(253,203,110,.25);border-radius:8px;font-size:.78rem;color:#7d5a12}
+.import-warnings li{margin:.2rem 0;list-style:none;padding-left:1rem;position:relative}
+.import-warnings li::before{content:'\26A0';position:absolute;left:0}
+
+/* === VERSION PANEL === */
+.version-panel{position:fixed;top:0;right:-420px;width:400px;height:100vh;background:var(--card);border-left:1px solid var(--brd);box-shadow:-4px 0 24px rgba(0,0,0,.08);z-index:300;transition:right .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
+.version-panel.open{right:0}
+.version-panel .vp-header{padding:1.2rem 1.4rem;border-bottom:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between}
+.version-panel .vp-header h3{font-size:.95rem;font-weight:700;color:var(--p)}
+.version-panel .vp-close{background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--txtL);padding:.3rem}
+.version-panel .vp-close:hover{color:var(--p)}
+.version-panel .vp-list{flex:1;overflow-y:auto;padding:.8rem}
+.version-panel .vp-empty{text-align:center;color:var(--txtL);font-size:.84rem;padding:2rem 1rem}
+.version-item{padding:.8rem 1rem;border:1px solid var(--brd);border-radius:10px;margin-bottom:.6rem;transition:var(--trans)}
+.version-item:hover{border-color:var(--pl);background:#f8fafb}
+.version-item .vi-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem}
+.version-item .vi-num{font-size:.75rem;font-weight:700;color:var(--pl);background:rgba(26,74,122,.06);padding:.15rem .5rem;border-radius:8px}
+.version-item .vi-date{font-size:.72rem;color:var(--txtL)}
+.version-item .vi-label{font-size:.82rem;color:var(--p);font-weight:500}
+.version-item .vi-restore{margin-top:.5rem;background:none;border:1px solid var(--pl);color:var(--pl);padding:.3rem .7rem;border-radius:8px;font-size:.73rem;font-weight:500;cursor:pointer;transition:var(--trans)}
+.version-item .vi-restore:hover{background:var(--pl);color:#fff}
+.version-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.2);z-index:299}
+.version-overlay.show{display:block}
+
 /* ===== SIMULATOR ===== */
 .sim-layout{display:grid;grid-template-columns:340px 1fr;gap:1.5rem}
 @media(max-width:900px){.sim-layout{grid-template-columns:1fr}}
@@ -257,6 +296,7 @@ table.dt tr:hover td{background:#f8fafb}
   <div class="status-pill static" id="statusPill"><div class="status-dot static" id="statusDot"></div><span id="statusLabel">Donn&eacute;es int&eacute;gr&eacute;es</span></div>
   <button class="btn" onclick="document.getElementById('fileInput').click()">&#128196; Importer Excel</button>
   <input type="file" id="fileInput" accept=".xlsx,.xls" style="display:none" onchange="handleFile(this.files[0])">
+  <button class="btn" onclick="openVersionPanel()">&#128338; Versions</button>
   <button class="btn primary" onclick="exportPDF()">&#128424; Export PDF</button>
 </div>
 
@@ -268,6 +308,12 @@ table.dt tr:hover td{background:#f8fafb}
   <div class="dz-text" id="dzText">Glissez votre fichier GYNEVA_Business_Plan.xlsx ici</div>
   <div class="dz-sub">ou cliquez pour s&eacute;lectionner &middot; Fichier envoy&eacute; au serveur pour traitement</div>
   <input type="file" accept=".xlsx,.xls" onchange="handleFile(this.files[0])">
+</div>
+
+<!-- IMPORT SUMMARY -->
+<div class="import-summary" id="importSummary">
+  <h3>&#128203; R&eacute;sum&eacute; de l'import</h3>
+  <div id="importDiffContent"></div>
 </div>
 
 <!-- ====== OVERVIEW ====== -->
@@ -632,6 +678,9 @@ dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('over');if
 async function handleFile(file){
   if(!file)return;
   try {
+    // Deep copy current data for diff
+    const oldData = D ? JSON.parse(JSON.stringify(D)) : null;
+
     const buffer = await file.arrayBuffer();
     const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
     const result = await api('/import/excel', {
@@ -663,10 +712,158 @@ async function handleFile(file){
     document.getElementById('statusLabel').textContent='Donn\u00e9es en direct \u00b7 '+file.name;
     document.getElementById('statusPill').className='status-pill live';
     document.getElementById('statusDot').className='status-dot live';
+
+    // Show import diff summary
+    buildImportDiff(oldData, D, result.warnings || []);
   } catch(err) {
     console.error('Import error:', err);
     const msg = err.error || err.message || 'Erreur inconnue';
     document.getElementById('dzText').textContent='\u2717 Erreur: ' + msg;
+    document.getElementById('importSummary').classList.remove('show');
+  }
+}
+
+// ===== IMPORT DIFF =====
+function buildImportDiff(oldData, newData, warnings) {
+  const container = document.getElementById('importSummary');
+  const content = document.getElementById('importDiffContent');
+
+  const sumArr = (arr, start, end) => arr.slice(start, end).reduce((a,b) => a+b, 0);
+  const metrics = [
+    { label: 'CA Ann\u00e9e 1', fn: d => sumArr(d.ca, 0, 12) },
+    { label: 'CA Ann\u00e9e 2', fn: d => sumArr(d.ca, 12, 24) },
+    { label: 'CA Ann\u00e9e 3', fn: d => sumArr(d.ca, 24, 36) },
+    { label: 'R\u00e9sultat Ann\u00e9e 1', fn: d => sumArr(d.result, 0, 12) },
+    { label: 'R\u00e9sultat Ann\u00e9e 2', fn: d => sumArr(d.result, 12, 24) },
+    { label: 'R\u00e9sultat Ann\u00e9e 3', fn: d => sumArr(d.result, 24, 36) },
+    { label: 'CAPEX', fn: d => d.capex },
+    { label: 'Honoraires / consult.', fn: d => d.fee },
+    { label: 'Consult. / jour', fn: d => d.consultDay },
+    { label: 'ETP max', fn: d => Math.max(...d.fteTotal) },
+  ];
+
+  let diffs = [];
+  if (oldData) {
+    for (const m of metrics) {
+      const ov = m.fn(oldData);
+      const nv = m.fn(newData);
+      if (ov !== nv) diffs.push({ label: m.label, old: ov, new: nv });
+    }
+  }
+
+  let html = '';
+  if (!oldData) {
+    html = '<div class="no-change">Premi\u00e8re importation — donn\u00e9es charg\u00e9es.</div>';
+  } else if (diffs.length === 0) {
+    html = '<div class="no-change">Aucun changement d\u00e9tect\u00e9 par rapport aux donn\u00e9es pr\u00e9c\u00e9dentes.</div>';
+  } else {
+    html = '<div class="diff-grid">';
+    for (const d of diffs) {
+      const pct = d.old !== 0 ? ((d.new - d.old) / Math.abs(d.old) * 100) : 0;
+      const pctClass = pct > 0 ? 'up' : pct < 0 ? 'down' : '';
+      const pctStr = pct !== 0 ? '<span class="diff-pct ' + pctClass + '">' + (pct > 0 ? '+' : '') + pct.toFixed(1) + '%</span>' : '';
+      html += '<div class="diff-item"><span class="diff-label">' + d.label + '</span>'
+        + '<span class="diff-values"><span class="diff-old">' + fmt(d.old) + '</span>'
+        + '<span class="diff-arrow">\u2192</span>'
+        + '<span class="diff-new">' + fmt(d.new) + '</span>'
+        + pctStr + '</span></div>';
+    }
+    html += '</div>';
+  }
+
+  // Show warnings from parser
+  if (warnings && warnings.length > 0) {
+    html += '<ul class="import-warnings">';
+    for (const w of warnings) html += '<li>' + w + '</li>';
+    html += '</ul>';
+  }
+
+  content.innerHTML = html;
+  container.classList.add('show');
+}
+
+// ===== VERSION PANEL =====
+function openVersionPanel() {
+  document.getElementById('versionPanel').classList.add('open');
+  document.getElementById('versionOverlay').classList.add('show');
+  loadVersions();
+}
+
+function closeVersionPanel() {
+  document.getElementById('versionPanel').classList.remove('open');
+  document.getElementById('versionOverlay').classList.remove('show');
+}
+
+async function loadVersions() {
+  const list = document.getElementById('versionList');
+  if (!currentPlanId) {
+    list.innerHTML = '<div class="vp-empty">Aucun plan actif. Importez d\'abord des donn\u00e9es.</div>';
+    return;
+  }
+  try {
+    const result = await api('/plans/' + currentPlanId + '/versions');
+    const versions = result.versions || [];
+    if (versions.length === 0) {
+      list.innerHTML = '<div class="vp-empty">Aucune version enregistr\u00e9e pour ce plan.</div>';
+      return;
+    }
+    list.innerHTML = versions.map(function(v) {
+      const d = new Date(v.createdAt);
+      const dateStr = d.toLocaleDateString('fr-CH', { day: '2-digit', month: 'short', year: 'numeric' })
+        + ' \u00e0 ' + d.toLocaleTimeString('fr-CH', { hour: '2-digit', minute: '2-digit' });
+      return '<div class="version-item">'
+        + '<div class="vi-top"><span class="vi-num">v' + v.versionNumber + '</span><span class="vi-date">' + dateStr + '</span></div>'
+        + '<div class="vi-label">' + (v.label || 'Version ' + v.versionNumber) + '</div>'
+        + '<button class="vi-restore" onclick="restoreVersion(\'' + v.id + '\')">Restaurer cette version</button>'
+        + '</div>';
+    }).join('');
+  } catch(err) {
+    list.innerHTML = '<div class="vp-empty">Erreur: ' + (err.error || err.message || 'Impossible de charger les versions') + '</div>';
+  }
+}
+
+async function restoreVersion(versionId) {
+  if (!currentPlanId) return;
+  try {
+    // Fetch full version data
+    const result = await api('/plans/' + currentPlanId + '/versions/' + versionId);
+    const vData = result.version;
+    if (!vData || !vData.data) throw new Error('Donn\u00e9es de version incompl\u00e8tes');
+
+    const oldData = D ? JSON.parse(JSON.stringify(D)) : null;
+
+    // Save restored version to plan (creates auto-snapshot of current state)
+    const restored = vData.data;
+    const constants = vData.constants || {};
+    await api('/plans/' + currentPlanId, {
+      method: 'PUT',
+      body: JSON.stringify({
+        data: restored,
+        consultDay: constants.consultDay, fee: constants.fee, daysYear: constants.daysYear,
+        revSpec: constants.revSpec, capex: constants.capex,
+        versionLabel: 'Restauration v' + (vData.versionNumber || '?'),
+      }),
+    });
+
+    // Update local state
+    D = restored;
+    D.consultDay = constants.consultDay || D.consultDay;
+    D.fee = constants.fee || D.fee;
+    D.daysYear = constants.daysYear || D.daysYear;
+    D.revSpec = constants.revSpec || D.revSpec;
+    D.capex = constants.capex || D.capex;
+    computeDerived();
+    updateUI();
+
+    buildImportDiff(oldData, D, []);
+    document.getElementById('statusLabel').textContent = 'Restaur\u00e9 \u00b7 v' + (vData.versionNumber || '?');
+    document.getElementById('statusPill').className = 'status-pill live';
+    document.getElementById('statusDot').className = 'status-dot live';
+
+    closeVersionPanel();
+  } catch(err) {
+    console.error('Restore error:', err);
+    alert('Erreur lors de la restauration: ' + (err.error || err.message || 'Erreur inconnue'));
   }
 }
 
@@ -1069,8 +1266,8 @@ function getDefaultData() {
   return {
     ca:[0,0,0,38313,108554,200617,249316,255982,255982,255982,267157,278332,289506,300681,300681,300681,300681,300681,300681,300681,300681,300681,311855,323030,359747,396463,396463,396463,396463,396463,396463,396463,396463,396463,396463,396463],
     caAssoc:[0,0,0,25542,63855,102168,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710],
-    caIndep:[0,0,0,12771,44698,95782,114939,114939,114939,114939,114939,114939,114939,114939,114939,114939,114939,114939,114939,114939,114939,114939,114939,114939,140481,166023,166023,166023,166023,166023,166023,166023,166023,166023,166023,166023],
-    caInterne:[0,0,0,0,0,0,0,0,0,0,11175,22349,33524,44698,44698,44698,44698,44698,44698,44698,44698,44698,55873,67048,78222,89397,89397,89397,89397,89397,89397,89397,89397,89397,89397,89397],
+    caIndep:[0,0,0,12771,44699,95783,114939,114939,114939,114939,114939,114939,114939,114939,114939,114939,114939,114939,114939,114939,114939,114939,114939,114939,140481,166023,166023,166023,166023,166023,166023,166023,166023,166023,166023,166023],
+    caInterne:[0,0,0,0,0,0,0,0,0,0,11175,22349,33524,44699,44699,44699,44699,44699,44699,44699,44699,44699,55873,67048,78222,89397,89397,89397,89397,89397,89397,89397,89397,89397,89397,89397],
     caSage:[0,0,0,0,0,2667,6667,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333],
     result:[0,-17000,-28942,-13755,11069,30233,50341,55758,58758,58758,66724,74691,64057,72023,71023,71023,71023,71023,70857,70440,70440,70440,78406,-13627,87675,106127,106127,106127,106127,106127,105794,105794,105794,105794,105794,5794],
     cashflow:[0,-17000,-45942,-59697,-48627,-18395,31947,87705,146463,205221,271945,346636,410692,482716,553739,624762,695785,766808,837666,908106,978546,1048986,1127393,1113765,1201440,1307568,1413695,1519822,1625949,1732077,1837871,1943665,2049460,2155254,2261048,2266842],
@@ -1081,8 +1278,8 @@ function getDefaultData() {
     lab:[0,0,0,12000,15000,18000,21000,24000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000],
     fteAssoc:[0,0,0,0,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
     fteIndep:[0,0,0,0,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,3,3,3],
-    fteInterne:[0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2],
-    fteAdmin:[0,0,0,3,4,5,6,6,6,6,6,6,7,7,7,7,7,7,7,7,7,7,7,7,9,9,9,9,9,9,9,9,9,9,9,9],
+    fteInterne:[0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2],
+    fteAdmin:[0,0,2,3,4,5,6,6,6,6,6,6,8,8,8,8,8,8,8,8,8,8,8,8,9,9,9,9,9,9,9,9,9,9,9,9],
     fteTotal:[0,0,1,3,6,8,10,11,11,11,11,11,13,13,13,13,13,13,13,13,13,13,14,14,16,17,17,17,17,17,17,17,17,17,17,17],
     consultDay:16,fee:225,daysYear:215,revSpec:923432,capex:523000
   };
@@ -1142,6 +1339,18 @@ window.addEventListener('load', async function() {
   }, 100);
 });
 </script>
+
+<!-- VERSION PANEL -->
+<div class="version-overlay" id="versionOverlay" onclick="closeVersionPanel()"></div>
+<div class="version-panel" id="versionPanel">
+  <div class="vp-header">
+    <h3>&#128338; Historique des versions</h3>
+    <button class="vp-close" onclick="closeVersionPanel()">&times;</button>
+  </div>
+  <div class="vp-list" id="versionList">
+    <div class="vp-empty">Chargement...</div>
+  </div>
+</div>
 
 </div><!-- end #app-content -->
 
