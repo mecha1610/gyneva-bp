@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GYNEVA — Business Plan Interactif</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--p:#0f2b46;--pl:#1a4a7a;--acc:#00b894;--acc2:#00cec9;--warn:#fdcb6e;--danger:#d63031;--bg:#f0f3f8;--card:#fff;--txt:#2d3436;--txtL:#636e72;--brd:#dfe6e9;--sh:0 2px 16px rgba(0,0,0,.06);--r:14px;--trans:all .25s cubic-bezier(.4,0,.2,1)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6;-webkit-font-smoothing:antialiased}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* === SIDEBAR === */
+.layout{display:flex;min-height:100vh}
+.sidebar{width:260px;background:linear-gradient(180deg,var(--p) 0%,#0a1f33 100%);color:#fff;padding:0;position:fixed;top:0;left:0;bottom:0;z-index:200;display:flex;flex-direction:column;transition:var(--trans);overflow:hidden}
+.sidebar.collapsed{width:64px}
+.sidebar .logo{padding:1.5rem 1.2rem;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:.8rem}
+.sidebar .logo h1{font-size:1.15rem;font-weight:700;letter-spacing:-.3px;white-space:nowrap}
+.sidebar .logo .dot{width:10px;height:10px;border-radius:50%;background:var(--acc);flex-shrink:0}
+.sidebar .logo-sub{font-size:.65rem;opacity:.5;margin-top:2px;white-space:nowrap}
+.sidebar nav{flex:1;padding:.8rem 0}
+.sidebar nav button{width:100%;background:none;border:none;color:rgba(255,255,255,.6);padding:.7rem 1.2rem;text-align:left;cursor:pointer;font-size:.82rem;font-weight:500;display:flex;align-items:center;gap:.7rem;transition:var(--trans);white-space:nowrap;border-left:3px solid transparent}
+.sidebar nav button:hover{color:#fff;background:rgba(255,255,255,.06)}
+.sidebar nav button.active{color:#fff;background:rgba(0,184,148,.1);border-left-color:var(--acc)}
+.sidebar nav button .nav-icon{font-size:1.1rem;width:24px;text-align:center;flex-shrink:0}
+.sidebar nav button .nav-label{overflow:hidden}
+.sidebar .sidebar-footer{padding:1rem 1.2rem;border-top:1px solid rgba(255,255,255,.08);font-size:.7rem;opacity:.4;white-space:nowrap}
+.toggle-btn{position:absolute;top:1.5rem;right:-14px;width:28px;height:28px;border-radius:50%;background:var(--pl);border:2px solid var(--bg);color:#fff;cursor:pointer;font-size:.75rem;display:flex;align-items:center;justify-content:center;z-index:201;transition:var(--trans)}
+.toggle-btn:hover{background:var(--acc)}
+
+/* === MAIN === */
+.main-area{margin-left:260px;transition:var(--trans);flex:1;min-width:0}
+.sidebar.collapsed ~ .main-area{margin-left:64px}
+
+/* === TOP BAR === */
+.topbar{background:var(--card);border-bottom:1px solid var(--brd);padding:.8rem 2rem;display:flex;align-items:center;gap:1rem;position:sticky;top:0;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,.04)}
+.topbar .page-title{font-size:1.05rem;font-weight:700;color:var(--p)}
+.topbar .spacer{flex:1}
+.status-pill{display:flex;align-items:center;gap:.4rem;font-size:.75rem;padding:.3rem .8rem;border-radius:20px;font-weight:500}
+.status-pill.live{background:rgba(0,184,148,.1);color:#00b894}.status-pill.static{background:rgba(253,203,110,.15);color:#d68910}
+.status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.status-dot.live{background:var(--acc);animation:pulse 2s infinite}.status-dot.static{background:var(--warn)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.btn{padding:.45rem 1rem;border-radius:8px;border:1px solid var(--brd);background:var(--card);color:var(--txt);font-size:.8rem;font-weight:500;cursor:pointer;transition:var(--trans);display:flex;align-items:center;gap:.4rem}
+.btn:hover{border-color:var(--pl);color:var(--pl)}
+.btn.primary{background:var(--pl);color:#fff;border-color:var(--pl)}.btn.primary:hover{background:var(--p)}
+
+/* === CONTENT === */
+.content{padding:1.8rem 2rem;max-width:1200px;margin:0 auto}
+.section{display:none;animation:fadeIn .3s ease}.section.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* === CARDS === */
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:1.5rem;margin-bottom:1.2rem;border:1px solid var(--brd);transition:var(--trans)}
+.card:hover{box-shadow:0 4px 24px rgba(0,0,0,.08)}
+.card h2{font-size:.95rem;color:var(--p);margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;font-weight:700}
+.card h2 .ic{font-size:1.15rem}
+.card h3{font-size:.85rem;color:var(--p);margin-bottom:.6rem;font-weight:600}
+
+/* === KPI === */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.9rem;margin-bottom:1.2rem}
+.kpi{background:var(--card);border-radius:var(--r);padding:1.2rem;border:1px solid var(--brd);box-shadow:var(--sh);transition:var(--trans);position:relative;overflow:hidden}
+.kpi:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,0,0,.08)}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r) var(--r) 0 0}
+.kpi.green::before{background:var(--acc)}.kpi.orange::before{background:var(--warn)}.kpi.red::before{background:var(--danger)}.kpi.blue::before{background:var(--pl)}
+.kpi .lb{font-size:.7rem;color:var(--txtL);text-transform:uppercase;letter-spacing:.6px;font-weight:600}
+.kpi .vl{font-size:1.6rem;font-weight:800;color:var(--p);margin:.4rem 0 .1rem}
+.kpi .sb{font-size:.73rem;color:var(--txtL)}
+.kpi.green .vl{color:var(--acc)}.kpi.orange .vl{color:#e17055}.kpi.red .vl{color:var(--danger)}
+
+/* === VERDICT === */
+.verdict{border-radius:var(--r);padding:1.2rem 1.4rem;margin-bottom:1.2rem;display:flex;align-items:flex-start;gap:.9rem;font-size:.88rem;line-height:1.6}
+.verdict .ic{font-size:1.6rem;flex-shrink:0}.verdict strong{font-weight:700}
+.verdict.green{background:rgba(0,184,148,.08);border:1px solid rgba(0,184,148,.2);color:#00755a}
+.verdict.orange{background:rgba(253,203,110,.12);border:1px solid rgba(253,203,110,.3);color:#7d5a12}
+.verdict.red{background:rgba(214,48,49,.08);border:1px solid rgba(214,48,49,.2);color:#8b2020}
+
+/* === CHARTS === */
+.chart-box{position:relative;height:300px;margin:.5rem 0}.chart-box.sm{height:240px}
+
+/* === TABLES === */
+table.dt{width:100%;border-collapse:separate;border-spacing:0;font-size:.82rem}
+table.dt th{background:#f8fafb;padding:.65rem .9rem;text-align:left;font-weight:600;color:var(--p);border-bottom:2px solid var(--brd);white-space:nowrap}
+table.dt td{padding:.55rem .9rem;border-bottom:1px solid #f0f3f5}
+table.dt tr:hover td{background:#f8fafb}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+
+/* === BADGES === */
+.badge{display:inline-block;padding:.15rem .6rem;border-radius:10px;font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+.badge.critique{background:#fdeaea;color:#c0392b}.badge.important{background:#fef5e7;color:#d68910}
+.badge.moyen{background:#eaf2f8;color:#2e86c1}.badge.faible{background:#e8f8f0;color:#27ae60}
+.badge.eleve{background:#fdeaea;color:#c0392b}.badge.tres-eleve{background:#c0392b;color:#fff}
+
+/* === PILLS === */
+.pills{display:flex;flex-wrap:wrap;gap:.4rem;margin:.5rem 0}
+.pill{background:rgba(26,74,122,.06);border-radius:20px;padding:.35rem .85rem;font-size:.78rem;color:var(--p);font-weight:500;border:1px solid rgba(26,74,122,.1)}
+.pill b{font-weight:700}
+
+/* === EXPLAINER === */
+.exp{background:#f8fafb;border-radius:10px;padding:.9rem 1.1rem;font-size:.84rem;line-height:1.6;color:#4a6785;margin:.8rem 0;border-left:3px solid var(--pl)}
+.exp strong{color:var(--p)}
+
+/* === SCENARIO CARDS === */
+.sc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:.9rem;margin:1rem 0}
+.sc-card{border-radius:var(--r);padding:1.1rem;border:2px solid var(--brd);transition:var(--trans);background:var(--card)}
+.sc-card:hover{border-color:var(--pl)}.sc-card.rec{border-color:var(--acc);background:rgba(0,184,148,.03)}
+.sc-card h3{font-size:.82rem;margin-bottom:.4rem;display:flex;align-items:center;gap:.4rem}
+.sc-card .bn{font-size:1.4rem;font-weight:800}.sc-card .dt{font-size:.76rem;color:var(--txtL);margin-top:.2rem}
+
+/* === PROFIT TIMELINE === */
+.profit-tl{display:flex;gap:0;margin:1rem 0;border-radius:var(--r);overflow:hidden;border:1px solid var(--brd)}
+.profit-yr{flex:1;padding:1rem;text-align:center;border-right:1px solid var(--brd);background:var(--card)}
+.profit-yr:last-child{border-right:none}
+.profit-yr .yl{font-size:.7rem;color:var(--txtL);text-transform:uppercase;font-weight:600;letter-spacing:.5px}
+.profit-yr .am{font-size:1.3rem;font-weight:800;color:var(--p);margin:.3rem 0}
+.profit-yr .pa{font-size:.82rem;color:var(--acc);font-weight:600}
+.profit-yr .nt{font-size:.72rem;color:var(--txtL)}
+
+/* === DROPZONE === */
+.dropzone{border:2px dashed var(--pl);border-radius:var(--r);padding:2rem;text-align:center;margin-bottom:1.2rem;background:rgba(26,74,122,.02);transition:var(--trans);cursor:pointer;position:relative}
+.dropzone:hover,.dropzone.over{background:rgba(26,74,122,.06);border-color:var(--acc)}
+.dropzone .dz-icon{font-size:2.2rem;margin-bottom:.4rem}.dropzone .dz-text{font-size:.9rem;color:var(--p);font-weight:600}
+.dropzone .dz-sub{font-size:.78rem;color:var(--txtL);margin-top:.3rem}
+.dropzone input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.dropzone.loaded{border-color:var(--acc);background:rgba(0,184,148,.04);border-style:solid}
+
+/* ===== SIMULATOR ===== */
+.sim-layout{display:grid;grid-template-columns:340px 1fr;gap:1.5rem}
+@media(max-width:900px){.sim-layout{grid-template-columns:1fr}}
+.sim-panel{background:var(--card);border-radius:var(--r);border:1px solid var(--brd);box-shadow:var(--sh);padding:1.4rem;position:sticky;top:70px;max-height:calc(100vh - 90px);overflow-y:auto}
+.sim-panel h2{font-size:.9rem;color:var(--p);font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+.sim-group{margin-bottom:1.3rem;padding-bottom:1rem;border-bottom:1px solid #f0f3f5}
+.sim-group:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.sim-group h3{font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;color:var(--txtL);font-weight:600;margin-bottom:.7rem}
+.sim-row{margin-bottom:.8rem}
+.sim-row label{display:flex;justify-content:space-between;font-size:.8rem;font-weight:500;margin-bottom:.25rem}
+.sim-row label span{color:var(--pl);font-weight:700;font-variant-numeric:tabular-nums}
+.sim-row input[type=range]{width:100%;height:6px;-webkit-appearance:none;appearance:none;background:#e0e6ed;border-radius:3px;outline:none;cursor:pointer}
+.sim-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--pl);cursor:pointer;border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.sim-row select{width:100%;padding:.45rem .6rem;border:1px solid var(--brd);border-radius:8px;font-size:.82rem;background:var(--card);cursor:pointer}
+.sim-row .toggle{display:flex;gap:.5rem;align-items:center}
+.sim-row .toggle-sw{width:40px;height:22px;border-radius:11px;background:#ccc;cursor:pointer;position:relative;transition:var(--trans)}
+.sim-row .toggle-sw.on{background:var(--acc)}
+.sim-row .toggle-sw::after{content:'';position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:var(--trans);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.sim-row .toggle-sw.on::after{left:20px}
+.sim-results{flex:1}
+.sim-delta{display:inline-block;font-size:.7rem;font-weight:600;padding:.1rem .5rem;border-radius:10px;margin-left:.4rem}
+.sim-delta.up{background:rgba(0,184,148,.1);color:#00b894}
+.sim-delta.down{background:rgba(214,48,49,.1);color:var(--danger)}
+.sim-delta.neutral{background:rgba(99,110,114,.1);color:var(--txtL)}
+
+/* === RESET BUTTON === */
+.btn-reset{background:none;border:1px solid var(--brd);color:var(--txtL);padding:.35rem .7rem;border-radius:8px;font-size:.72rem;cursor:pointer;transition:var(--trans)}
+.btn-reset:hover{border-color:var(--danger);color:var(--danger)}
+
+/* === SCENARIO SAVE/LOAD === */
+.sim-actions{display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap}
+.sim-actions .btn{font-size:.75rem;padding:.35rem .7rem}
+.scenario-list{max-height:200px;overflow-y:auto;border:1px solid var(--brd);border-radius:8px;margin-bottom:1rem;display:none}
+.scenario-list.show{display:block}
+.scenario-item{padding:.5rem .8rem;font-size:.8rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #f0f3f5}
+.scenario-item:hover{background:#f8fafb}
+.scenario-item:last-child{border-bottom:none}
+.scenario-item .del{color:var(--danger);cursor:pointer;font-size:.7rem;padding:.2rem .4rem;border:none;background:none}
+
+/* === ADMIN PANEL === */
+.admin-panel{display:none;margin-top:1.2rem}
+.admin-panel.show{display:block}
+.admin-emails{list-style:none;padding:0}
+.admin-emails li{display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;border-bottom:1px solid #f0f3f5;font-size:.82rem}
+.admin-add{display:flex;gap:.5rem;margin-top:.8rem}
+.admin-add input{flex:1;padding:.4rem .6rem;border:1px solid var(--brd);border-radius:8px;font-size:.82rem}
+
+/* === MOBILE === */
+@media(max-width:768px){
+  .sidebar{width:64px}.sidebar .nav-label,.sidebar .logo h1,.sidebar .logo-sub,.sidebar .sidebar-footer span{display:none}
+  .main-area{margin-left:64px}.content{padding:1rem}.kpi-grid{grid-template-columns:1fr 1fr}
+  .toggle-btn{display:none}
+}
+
+/* === PRINT/PDF === */
+@media print{
+  .sidebar,.topbar,.dropzone,.toggle-btn{display:none!important}
+  .main-area{margin-left:0!important}
+  .section{display:block!important;page-break-inside:avoid}
+  .card{box-shadow:none;border:1px solid #ddd}
+}
+/* === AUTH GATE === */
+#app-content{display:none}
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#0f2b46 0%,#1a4a7a 50%,#00b894 100%);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+.login-card{background:#fff;border-radius:20px;padding:2.5rem 2.5rem 2rem;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.login-card .logo-auth{display:flex;align-items:center;justify-content:center;gap:.6rem;margin-bottom:.5rem}
+.login-card .logo-auth .dot{width:12px;height:12px;border-radius:50%;background:#00b894}
+.login-card .logo-auth h1{font-size:1.6rem;font-weight:800;color:#0f2b46;letter-spacing:-.5px}
+.login-card .subtitle{font-size:.85rem;color:#636e72;margin-bottom:2rem}
+.login-card .divider{height:1px;background:#dfe6e9;margin:1.5rem 0}
+.login-card .access-info{font-size:.75rem;color:#b2bec3;margin-top:1rem}
+.login-card .error-msg{background:#fdeaea;color:#c0392b;padding:.6rem 1rem;border-radius:10px;font-size:.82rem;margin-top:1rem;display:none}
+#g_id_onload,#google-btn{display:flex;justify-content:center}
+.logout-btn{background:none;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.7);padding:.35rem .8rem;border-radius:8px;font-size:.75rem;cursor:pointer;transition:all .25s ease;margin-left:.5rem}
+.logout-btn:hover{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.6)}
+.user-info{display:flex;align-items:center;gap:.5rem;font-size:.8rem;color:rgba(255,255,255,.8)}
+.user-info img{width:26px;height:26px;border-radius:50%;border:2px solid rgba(255,255,255,.3)}
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN SCREEN ===== -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="logo-auth">
+      <div class="dot"></div>
+      <h1>GYNEVA</h1>
+    </div>
+    <p class="subtitle">Business Plan Interactif &mdash; Acc&egrave;s restreint</p>
+    <div id="google-btn"></div>
+    <div class="divider"></div>
+    <p class="access-info">Seuls les comptes autoris&eacute;s peuvent acc&eacute;der &agrave; cette application.</p>
+    <div class="error-msg" id="auth-error"></div>
+  </div>
+</div>
+
+<!-- ===== APP CONTENT (hidden until auth) ===== -->
+<div id="app-content">
+
+<!-- ===== SIDEBAR ===== -->
+<div class="sidebar" id="sidebar">
+  <button class="toggle-btn" onclick="toggleSidebar()" id="toggleBtn">&#9664;</button>
+  <div class="logo">
+    <div class="dot"></div>
+    <div>
+      <h1>GYNEVA</h1>
+      <div class="logo-sub">Business Plan · Gen&egrave;ve</div>
+    </div>
+  </div>
+  <nav>
+    <button class="active" onclick="nav('overview',this)"><span class="nav-icon">&#128200;</span><span class="nav-label">Vue d'ensemble</span></button>
+    <button onclick="nav('simulator',this)"><span class="nav-icon">&#9881;&#65039;</span><span class="nav-label">Simulateur</span></button>
+    <button onclick="nav('revenue',this)"><span class="nav-icon">&#128176;</span><span class="nav-label">Revenus</span></button>
+    <button onclick="nav('cashflow',this)"><span class="nav-icon">&#128202;</span><span class="nav-label">Tr&eacute;sorerie</span></button>
+    <button onclick="nav('team',this)"><span class="nav-icon">&#128101;</span><span class="nav-label">&Eacute;quipe</span></button>
+    <button onclick="nav('risks',this)"><span class="nav-icon">&#9888;&#65039;</span><span class="nav-label">Risques</span></button>
+    <button onclick="nav('profit',this)"><span class="nav-icon">&#128181;</span><span class="nav-label">Profit associ&eacute;s</span></button>
+    <button onclick="nav('optimize',this)"><span class="nav-icon">&#128161;</span><span class="nav-label">Optimisations</span></button>
+    <button id="navAdmin" style="display:none" onclick="nav('admin',this)"><span class="nav-icon">&#128274;</span><span class="nav-label">Admin</span></button>
+  </nav>
+  <div class="sidebar-footer"><span>Analyse confidentielle &middot; 2025</span></div>
+</div>
+
+<!-- ===== MAIN ===== -->
+<div class="main-area">
+<div class="topbar">
+  <div class="page-title" id="pageTitle">Vue d'ensemble</div>
+  <div class="spacer"></div>
+  <div class="status-pill static" id="statusPill"><div class="status-dot static" id="statusDot"></div><span id="statusLabel">Donn&eacute;es int&eacute;gr&eacute;es</span></div>
+  <button class="btn" onclick="document.getElementById('fileInput').click()">&#128196; Importer Excel</button>
+  <input type="file" id="fileInput" accept=".xlsx,.xls" style="display:none" onchange="handleFile(this.files[0])">
+  <button class="btn primary" onclick="exportPDF()">&#128424; Export PDF</button>
+</div>
+
+<div class="content">
+
+<!-- DROPZONE -->
+<div class="dropzone" id="dropzone">
+  <div class="dz-icon">&#128196;</div>
+  <div class="dz-text" id="dzText">Glissez votre fichier GYNEVA_Business_Plan.xlsx ici</div>
+  <div class="dz-sub">ou cliquez pour s&eacute;lectionner &middot; Fichier envoy&eacute; au serveur pour traitement</div>
+  <input type="file" accept=".xlsx,.xls" onchange="handleFile(this.files[0])">
+</div>
+
+<!-- ====== OVERVIEW ====== -->
+<div class="section active" id="overview">
+  <div class="verdict green" id="verdictMain">
+    <div class="ic">&#9989;</div>
+    <div><strong>Projet &eacute;conomiquement viable.</strong> Le mod&egrave;le atteint la rentabilit&eacute; d&egrave;s le 5e mois d'activit&eacute; et d&eacute;gage un r&eacute;sultat cumul&eacute; de <span id="vTresoY3">CHF 2,3M</span> sur 3 ans. Les risques principaux sont ma&icirc;trisables avec les optimisations propos&eacute;es.</div>
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi blue"><div class="lb">Investissement total</div><div class="vl" id="kCapex">523k</div><div class="sb">CAPEX + &eacute;quipements</div></div>
+    <div class="kpi green"><div class="lb">CA Ann&eacute;e 3</div><div class="vl" id="kCaY3">4,7M</div><div class="sb" id="kCaGrowth">Vitesse de croisi&egrave;re</div></div>
+    <div class="kpi green"><div class="lb">R&eacute;sultat net Ann&eacute;e 3</div><div class="vl" id="kResY3">1,15M</div><div class="sb" id="kMargin">Marge ~24%</div></div>
+    <div class="kpi blue"><div class="lb">Retour sur investissement</div><div class="vl" id="kPayback">11 mois</div><div class="sb">Payback period</div></div>
+  </div>
+  <div class="card">
+    <h2><span class="ic">&#128200;</span> &Eacute;volution sur 3 ans</h2>
+    <div class="chart-box"><canvas id="cOverview"></canvas></div>
+  </div>
+  <div class="card">
+    <h2><span class="ic">&#9881;</span> Hypoth&egrave;ses cl&eacute;s du mod&egrave;le</h2>
+    <div class="exp">Le mod&egrave;le repose sur les standards TARMED pour la gyn&eacute;cologie &agrave; Gen&egrave;ve. Chaque hypoth&egrave;se est modifiable via le <strong>Simulateur</strong> ou dans le fichier Excel.</div>
+    <div class="pills" id="pillsAssumptions">
+      <div class="pill"><b>16</b> consult./jour</div>
+      <div class="pill"><b>CHF 225</b> /consultation</div>
+      <div class="pill"><b>215</b> jours/an</div>
+      <div class="pill"><b>60/40</b> partage associ&eacute;s</div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== SIMULATOR ====== -->
+<div class="section" id="simulator">
+  <div class="verdict orange">
+    <div class="ic">&#9881;&#65039;</div>
+    <div><strong>Simulateur de sc&eacute;narios.</strong> Modifiez les hypoth&egrave;ses ci-dessous et observez l'impact en temps r&eacute;el sur le chiffre d'affaires, le r&eacute;sultat net et la tr&eacute;sorerie. Les valeurs de base du business plan sont pr&eacute;-remplies.</div>
+  </div>
+  <!-- Scenario save/load -->
+  <div class="sim-actions">
+    <button class="btn" onclick="saveScenario()">&#128190; Sauvegarder sc&eacute;nario</button>
+    <button class="btn" onclick="toggleScenarioList()">&#128194; Charger sc&eacute;nario</button>
+  </div>
+  <div class="scenario-list" id="scenarioList"></div>
+  <div class="sim-layout">
+    <!-- CONTROLS PANEL -->
+    <div class="sim-panel">
+      <h2>&#9881;&#65039; Param&egrave;tres <button class="btn-reset" onclick="resetSim()" style="margin-left:auto">&#8635; R&eacute;initialiser</button></h2>
+
+      <div class="sim-group">
+        <h3>&#128137; Activit&eacute; m&eacute;dicale</h3>
+        <div class="sim-row">
+          <label>Consultations / jour <span id="sConsultVal">16</span></label>
+          <input type="range" id="sConsult" min="8" max="24" step="1" value="16" oninput="runSim()">
+        </div>
+        <div class="sim-row">
+          <label>Honoraires moyens (CHF) <span id="sFeeVal">225</span></label>
+          <input type="range" id="sFee" min="120" max="350" step="5" value="225" oninput="runSim()">
+        </div>
+        <div class="sim-row">
+          <label>Jours travaill&eacute;s / an <span id="sDaysVal">215</span></label>
+          <input type="range" id="sDays" min="180" max="250" step="5" value="215" oninput="runSim()">
+        </div>
+      </div>
+
+      <div class="sim-group">
+        <h3>&#128101; &Eacute;quipe m&eacute;dicale</h3>
+        <div class="sim-row">
+          <label>Associ&eacute;s (sp&eacute;cialistes) <span id="sAssocVal">2</span></label>
+          <input type="range" id="sAssoc" min="1" max="4" step="1" value="2" oninput="runSim()">
+        </div>
+        <div class="sim-row">
+          <label>M&eacute;decins ind&eacute;pendants <span id="sIndepVal">3</span></label>
+          <input type="range" id="sIndep" min="0" max="6" step="1" value="3" oninput="runSim()">
+        </div>
+        <div class="sim-row">
+          <label>M&eacute;decins internes <span id="sInterneVal">2</span></label>
+          <input type="range" id="sInterne" min="0" max="4" step="1" value="2" oninput="runSim()">
+        </div>
+      </div>
+
+      <div class="sim-group">
+        <h3>&#128176; Tr&eacute;sorerie &amp; paiements</h3>
+        <div class="sim-row">
+          <label>D&eacute;lai paiement LAMal</label>
+          <select id="sDelay" onchange="runSim()">
+            <option value="0">Sans d&eacute;lai (id&eacute;al)</option>
+            <option value="1" selected>1 mois (r&eacute;aliste)</option>
+            <option value="3">3 mois (prudent)</option>
+          </select>
+        </div>
+        <div class="sim-row">
+          <label>Patients OI/ONU (cash) <span id="sCashVal">15%</span></label>
+          <input type="range" id="sCash" min="0" max="30" step="1" value="15" oninput="runSim()">
+        </div>
+        <div class="sim-row">
+          <label>Factoring Caisse M&eacute;decins
+            <div class="toggle">
+              <div class="toggle-sw on" id="sFactToggle" onclick="this.classList.toggle('on');runSim()"></div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <div class="sim-group">
+        <h3>&#128178; Charges suppl&eacute;mentaires</h3>
+        <div class="sim-row">
+          <label>Charges non budg&eacute;t&eacute;es / an (CHF) <span id="sExtraVal">200k</span></label>
+          <input type="range" id="sExtra" min="0" max="400000" step="10000" value="200000" oninput="runSim()">
+        </div>
+        <div class="sim-row">
+          <label>Co&ucirc;t RC obst&eacute;trique / an (CHF) <span id="sRCVal">60k</span></label>
+          <input type="range" id="sRC" min="0" max="120000" step="5000" value="60000" oninput="runSim()">
+        </div>
+      </div>
+
+      <div class="sim-group">
+        <h3>&#128200; Mont&eacute;e en charge</h3>
+        <div class="sim-row">
+          <label>Mois d&eacute;but activit&eacute; <span id="sStartVal">4</span></label>
+          <input type="range" id="sStart" min="1" max="12" step="1" value="4" oninput="runSim()">
+        </div>
+        <div class="sim-row">
+          <label>Taux occupation Y1 <span id="sOccupVal">60%</span></label>
+          <input type="range" id="sOccup" min="30" max="100" step="5" value="60" oninput="runSim()">
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULTS PANEL -->
+    <div class="sim-results">
+      <div class="kpi-grid">
+        <div class="kpi green"><div class="lb">CA Ann&eacute;e 3 (simul&eacute;)</div><div class="vl" id="simCaY3">4,7M</div><div class="sb" id="simCaDelta"></div></div>
+        <div class="kpi green"><div class="lb">R&eacute;sultat net Y3 (simul&eacute;)</div><div class="vl" id="simResY3">1,15M</div><div class="sb" id="simResDelta"></div></div>
+        <div class="kpi"><div class="lb">R&eacute;sultat ajust&eacute; Y3</div><div class="vl" id="simResAdj">&mdash;</div><div class="sb">Apr&egrave;s charges manquantes + RC</div></div>
+        <div class="kpi"><div class="lb">Par associ&eacute; Y3</div><div class="vl" id="simPerAssoc">&mdash;</div><div class="sb" id="simPerAssocSub">R&eacute;sultat ajust&eacute; / associ&eacute;</div></div>
+      </div>
+      <div class="card">
+        <h2><span class="ic">&#128200;</span> Projection simul&eacute;e &mdash; CA &amp; R&eacute;sultat</h2>
+        <div class="chart-box"><canvas id="cSim1"></canvas></div>
+      </div>
+      <div class="card">
+        <h2><span class="ic">&#128202;</span> Tr&eacute;sorerie simul&eacute;e</h2>
+        <div class="chart-box"><canvas id="cSim2"></canvas></div>
+      </div>
+      <div class="card">
+        <h2><span class="ic">&#128176;</span> Synth&egrave;se du sc&eacute;nario simul&eacute;</h2>
+        <div id="simSummary" class="exp"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== REVENUE ====== -->
+<div class="section" id="revenue">
+  <div class="card">
+    <h2><span class="ic">&#128176;</span> Chiffre d'affaires mensuel par source</h2>
+    <div class="exp"><strong>Associ&eacute;s</strong> (vous) &middot; <strong>Ind&eacute;pendants</strong> (locataires) &middot; <strong>Internes</strong> (salari&eacute;s) &middot; <strong>Sage-femme</strong>. La mont&eacute;e en charge est progressive sur 36 mois.</div>
+    <div class="chart-box"><canvas id="cRevenue"></canvas></div>
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi blue"><div class="lb">Potentiel / sp&eacute;cialiste</div><div class="vl" id="kRevSpec">923k</div><div class="sb">CHF/an &agrave; 100%</div></div>
+    <div class="kpi"><div class="lb">CA Ann&eacute;e 1</div><div class="vl" id="kCaY1">1,9M</div><div class="sb">D&eacute;marrage progressif</div></div>
+    <div class="kpi"><div class="lb">CA Ann&eacute;e 2</div><div class="vl" id="kCaY2">3,6M</div><div class="sb" id="kCaY2g">Mont&eacute;e en puissance</div></div>
+    <div class="kpi green"><div class="lb">CA Ann&eacute;e 3</div><div class="vl" id="kCaY3b">4,7M</div><div class="sb">Vitesse de croisi&egrave;re</div></div>
+  </div>
+  <div class="card">
+    <h2><span class="ic">&#128178;</span> Mod&egrave;le de partage du chiffre d'affaires</h2>
+    <div class="exp"><strong>Associ&eacute;s :</strong> 60% de leurs honoraires pour eux, 40% pour GynEva.<br><strong>Ind&eacute;pendants :</strong> 60% pour eux, 40% pour GynEva.<br><strong>Internes :</strong> Salari&eacute;s &mdash; GynEva garde le CA et paye le salaire.<br><strong>Sage-femme :</strong> Contribution nette via les prestations maternit&eacute;.</div>
+  </div>
+</div>
+
+<!-- ====== CASHFLOW ====== -->
+<div class="section" id="cashflow">
+  <div class="verdict orange" id="verdictCash">
+    <div class="ic">&#9888;&#65039;</div>
+    <div><strong>Point d'attention principal.</strong> Avec d&eacute;lai LAMal 3 mois sans optimisation, la tr&eacute;sorerie n&eacute;cessite un BFR de <strong id="vCashMin">273k CHF</strong>. Avec factoring + client&egrave;le OI, le besoin tombe &agrave; <strong id="vCashOpt">46k CHF</strong>.</div>
+  </div>
+  <div class="card">
+    <h2><span class="ic">&#128202;</span> Tr&eacute;sorerie cumul&eacute;e &mdash; Sc&eacute;narios compar&eacute;s</h2>
+    <div class="chart-box"><canvas id="cCashflow"></canvas></div>
+  </div>
+  <div class="sc-grid">
+    <div class="sc-card"><h3>&#128308; 100% LAMal 3 mois</h3><div class="bn" style="color:var(--danger)" id="scWorst">-273k</div><div class="dt">Creux maximum &middot; FdR 250k = insuffisant</div></div>
+    <div class="sc-card"><h3>&#128992; 15% cash + LAMal 3m</h3><div class="bn" style="color:#e17055" id="scCash3m">-155k</div><div class="dt">Creux r&eacute;duit &middot; FdR 250k = juste</div></div>
+    <div class="sc-card"><h3>&#128993; 15% cash + LAMal 1m</h3><div class="bn" style="color:var(--warn)" id="scCash1m">-75k</div><div class="dt">D&eacute;lai r&eacute;aliste &middot; FdR 250k = confortable</div></div>
+    <div class="sc-card rec"><h3>&#9989; 15% cash + Factoring</h3><div class="bn" style="color:var(--acc)" id="scFact">-46k</div><div class="dt">Avance imm&eacute;diate &middot; ~49k/an &middot; FdR largement OK</div></div>
+  </div>
+</div>
+
+<!-- ====== TEAM ====== -->
+<div class="section" id="team">
+  <div class="card">
+    <h2><span class="ic">&#128101;</span> Mont&eacute;e en charge de l'&eacute;quipe (ETP)</h2>
+    <div class="exp">L'&eacute;quipe passe de <strong>0 &agrave; 17 ETP</strong> sur 36 mois. Chaque recrutement est align&eacute; sur la croissance du CA.</div>
+    <div class="chart-box"><canvas id="cTeam"></canvas></div>
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi"><div class="lb">Mois 6</div><div class="vl" id="kFte6">8</div><div class="sb">ETP</div></div>
+    <div class="kpi"><div class="lb">Mois 12</div><div class="vl" id="kFte12">11</div><div class="sb">ETP</div></div>
+    <div class="kpi"><div class="lb">Mois 24</div><div class="vl" id="kFte24">14</div><div class="sb">ETP</div></div>
+    <div class="kpi green"><div class="lb">Mois 36</div><div class="vl" id="kFte36">17</div><div class="sb">ETP &middot; croisi&egrave;re</div></div>
+  </div>
+</div>
+
+<!-- ====== RISKS ====== -->
+<div class="section" id="risks">
+  <div class="card">
+    <h2><span class="ic">&#9888;&#65039;</span> Matrice des risques</h2>
+    <table class="dt"><thead><tr><th>Risque</th><th>Probabilit&eacute;</th><th>Impact</th><th>Mitigation</th></tr></thead>
+    <tbody>
+      <tr><td>Retard autorisation cantonale</td><td><span class="badge moyen">Moyen</span></td><td><span class="badge eleve">&Eacute;lev&eacute;</span></td><td>Anticiper d&eacute;p&ocirc;t 6 mois avant</td></tr>
+      <tr><td>D&eacute;lais paiement LAMal &gt; 3 mois</td><td><span class="badge moyen">Moyen</span></td><td><span class="badge eleve">&Eacute;lev&eacute;</span></td><td>Factoring Caisse des M&eacute;decins</td></tr>
+      <tr><td>Sous-occupation prolong&eacute;e Y1</td><td><span class="badge moyen">Moyen</span></td><td><span class="badge moyen">Moyen</span></td><td>Plan marketing, r&eacute;seau r&eacute;f&eacute;rents</td></tr>
+      <tr><td>D&eacute;part m&eacute;decin ind&eacute;pendant</td><td><span class="badge moyen">Moyen</span></td><td><span class="badge eleve">&Eacute;lev&eacute;</span></td><td>Clause non-concurrence, conditions attractives</td></tr>
+      <tr><td>&Eacute;volution tarifaire TARMED/TARDOC</td><td><span class="badge moyen">Moyen</span></td><td><span class="badge eleve">&Eacute;lev&eacute;</span></td><td>Diversification anti-&acirc;ge, actes priv&eacute;s</td></tr>
+      <tr><td>Litige obst&eacute;trique (RC pro)</td><td><span class="badge faible">Faible</span></td><td><span class="badge tres-eleve">Tr&egrave;s &eacute;lev&eacute;</span></td><td>RC pro adapt&eacute;e, protocoles stricts</td></tr>
+      <tr><td>Sous-estimation CAPEX</td><td><span class="badge moyen">Moyen</span></td><td><span class="badge faible">Faible</span></td><td>R&eacute;serve CHF 20k, leasing possible</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card">
+    <h2><span class="ic">&#128680;</span> Charges non budg&eacute;t&eacute;es identifi&eacute;es (~CHF 150-270k/an)</h2>
+    <table class="dt"><thead><tr><th>Poste</th><th>Estimation</th><th>Criticit&eacute;</th></tr></thead>
+    <tbody>
+      <tr><td>RC professionnelle (obst&eacute;trique)</td><td class="num">CHF 40-80k</td><td><span class="badge critique">critique</span></td></tr>
+      <tr><td>Provision litiges</td><td class="num">CHF 20-50k</td><td><span class="badge critique">critique</span></td></tr>
+      <tr><td>Entretien &eacute;quipements</td><td class="num">CHF 15-25k</td><td><span class="badge important">important</span></td></tr>
+      <tr><td>Logiciels / licences</td><td class="num">CHF 10-20k</td><td><span class="badge important">important</span></td></tr>
+      <tr><td>D&eacute;chets m&eacute;dicaux</td><td class="num">CHF 8-15k</td><td><span class="badge important">important</span></td></tr>
+      <tr><td>Formation continue</td><td class="num">CHF 5-10k</td><td><span class="badge moyen">moyen</span></td></tr>
+      <tr><td>Cotisations FMH</td><td class="num">CHF 5-8k</td><td><span class="badge moyen">moyen</span></td></tr>
+      <tr><td>Autorisations cantonales</td><td class="num">CHF 3-5k</td><td><span class="badge moyen">moyen</span></td></tr>
+    </tbody></table>
+  </div>
+  <div class="card">
+    <h2><span class="ic">&#127919;</span> Stress test &mdash; Seuils critiques</h2>
+    <div class="exp">En dessous du <strong>seuil critique</strong>, le projet n'est plus viable. Comparez avec la valeur de base pour &eacute;valuer votre marge de s&eacute;curit&eacute;.</div>
+    <table class="dt"><thead><tr><th>Variable</th><th style="color:var(--danger)">Pessimiste</th><th><strong>Base</strong></th><th style="color:var(--acc)">Optimiste</th><th style="color:var(--danger)">Seuil critique</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Consultations/jour</strong></td><td>12 (-25%)</td><td><strong id="stConsult">16</strong></td><td>20 (+25%)</td><td style="color:var(--danger);font-weight:600">10</td></tr>
+      <tr><td><strong>Honoraires moyens</strong></td><td>CHF 180</td><td><strong id="stFee">CHF 225</strong></td><td>CHF 270</td><td style="color:var(--danger);font-weight:600">CHF 160</td></tr>
+      <tr><td><strong>Taux occupation Y1</strong></td><td>40%</td><td><strong>60%</strong></td><td>80%</td><td style="color:var(--danger);font-weight:600">35%</td></tr>
+      <tr><td><strong>D&eacute;lai mont&eacute;e charge</strong></td><td>8 mois</td><td><strong>5 mois</strong></td><td>3 mois</td><td style="color:var(--danger);font-weight:600">12 mois</td></tr>
+      <tr><td><strong>D&eacute;lai paiement LAMal</strong></td><td>3 mois</td><td><strong>1 mois</strong></td><td>&lt; 1 mois</td><td style="color:var(--danger);font-weight:600">4 mois</td></tr>
+    </tbody></table>
+  </div>
+</div>
+
+<!-- ====== PROFIT ====== -->
+<div class="section" id="profit">
+  <div class="verdict green">
+    <div class="ic">&#128176;</div>
+    <div><strong>ROI attractif.</strong> Pour ~CHF 80k par associ&eacute;, le retour cumul&eacute; sur 3 ans atteint <strong>CHF 700-900k</strong> par personne apr&egrave;s charges manquantes.</div>
+  </div>
+  <div class="card">
+    <h2><span class="ic">&#128181;</span> R&eacute;sultat net &mdash; Part par associ&eacute;</h2>
+    <div class="profit-tl">
+      <div class="profit-yr"><div class="yl">Ann&eacute;e 1</div><div class="am" id="pResY1">CHF 347k</div><div class="pa" id="pPerY1">~173k / associ&eacute;</div><div class="nt" id="pAdjY1">Apr&egrave;s charges manquantes: ~73k</div></div>
+      <div class="profit-yr"><div class="yl">Ann&eacute;e 2</div><div class="am" id="pResY2">CHF 767k</div><div class="pa" id="pPerY2">~384k / associ&eacute;</div><div class="nt" id="pAdjY2">Apr&egrave;s charges manquantes: ~284k</div></div>
+      <div class="profit-yr"><div class="yl">Ann&eacute;e 3</div><div class="am" id="pResY3">CHF 1,15M</div><div class="pa" id="pPerY3">~576k / associ&eacute;</div><div class="nt" id="pAdjY3">Apr&egrave;s charges manquantes: ~476k</div></div>
+    </div>
+    <div class="exp"><strong>L'associ&eacute; m&eacute;decin</strong> touche en plus 60% de son propre CA (~CHF 554k/an &agrave; plein r&eacute;gime). <strong>L'associ&eacute; non-m&eacute;decin</strong> d&eacute;pend du r&eacute;sultat du cabinet.</div>
+  </div>
+  <div class="card">
+    <h2><span class="ic">&#128200;</span> R&eacute;sultat par associ&eacute; (graphique)</h2>
+    <div class="chart-box sm"><canvas id="cProfit"></canvas></div>
+  </div>
+</div>
+
+<!-- ====== OPTIMIZE ====== -->
+<div class="section" id="optimize">
+  <div class="verdict green">
+    <div class="ic">&#128161;</div>
+    <div><strong>Deux leviers puissants</strong> qui r&eacute;duisent le besoin en fonds de roulement de <strong>80%</strong> et s&eacute;curisent le d&eacute;marrage.</div>
+  </div>
+  <div class="card">
+    <h2><span class="ic">&#127975;</span> Caisse des M&eacute;decins &mdash; Factoring</h2>
+    <div class="exp">Avance imm&eacute;diate sur honoraires LAMal. Au lieu d'attendre 1-3 mois, vous encaissez d&egrave;s la facturation. Co&ucirc;t : ~<strong>1,5% du CA factur&eacute;</strong> (~CHF 49k/an &agrave; plein r&eacute;gime).</div>
+    <div class="kpi-grid">
+      <div class="kpi red"><div class="lb">BFR sans factoring</div><div class="vl" id="kBfrSans">233k</div><div class="sb">FdR 250k = tout juste</div></div>
+      <div class="kpi green"><div class="lb">BFR avec factoring</div><div class="vl" id="kBfrAvec">46k</div><div class="sb">FdR 250k = largement OK</div></div>
+      <div class="kpi blue"><div class="lb">Co&ucirc;t annuel factoring</div><div class="vl">~49k</div><div class="sb">~4% du r&eacute;sultat net</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2><span class="ic">&#127760;</span> Client&egrave;le OI/ONU (15%)</h2>
+    <div class="exp">~15% des patients genevois sont des fonctionnaires internationaux couverts par l'<strong>UNSMIS</strong>. Ils payent comptant &mdash; cash imm&eacute;diat, aucun d&eacute;lai LAMal. Ce levier r&eacute;duit naturellement le BFR sans co&ucirc;t suppl&eacute;mentaire.</div>
+  </div>
+  <div class="card">
+    <h2><span class="ic">&#128200;</span> Impact combin&eacute; sur la tr&eacute;sorerie</h2>
+    <div class="chart-box"><canvas id="cOptimize"></canvas></div>
+  </div>
+</div>
+
+<!-- ====== ADMIN ====== -->
+<div class="section" id="admin">
+  <div class="card">
+    <h2><span class="ic">&#128274;</span> Gestion des utilisateurs autoris&eacute;s</h2>
+    <div class="exp">Ajoutez ou supprimez des adresses email autoris&eacute;es &agrave; acc&eacute;der &agrave; l'application.</div>
+    <ul class="admin-emails" id="adminEmailList"></ul>
+    <div class="admin-add">
+      <input type="email" id="adminNewEmail" placeholder="nouvel.email@example.com">
+      <button class="btn primary" onclick="addAllowedEmail()">Ajouter</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /content -->
+</div><!-- /main-area -->
+
+<script>
+// ===== API HELPER =====
+const API_BASE = '/api';
+async function api(path, opts = {}) {
+  const res = await fetch(API_BASE + path, {
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json', ...opts.headers },
+    ...opts,
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw { status: res.status, ...data };
+  return data;
+}
+
+// ===== GLOBALS =====
+const CASH_SHARE_BASE = 0.15, FACT_COST = 0.015;
+let charts = {};
+let D = null;
+let SIM = null;
+let currentUser = null;
+let currentPlanId = null;
+
+// ===== NAV =====
+const pageTitles = {overview:"Vue d'ensemble",simulator:"Simulateur",revenue:"Revenus",cashflow:"Tr\u00e9sorerie",team:"\u00c9quipe",risks:"Risques",profit:"Profit associ\u00e9s",optimize:"Optimisations",admin:"Administration"};
+function nav(id, btn) {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.sidebar nav button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('pageTitle').textContent = pageTitles[id]||id;
+  if (id === 'admin') loadAdminData();
+}
+
+// ===== FORMAT =====
+function fmt(n){if(n==null||isNaN(n))return'\u2014';const a=Math.abs(n);if(a>=1e6)return(n/1e6).toFixed(1)+'M';if(a>=1e3)return Math.round(n/1e3)+'k';return Math.round(n).toString()}
+function fmtCHF(n){return'CHF '+fmt(n)}
+function fmtN(n){if(n==null||isNaN(n))return'\u2014';return n.toLocaleString('fr-CH',{maximumFractionDigits:0})}
+function pct(a,b){return b?Math.round((a/b-1)*100)+'%':'\u2014'}
+
+// ===== SIDEBAR TOGGLE =====
+function toggleSidebar(){
+  const sb=document.getElementById('sidebar');
+  sb.classList.toggle('collapsed');
+  document.getElementById('toggleBtn').innerHTML=sb.classList.contains('collapsed')?'&#9654;':'&#9664;';
+}
+
+// ===== DROPZONE =====
+const dz=document.getElementById('dropzone');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('over')});
+dz.addEventListener('dragleave',()=>dz.classList.remove('over'));
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('over');if(e.dataTransfer.files.length)handleFile(e.dataTransfer.files[0])});
+
+// ===== EXCEL IMPORT (via API) =====
+async function handleFile(file){
+  if(!file)return;
+  try {
+    const buffer = await file.arrayBuffer();
+    const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
+    const result = await api('/import/excel', {
+      method: 'POST',
+      body: JSON.stringify({ file: base64, filename: file.name }),
+    });
+    D = result.data;
+    computeDerived();
+    updateUI();
+    // Save imported data to current plan
+    if (currentPlanId) {
+      await api('/plans/' + currentPlanId, {
+        method: 'PUT',
+        body: JSON.stringify({
+          data: {
+            ca:D.ca, caAssoc:D.caAssoc, caIndep:D.caIndep, caInterne:D.caInterne, caSage:D.caSage,
+            result:D.result, cashflow:D.cashflow, treso1m:D.treso1m, treso3m:D.treso3m,
+            admin:D.admin, opex:D.opex, lab:D.lab,
+            fteAssoc:D.fteAssoc, fteIndep:D.fteIndep, fteInterne:D.fteInterne, fteAdmin:D.fteAdmin, fteTotal:D.fteTotal,
+          },
+          consultDay: D.consultDay, fee: D.fee, daysYear: D.daysYear,
+          revSpec: D.revSpec, capex: D.capex,
+          versionLabel: 'Import Excel: ' + file.name,
+        }),
+      });
+    }
+    dz.classList.add('loaded');
+    document.getElementById('dzText').textContent='\u2713 '+file.name+' \u2014 donn\u00e9es synchronis\u00e9es';
+    document.getElementById('statusLabel').textContent='Donn\u00e9es en direct \u00b7 '+file.name;
+    document.getElementById('statusPill').className='status-pill live';
+    document.getElementById('statusDot').className='status-dot live';
+  } catch(err) {
+    console.error('Import error:', err);
+    const msg = err.error || err.message || 'Erreur inconnue';
+    document.getElementById('dzText').textContent='\u2717 Erreur: ' + msg;
+  }
+}
+
+function computeDerived(){
+  D.caY1=D.ca.slice(0,12).reduce((a,b)=>a+b,0);D.caY2=D.ca.slice(12,24).reduce((a,b)=>a+b,0);D.caY3=D.ca.slice(24,36).reduce((a,b)=>a+b,0);
+  D.resY1=D.result.slice(0,12).reduce((a,b)=>a+b,0);D.resY2=D.result.slice(12,24).reduce((a,b)=>a+b,0);D.resY3=D.result.slice(24,36).reduce((a,b)=>a+b,0);
+  const scenarios = computeScenarios(D.ca, D.admin, D.opex, D.lab, CASH_SHARE_BASE);
+  D.tresoFact=scenarios.fact; D.tresoCash3m=scenarios.cash3m; D.tresoCash1m=scenarios.cash1m;
+  D.bfrWorst=Math.min(...D.treso3m); D.bfrFact=Math.min(...D.tresoFact);
+  D.bfrCash3m=Math.min(...D.tresoCash3m); D.bfrCash1m=Math.min(...D.tresoCash1m);
+}
+
+function computeScenarios(ca,admin,opex,lab,cashShare){
+  let fact=[],cash3m=[],cash1m=[];
+  let c1=0,c2=0,c3=0;
+  for(let m=0;m<36;m++){
+    c1+=ca[m]*cashShare+ca[m]*(1-cashShare)*(1-FACT_COST)+admin[m]+opex[m]+lab[m]; fact.push(c1);
+    c2+=ca[m]*cashShare+(m>=3?ca[m-3]*(1-cashShare):0)+admin[m]+opex[m]+lab[m]; cash3m.push(c2);
+    c3+=ca[m]*cashShare+(m>=1?ca[m-1]*(1-cashShare):0)+admin[m]+opex[m]+lab[m]; cash1m.push(c3);
+  }
+  return {fact,cash3m,cash1m};
+}
+
+// ===== UPDATE UI =====
+function updateUI(){
+  if(!D)return;
+  const el=id=>document.getElementById(id);
+  el('kCapex').textContent=fmt(D.capex); el('kCaY3').textContent=fmt(D.caY3); el('kCaY3b').textContent=fmt(D.caY3);
+  el('kCaGrowth').textContent='Vitesse de croisi\u00e8re'; el('kResY3').textContent=fmt(D.resY3);
+  el('kMargin').textContent='Marge ~'+Math.round(D.resY3/D.caY3*100)+'%';
+  el('kRevSpec').textContent=fmt(D.revSpec); el('kCaY1').textContent=fmt(D.caY1); el('kCaY2').textContent=fmt(D.caY2);
+  el('vTresoY3').textContent=fmtCHF(D.cashflow[35]);
+  el('vCashMin').textContent=fmt(Math.abs(D.bfrWorst))+' CHF'; el('vCashOpt').textContent=fmt(Math.abs(D.bfrFact))+' CHF';
+  el('scWorst').textContent=fmt(D.bfrWorst); el('scCash3m').textContent=fmt(D.bfrCash3m);
+  el('scCash1m').textContent=fmt(D.bfrCash1m); el('scFact').textContent=fmt(D.bfrFact);
+  el('kBfrSans').textContent=fmt(Math.abs(D.bfrWorst)); el('kBfrAvec').textContent=fmt(Math.abs(D.bfrFact));
+  el('kFte6').textContent=D.fteTotal[5]||0; el('kFte12').textContent=D.fteTotal[11]||0;
+  el('kFte24').textContent=D.fteTotal[23]||0; el('kFte36').textContent=D.fteTotal[35]||0;
+  const adj=200000;
+  el('pResY1').textContent=fmtCHF(D.resY1); el('pResY2').textContent=fmtCHF(D.resY2); el('pResY3').textContent=fmtCHF(D.resY3);
+  el('pPerY1').textContent='~'+fmt(D.resY1/2)+' / associ\u00e9'; el('pPerY2').textContent='~'+fmt(D.resY2/2)+' / associ\u00e9'; el('pPerY3').textContent='~'+fmt(D.resY3/2)+' / associ\u00e9';
+  el('pAdjY1').textContent='Apr\u00e8s charges manquantes: ~'+fmt(Math.max(0,D.resY1/2-adj/2)); el('pAdjY2').textContent='Apr\u00e8s charges manquantes: ~'+fmt(D.resY2/2-adj/2); el('pAdjY3').textContent='Apr\u00e8s charges manquantes: ~'+fmt(D.resY3/2-adj/2);
+  el('stConsult').textContent=D.consultDay; el('stFee').textContent='CHF '+D.fee;
+  el('pillsAssumptions').innerHTML='<div class="pill"><b>'+D.consultDay+'</b> consult./jour</div><div class="pill"><b>CHF '+D.fee+'</b> /consultation</div><div class="pill"><b>'+D.daysYear+'</b> jours/an</div><div class="pill"><b>60/40</b> partage associ\u00e9s</div>';
+  let pb=36,cumR=0;for(let m=0;m<36;m++){cumR+=D.result[m];if(cumR>0&&D.result[m]>0){pb=m+1;break;}}
+  el('kPayback').textContent=pb+' mois';
+  updateCharts();
+}
+
+// ===== CHARTS =====
+const labels=Array.from({length:36},(_,i)=>'M'+(i+1));
+const labelsQ=['','','M3','','','M6','','','M9','','','M12','','','M15','','','M18','','','M21','','','M24','','','M27','','','M30','','','M33','','','M36'];
+const gridOpts={color:'rgba(0,0,0,.04)',drawBorder:false};
+Chart.defaults.font.family="Inter,-apple-system,sans-serif";Chart.defaults.font.size=11;Chart.defaults.color='#636e72';
+const yearPlugin={id:'yl',beforeDraw(c){const ctx=c.ctx,x=c.scales.x,y=c.scales.y;ctx.save();[11,23].forEach(i=>{if(i>=x.min&&i<=x.max){const px=x.getPixelForValue(i);ctx.strokeStyle='rgba(0,0,0,.08)';ctx.lineWidth=1;ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(px,y.top);ctx.lineTo(px,y.bottom);ctx.stroke()}});ctx.restore()}};
+
+function updateCharts(){
+  if(!D)return;
+  Object.entries(charts).forEach(([k,c])=>{if(k!=='sim1'&&k!=='sim2'){try{c.destroy()}catch(e){}}});
+  charts.overview=new Chart(document.getElementById('cOverview'),{type:'bar',data:{labels:['Ann\u00e9e 1','Ann\u00e9e 2','Ann\u00e9e 3'],datasets:[{label:"Chiffre d'affaires",data:[D.caY1,D.caY2,D.caY3],backgroundColor:'rgba(26,74,122,.8)',borderRadius:8,barPercentage:.6},{label:'R\u00e9sultat net',data:[D.resY1,D.resY2,D.resY3],backgroundColor:'rgba(0,184,148,.8)',borderRadius:8,barPercentage:.6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:16}}},scales:{y:{grid:gridOpts,ticks:{callback:v=>fmt(v)}},x:{grid:{display:false}}}}});
+  charts.revenue=new Chart(document.getElementById('cRevenue'),{type:'bar',data:{labels:labelsQ,datasets:[{label:'Associ\u00e9s',data:D.caAssoc,backgroundColor:'#0f2b46',borderRadius:1},{label:'Ind\u00e9pendants',data:D.caIndep,backgroundColor:'#1a4a7a',borderRadius:1},{label:'Internes',data:D.caInterne,backgroundColor:'#5dade2',borderRadius:1},{label:'Sage-femme',data:D.caSage,backgroundColor:'#aed6f1',borderRadius:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:12}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:gridOpts,ticks:{callback:v=>fmt(v)}}}},plugins:[yearPlugin]});
+  charts.cashflow=new Chart(document.getElementById('cCashflow'),{type:'line',data:{labels:labelsQ,datasets:[{label:'Sans d\u00e9lai',data:D.cashflow,borderColor:'#00b894',backgroundColor:'rgba(0,184,148,.05)',fill:true,tension:.3,pointRadius:0,borderWidth:2},{label:'100% LAMal 3m',data:D.treso3m,borderColor:'#d63031',backgroundColor:'rgba(214,48,49,.03)',fill:true,tension:.3,pointRadius:0,borderWidth:2,borderDash:[6,3]},{label:'15% cash + Factoring',data:D.tresoFact,borderColor:'#1a4a7a',backgroundColor:'rgba(26,74,122,.05)',fill:true,tension:.3,pointRadius:0,borderWidth:2.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:12}}},scales:{y:{grid:gridOpts,ticks:{callback:v=>fmt(v)}},x:{grid:{display:false}}}},plugins:[yearPlugin]});
+  charts.team=new Chart(document.getElementById('cTeam'),{type:'bar',data:{labels:labelsQ,datasets:[{label:'Associ\u00e9s',data:D.fteAssoc,backgroundColor:'#0f2b46',borderRadius:1},{label:'Ind\u00e9pendants',data:D.fteIndep,backgroundColor:'#1a4a7a',borderRadius:1},{label:'Internes',data:D.fteInterne,backgroundColor:'#5dade2',borderRadius:1},{label:'Personnel admin',data:D.fteAdmin,backgroundColor:'#aed6f1',borderRadius:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:12}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:gridOpts,title:{display:true,text:'ETP'}}}},plugins:[yearPlugin]});
+  charts.profit=new Chart(document.getElementById('cProfit'),{type:'bar',data:{labels:['Ann\u00e9e 1','Ann\u00e9e 2','Ann\u00e9e 3'],datasets:[{label:'R\u00e9sultat brut / associ\u00e9',data:[D.resY1/2,D.resY2/2,D.resY3/2],backgroundColor:'rgba(26,74,122,.8)',borderRadius:8,barPercentage:.5},{label:'Apr\u00e8s charges manquantes',data:[Math.max(0,D.resY1/2-100000),D.resY2/2-100000,D.resY3/2-100000],backgroundColor:'rgba(0,184,148,.8)',borderRadius:8,barPercentage:.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:16}}},scales:{y:{grid:gridOpts,ticks:{callback:v=>fmt(v)+' CHF'}},x:{grid:{display:false}}}}});
+  charts.optimize=new Chart(document.getElementById('cOptimize'),{type:'line',data:{labels:labelsQ,datasets:[{label:'100% LAMal 3m (pire)',data:D.treso3m,borderColor:'#d63031',tension:.3,pointRadius:0,borderWidth:2,borderDash:[6,3]},{label:'15% cash + LAMal 3m',data:D.tresoCash3m,borderColor:'#e17055',tension:.3,pointRadius:0,borderWidth:2},{label:'15% cash + Factoring',data:D.tresoFact,borderColor:'#00b894',tension:.3,pointRadius:0,borderWidth:2.5},{label:'Sans d\u00e9lai',data:D.cashflow,borderColor:'#b2bec3',tension:.3,pointRadius:0,borderWidth:1.5,borderDash:[3,3]}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:12}}},scales:{y:{grid:gridOpts,ticks:{callback:v=>fmt(v)}},x:{grid:{display:false}}}},plugins:[yearPlugin]});
+}
+
+// ===== SIMULATOR ENGINE =====
+const BASE = {consult:16, fee:225, days:215, assoc:2, indep:3, interne:2, start:4, occup:60, cashPct:15, delay:1, factoring:true, extra:200000, rc:60000};
+
+function resetSim(){
+  document.getElementById('sConsult').value=BASE.consult;
+  document.getElementById('sFee').value=BASE.fee;
+  document.getElementById('sDays').value=BASE.days;
+  document.getElementById('sAssoc').value=BASE.assoc;
+  document.getElementById('sIndep').value=BASE.indep;
+  document.getElementById('sInterne').value=BASE.interne;
+  document.getElementById('sStart').value=BASE.start;
+  document.getElementById('sOccup').value=BASE.occup;
+  document.getElementById('sCash').value=BASE.cashPct;
+  document.getElementById('sDelay').value=BASE.delay;
+  document.getElementById('sExtra').value=BASE.extra;
+  document.getElementById('sRC').value=BASE.rc;
+  const ft=document.getElementById('sFactToggle');if(!ft.classList.contains('on'))ft.classList.add('on');
+  runSim();
+}
+
+function getSimParams() {
+  const el=id=>document.getElementById(id);
+  return {
+    consult:+el('sConsult').value, fee:+el('sFee').value, days:+el('sDays').value,
+    assoc:+el('sAssoc').value, indep:+el('sIndep').value, interne:+el('sInterne').value,
+    start:+el('sStart').value, occup:+el('sOccup').value, cashPct:+el('sCash').value,
+    delay:+el('sDelay').value, factoring:el('sFactToggle').classList.contains('on'),
+    extra:+el('sExtra').value, rc:+el('sRC').value
+  };
+}
+
+function setSimParams(p) {
+  const el=id=>document.getElementById(id);
+  el('sConsult').value=p.consult; el('sFee').value=p.fee; el('sDays').value=p.days;
+  el('sAssoc').value=p.assoc; el('sIndep').value=p.indep; el('sInterne').value=p.interne;
+  el('sStart').value=p.start; el('sOccup').value=p.occup;
+  el('sCash').value=p.cashPct; el('sDelay').value=p.delay;
+  el('sExtra').value=p.extra; el('sRC').value=p.rc;
+  const ft=el('sFactToggle');
+  if(p.factoring && !ft.classList.contains('on')) ft.classList.add('on');
+  if(!p.factoring && ft.classList.contains('on')) ft.classList.remove('on');
+  runSim();
+}
+
+function runSim(){
+  const el=id=>document.getElementById(id);
+  const V={
+    consult:+el('sConsult').value, fee:+el('sFee').value, days:+el('sDays').value,
+    assoc:+el('sAssoc').value, indep:+el('sIndep').value, interne:+el('sInterne').value,
+    start:+el('sStart').value, occup:+el('sOccup').value/100, cashPct:+el('sCash').value/100,
+    delay:+el('sDelay').value, factoring:el('sFactToggle').classList.contains('on'),
+    extra:+el('sExtra').value, rc:+el('sRC').value
+  };
+
+  el('sConsultVal').textContent=V.consult; el('sFeeVal').textContent=V.fee; el('sDaysVal').textContent=V.days;
+  el('sAssocVal').textContent=V.assoc; el('sIndepVal').textContent=V.indep; el('sInterneVal').textContent=V.interne;
+  el('sStartVal').textContent=V.start; el('sOccupVal').textContent=Math.round(V.occup*100)+'%';
+  el('sCashVal').textContent=Math.round(V.cashPct*100)+'%';
+  el('sExtraVal').textContent=fmt(V.extra); el('sRCVal').textContent=fmt(V.rc);
+
+  const annualCA_per_spec = V.consult * V.fee * V.days;
+  const monthlyCA_per_spec = annualCA_per_spec/12;
+
+  const simCA=[], simResult=[], simCashflow=[];
+  let cumCash=0;
+
+  for(let m=0;m<36;m++){
+    const year=m<12?1:m<24?2:3;
+    let occ = 0;
+    if(m >= V.start-1){
+      const monthsSinceStart = m - (V.start-1);
+      if(year===1) occ = Math.min(V.occup, V.occup * Math.min(1, (monthsSinceStart+1)/8));
+      else if(year===2) occ = Math.min(1, V.occup + (1-V.occup)*0.6);
+      else occ = 1;
+    }
+
+    const caAssoc = monthlyCA_per_spec * V.assoc * occ * 0.4;
+    const caIndep = monthlyCA_per_spec * V.indep * occ * 0.4;
+    const caInterne = monthlyCA_per_spec * V.interne * occ;
+    const caSage = occ > 0 ? 13333 : 0;
+    const totalCA = caAssoc + caIndep + caInterne + caSage;
+
+    const baseMonthlyAdmin = 52650 * (1 + (V.assoc+V.indep+V.interne-7)*0.08);
+    const baseMonthlyOpex = 45584 * (1 + (V.assoc+V.indep+V.interne-7)*0.05);
+    const totalCosts = -(Math.abs(baseMonthlyAdmin) + Math.abs(baseMonthlyOpex)) * occ - (V.extra+V.rc)/12;
+    const salInterne = monthlyCA_per_spec * V.interne * occ * 0.55;
+
+    const netResult = totalCA + totalCosts - salInterne*(occ>0?1:0);
+
+    simCA.push(totalCA);
+    simResult.push(netResult);
+
+    let cashIn = 0;
+    if(V.factoring){
+      cashIn = totalCA * V.cashPct + totalCA * (1-V.cashPct) * (1-FACT_COST);
+    } else {
+      cashIn = totalCA * V.cashPct;
+      if(m >= V.delay) cashIn += simCA[m-V.delay] * (1-V.cashPct);
+    }
+    cumCash += cashIn + totalCosts - salInterne*(occ>0?1:0);
+    simCashflow.push(cumCash);
+  }
+
+  const simCaY1=simCA.slice(0,12).reduce((a,b)=>a+b,0);
+  const simCaY2=simCA.slice(12,24).reduce((a,b)=>a+b,0);
+  const simCaY3=simCA.slice(24,36).reduce((a,b)=>a+b,0);
+  const simResY1=simResult.slice(0,12).reduce((a,b)=>a+b,0);
+  const simResY2=simResult.slice(12,24).reduce((a,b)=>a+b,0);
+  const simResY3=simResult.slice(24,36).reduce((a,b)=>a+b,0);
+  const simResAdj=simResY3 - V.extra - V.rc;
+  const simPerAssoc=simResAdj/V.assoc;
+
+  SIM={ca:simCA,result:simResult,cashflow:simCashflow,caY1:simCaY1,caY2:simCaY2,caY3:simCaY3,resY1:simResY1,resY2:simResY2,resY3:simResY3};
+
+  function delta(sim,base){
+    if(!base||!D)return '';
+    const d=((sim/base-1)*100);
+    if(Math.abs(d)<1) return '<span class="sim-delta neutral">= base</span>';
+    return '<span class="sim-delta '+(d>0?'up':'down')+'">'+(d>0?'+':'')+d.toFixed(0)+'%</span>';
+  }
+
+  el('simCaY3').textContent=fmt(simCaY3);
+  el('simCaDelta').innerHTML='vs base '+fmt(D?D.caY3:0)+' '+delta(simCaY3,D?D.caY3:1);
+  el('simResY3').textContent=fmt(simResY3);
+  el('simResDelta').innerHTML='vs base '+fmt(D?D.resY3:0)+' '+delta(simResY3,D?D.resY3:1);
+  el('simResAdj').textContent=fmt(simResAdj);
+  el('simPerAssoc').textContent=fmt(simPerAssoc);
+  el('simPerAssocSub').textContent='R\u00e9sultat ajust\u00e9 / '+V.assoc+' associ\u00e9'+(V.assoc>1?'s':'');
+
+  el('simCaY3').parentElement.parentElement.className='kpi '+(simCaY3>(D?D.caY3:0)*0.9?'green':'orange');
+  el('simResY3').parentElement.parentElement.className='kpi '+(simResY3>(D?D.resY3:0)*0.9?'green':simResY3>0?'orange':'red');
+
+  const bfrMin=Math.min(...simCashflow);
+  el('simSummary').innerHTML=
+    '<strong>R\u00e9sum\u00e9 :</strong> Avec '+V.consult+' consultations/jour \u00e0 CHF '+V.fee+', '+V.assoc+' associ\u00e9(s), '+V.indep+' ind\u00e9pendant(s), '+V.interne+' interne(s), '+(V.factoring?'factoring activ\u00e9':'sans factoring')+', d\u00e9lai '+V.delay+' mois, '+Math.round(V.cashPct*100)+'% cash OI :<br><br>'+
+    '&bull; <strong>CA Ann\u00e9e 3 :</strong> CHF '+fmtN(simCaY3)+'<br>'+
+    '&bull; <strong>R\u00e9sultat brut Y3 :</strong> CHF '+fmtN(simResY3)+'<br>'+
+    '&bull; <strong>R\u00e9sultat ajust\u00e9 Y3</strong> (apr\u00e8s CHF '+fmtN(V.extra)+' charges + CHF '+fmtN(V.rc)+' RC) : <strong>CHF '+fmtN(simResAdj)+'</strong><br>'+
+    '&bull; <strong>Par associ\u00e9 :</strong> CHF '+fmtN(simPerAssoc)+' / an<br>'+
+    '&bull; <strong>Tr\u00e9sorerie min :</strong> CHF '+fmtN(bfrMin)+' '+(bfrMin<-250000?'\u26a0\ufe0f <span style="color:var(--danger)">BFR insuffisant</span>':bfrMin<0?'\u26a0\ufe0f N\u00e9gatif mais couvert par FdR':'\u2705 Positif')+'<br>'+
+    '&bull; <strong>Tr\u00e9sorerie finale :</strong> CHF '+fmtN(simCashflow[35]);
+
+  updateSimCharts();
+}
+
+function updateSimCharts(){
+  if(!SIM)return;
+  try{charts.sim1?.destroy()}catch(e){}
+  try{charts.sim2?.destroy()}catch(e){}
+
+  charts.sim1=new Chart(document.getElementById('cSim1'),{type:'bar',data:{labels:['Ann\u00e9e 1','Ann\u00e9e 2','Ann\u00e9e 3'],datasets:[
+    {label:"CA simul\u00e9",data:[SIM.caY1,SIM.caY2,SIM.caY3],backgroundColor:'rgba(26,74,122,.7)',borderRadius:8,barPercentage:.5},
+    {label:'CA base',data:[D.caY1,D.caY2,D.caY3],backgroundColor:'rgba(26,74,122,.2)',borderRadius:8,barPercentage:.5,borderWidth:1,borderColor:'rgba(26,74,122,.4)',borderDash:[4,4]},
+    {label:'R\u00e9sultat simul\u00e9',data:[SIM.resY1,SIM.resY2,SIM.resY3],backgroundColor:'rgba(0,184,148,.7)',borderRadius:8,barPercentage:.5},
+    {label:'R\u00e9sultat base',data:[D.resY1,D.resY2,D.resY3],backgroundColor:'rgba(0,184,148,.2)',borderRadius:8,barPercentage:.5,borderWidth:1,borderColor:'rgba(0,184,148,.4)'}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:12}}},scales:{y:{grid:gridOpts,ticks:{callback:v=>fmt(v)}},x:{grid:{display:false}}}}});
+
+  charts.sim2=new Chart(document.getElementById('cSim2'),{type:'line',data:{labels:labelsQ,datasets:[
+    {label:'Tr\u00e9sorerie simul\u00e9e',data:SIM.cashflow,borderColor:'#1a4a7a',backgroundColor:'rgba(26,74,122,.06)',fill:true,tension:.3,pointRadius:0,borderWidth:2.5},
+    {label:'Tr\u00e9sorerie base',data:D.cashflow,borderColor:'#b2bec3',tension:.3,pointRadius:0,borderWidth:1.5,borderDash:[4,4]},
+    {label:'Seuil 0',data:Array(36).fill(0),borderColor:'rgba(214,48,49,.3)',borderWidth:1,pointRadius:0,borderDash:[2,2]}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:12}}},scales:{y:{grid:gridOpts,ticks:{callback:v=>fmt(v)}},x:{grid:{display:false}}}},plugins:[yearPlugin]});
+}
+
+// ===== SCENARIO SAVE/LOAD =====
+async function saveScenario() {
+  const name = prompt('Nom du sc\u00e9nario :');
+  if (!name) return;
+  try {
+    await api('/scenarios', {
+      method: 'POST',
+      body: JSON.stringify({
+        name,
+        params: getSimParams(),
+        businessPlanId: currentPlanId || undefined,
+      }),
+    });
+  } catch(err) {
+    console.error('Save scenario error:', err);
+  }
+}
+
+async function toggleScenarioList() {
+  const list = document.getElementById('scenarioList');
+  if (list.classList.contains('show')) {
+    list.classList.remove('show');
+    return;
+  }
+  try {
+    const result = await api('/scenarios');
+    list.innerHTML = result.scenarios.map(s =>
+      '<div class="scenario-item" onclick="loadScenario(\''+s.id+'\')">'+
+        '<span>'+s.name+'</span>'+
+        '<button class="del" onclick="event.stopPropagation();deleteScenario(\''+s.id+'\')">\u2717</button>'+
+      '</div>'
+    ).join('') || '<div class="scenario-item">Aucun sc\u00e9nario sauvegard\u00e9</div>';
+    list.classList.add('show');
+  } catch(err) {
+    console.error('Load scenarios error:', err);
+  }
+}
+
+async function loadScenario(id) {
+  try {
+    const result = await api('/scenarios/' + id);
+    setSimParams(result.scenario.params);
+    document.getElementById('scenarioList').classList.remove('show');
+  } catch(err) {
+    console.error('Load scenario error:', err);
+  }
+}
+
+async function deleteScenario(id) {
+  try {
+    await api('/scenarios/' + id, { method: 'DELETE' });
+    toggleScenarioList(); // refresh
+    toggleScenarioList();
+  } catch(err) {
+    console.error('Delete scenario error:', err);
+  }
+}
+
+// ===== ADMIN =====
+async function loadAdminData() {
+  try {
+    const result = await api('/admin/users');
+    const list = document.getElementById('adminEmailList');
+    list.innerHTML = result.allowedEmails.map(e =>
+      '<li><span>'+e.email+'</span>' +
+      (e.email !== currentUser?.email ?
+        '<button class="btn-reset" onclick="removeAllowedEmail(\''+e.email+'\')">\u2717 Retirer</button>' :
+        '<span style="font-size:.7rem;color:var(--txtL)">(vous)</span>') +
+      '</li>'
+    ).join('');
+  } catch(err) {
+    console.error('Admin load error:', err);
+  }
+}
+
+async function addAllowedEmail() {
+  const input = document.getElementById('adminNewEmail');
+  const email = input.value.trim();
+  if (!email) return;
+  try {
+    await api('/admin/users', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    });
+    input.value = '';
+    loadAdminData();
+  } catch(err) {
+    console.error('Add email error:', err);
+  }
+}
+
+async function removeAllowedEmail(email) {
+  try {
+    await api('/admin/users?email=' + encodeURIComponent(email), { method: 'DELETE' });
+    loadAdminData();
+  } catch(err) {
+    console.error('Remove email error:', err);
+  }
+}
+
+// ===== EXPORT PDF =====
+function exportPDF(){window.print()}
+
+// ===== AUTH LOGIC (server-side sessions) =====
+async function checkSession() {
+  try {
+    const result = await api('/auth/me');
+    if (result.user) {
+      grantAccess(result.user);
+      return true;
+    }
+  } catch(e) {}
+  return false;
+}
+
+async function grantAccess(user) {
+  currentUser = user;
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app-content').style.display = 'block';
+
+  // Show admin nav if admin
+  if (user.role === 'ADMIN') {
+    document.getElementById('navAdmin').style.display = '';
+  }
+
+  // Add user badge in topbar
+  const topbar = document.querySelector('.topbar .spacer');
+  if (topbar && !document.getElementById('user-badge')) {
+    const badge = document.createElement('div');
+    badge.id = 'user-badge';
+    badge.className = 'user-info';
+    badge.innerHTML = (user.picture ? '<img src="'+user.picture+'" alt="">' : '') +
+      '<span>'+user.name+'</span>' +
+      '<button class="logout-btn" onclick="logout()">D\u00e9connexion</button>';
+    topbar.parentNode.insertBefore(badge, topbar.nextSibling);
+  }
+
+  // Load plans from API
+  try {
+    const result = await api('/plans');
+    if (result.plans && result.plans.length > 0) {
+      const plan = result.plans[0];
+      currentPlanId = plan.id;
+      // Load full plan data
+      const fullPlan = await api('/plans/' + plan.id);
+      D = { ...fullPlan.plan.data, consultDay: fullPlan.plan.consultDay, fee: fullPlan.plan.fee, daysYear: fullPlan.plan.daysYear, revSpec: fullPlan.plan.revSpec, capex: fullPlan.plan.capex };
+    } else {
+      // Create default plan
+      const newPlan = await api('/plans', {
+        method: 'POST',
+        body: JSON.stringify({ name: 'GYNEVA \u2014 Business Plan Initial' }),
+      });
+      currentPlanId = newPlan.plan.id;
+      const fullPlan = await api('/plans/' + newPlan.plan.id);
+      D = { ...fullPlan.plan.data, consultDay: fullPlan.plan.consultDay, fee: fullPlan.plan.fee, daysYear: fullPlan.plan.daysYear, revSpec: fullPlan.plan.revSpec, capex: fullPlan.plan.capex };
+    }
+  } catch(e) {
+    console.error('Failed to load plans, using defaults:', e);
+    // Fallback to inline defaults if API fails
+    D = getDefaultData();
+  }
+
+  computeDerived();
+  updateUI();
+  runSim();
+}
+
+function getDefaultData() {
+  return {
+    ca:[0,0,0,38313,108554,200617,249316,255982,255982,255982,267157,278332,289506,300681,300681,300681,300681,300681,300681,300681,300681,300681,311855,323030,359747,396463,396463,396463,396463,396463,396463,396463,396463,396463,396463,396463],
+    caAssoc:[0,0,0,25542,63855,102168,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710,127710],
+    caIndep:[0,0,0,12771,44698,95782,114939,114939,114939,114939,114939,114939,114939,114939,114939,114939,114939,114939,114939,114939,114939,114939,114939,114939,140481,166023,166023,166023,166023,166023,166023,166023,166023,166023,166023,166023],
+    caInterne:[0,0,0,0,0,0,0,0,0,0,11175,22349,33524,44698,44698,44698,44698,44698,44698,44698,44698,44698,55873,67048,78222,89397,89397,89397,89397,89397,89397,89397,89397,89397,89397,89397],
+    caSage:[0,0,0,0,0,2667,6667,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333,13333],
+    result:[0,-17000,-28942,-13755,11069,30233,50341,55758,58758,58758,66724,74691,64057,72023,71023,71023,71023,71023,70857,70440,70440,70440,78406,-13627,87675,106127,106127,106127,106127,106127,105794,105794,105794,105794,105794,5794],
+    cashflow:[0,-17000,-45942,-59697,-48627,-18395,31947,87705,146463,205221,271945,346636,410692,482716,553739,624762,695785,766808,837666,908106,978546,1048986,1127393,1113765,1201440,1307568,1413695,1519822,1625949,1732077,1837871,1943665,2049460,2155254,2261048,2266842],
+    treso1m:[0,0,0,0,0,-15098,10335,63676,122434,181192,239950,306675,1199115,1263172,1334195,1405218,1476242,1547265,1618122,1688562,1759002,1829442,1899883,1878289,3727941,3815616,3921743,4027870,4133998,4240125,4345919,4451714,4557508,4663302,4769096,4774891],
+    treso3m:[0,-17000,-45942,-80534,-126801,-199235,-255632,-272529,-241097,-184755,-125997,-67239,-19115,36976,928416,991473,1062496,1133519,1204376,1274817,1345257,1415697,1486137,1456577,1517834,1587057,3436708,3524383,3630511,3736638,3842432,3948227,4054021,4159815,4265609,4271404],
+    admin:[0,0,-8775,-22425,-35100,-44850,-52650,-52650,-52650,-52650,-52650,-52650,-68250,-68250,-68250,-68250,-68250,-68250,-68250,-68250,-68250,-68250,-68250,-68250,-81900,-81900,-81900,-81900,-81900,-81900,-81900,-81900,-81900,-81900,-81900,-81900],
+    opex:[0,-17000,-20167,-24167,-26167,-45584,-45584,-45584,-45584,-45584,-45584,-45584,-48584,-48584,-49584,-49584,-49584,-49584,-49750,-50167,-50167,-50167,-50167,-150167,-53667,-53667,-53667,-53667,-53667,-53667,-54000,-54000,-54000,-54000,-54000,-154000],
+    lab:[0,0,0,12000,15000,18000,21000,24000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000,27000],
+    fteAssoc:[0,0,0,0,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+    fteIndep:[0,0,0,0,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,3,3,3],
+    fteInterne:[0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2],
+    fteAdmin:[0,0,0,3,4,5,6,6,6,6,6,6,7,7,7,7,7,7,7,7,7,7,7,7,9,9,9,9,9,9,9,9,9,9,9,9],
+    fteTotal:[0,0,1,3,6,8,10,11,11,11,11,11,13,13,13,13,13,13,13,13,13,13,14,14,16,17,17,17,17,17,17,17,17,17,17,17],
+    consultDay:16,fee:225,daysYear:215,revSpec:923432,capex:523000
+  };
+}
+
+async function logout() {
+  try { await api('/auth/logout', { method: 'POST' }); } catch(e) {}
+  currentUser = null;
+  currentPlanId = null;
+  const badge = document.getElementById('user-badge');
+  if (badge) badge.remove();
+  document.getElementById('app-content').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  if (window.google && google.accounts) {
+    google.accounts.id.renderButton(document.getElementById('google-btn'), {
+      theme:'outline', size:'large', text:'signin_with', width:300, locale:'fr'
+    });
+  }
+}
+
+async function handleGoogleResponse(response) {
+  try {
+    const result = await api('/auth/google', {
+      method: 'POST',
+      body: JSON.stringify({ credential: response.credential }),
+    });
+    grantAccess(result.user);
+  } catch(e) {
+    console.error('Auth error:', e);
+    const errEl = document.getElementById('auth-error');
+    errEl.textContent = e.error || 'Erreur d\'authentification. Veuillez r\u00e9essayer.';
+    errEl.style.display = 'block';
+  }
+}
+
+// Init auth on page load
+window.addEventListener('load', async function() {
+  // Try existing session first
+  if (await checkSession()) return;
+
+  // Wait for Google Identity Services to load
+  const initGoogle = setInterval(function() {
+    if (window.google && google.accounts && google.accounts.id) {
+      clearInterval(initGoogle);
+      google.accounts.id.initialize({
+        client_id: '219370646588-maujla0rmhv2u1c2dh793dgl33emp2t1.apps.googleusercontent.com',
+        callback: handleGoogleResponse
+      });
+      google.accounts.id.renderButton(document.getElementById('google-btn'), {
+        theme: 'outline',
+        size: 'large',
+        text: 'signin_with',
+        width: 300,
+        locale: 'fr'
+      });
+    }
+  }, 100);
+});
+</script>
+
+</div><!-- end #app-content -->
+
+</body>
+</html>

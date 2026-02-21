@@ -1,0 +1,120 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+  VIEWER
+}
+
+model User {
+  id          String    @id @default(cuid())
+  email       String    @unique
+  name        String?
+  picture     String?
+  role        Role      @default(VIEWER)
+  googleSub   String?   @unique @map("google_sub")
+  lastLoginAt DateTime? @map("last_login_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  sessions      Session[]
+  businessPlans BusinessPlan[]
+  scenarios     SimulatorScenario[]
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([expiresAt])
+  @@map("sessions")
+}
+
+model AllowedEmail {
+  id      String  @id @default(cuid())
+  email   String  @unique
+  addedBy String? @map("added_by")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("allowed_emails")
+}
+
+model BusinessPlan {
+  id       String  @id @default(cuid())
+  userId   String  @map("user_id")
+  name     String
+  isActive Boolean @default(true) @map("is_active")
+
+  // JSONB: 36-month arrays (ca, caAssoc, caIndep, caInterne, caSage, result, cashflow, etc.)
+  data Json
+
+  // Scalar constants (queryable)
+  consultDay Int     @map("consult_day")
+  fee        Int
+  daysYear   Int     @map("days_year")
+  revSpec    Int     @map("rev_spec")
+  capex      Int
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user     User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  versions BusinessPlanVersion[]
+  scenarios SimulatorScenario[]
+
+  @@index([userId])
+  @@map("business_plans")
+}
+
+model BusinessPlanVersion {
+  id             String @id @default(cuid())
+  businessPlanId String @map("business_plan_id")
+  versionNumber  Int    @map("version_number")
+  label          String?
+
+  // Full snapshot
+  data Json
+  constants Json
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  businessPlan BusinessPlan @relation(fields: [businessPlanId], references: [id], onDelete: Cascade)
+
+  @@index([businessPlanId])
+  @@map("business_plan_versions")
+}
+
+model SimulatorScenario {
+  id             String  @id @default(cuid())
+  userId         String  @map("user_id")
+  businessPlanId String? @map("business_plan_id")
+  name           String
+  params         Json    // 13 simulator parameters
+  isShared       Boolean @default(false) @map("is_shared")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  businessPlan BusinessPlan? @relation(fields: [businessPlanId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@map("simulator_scenarios")
+}
