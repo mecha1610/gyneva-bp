@@ -251,6 +251,46 @@ table.dt tr:hover td{background:#f8fafb}
 .sim-delta.down{background:rgba(214,48,49,.1);color:var(--danger)}
 .sim-delta.neutral{background:rgba(99,110,114,.1);color:var(--txtL)}
 
+/* === SIMULATOR YEAR TABS === */
+.sim-year-tabs{display:flex;gap:0;margin-bottom:1.2rem;border-radius:var(--r);overflow:hidden;border:1px solid var(--brd);background:#f8fafb}
+.sim-tab{flex:1;padding:.65rem .5rem;border:none;background:none;font-size:.8rem;font-weight:600;color:var(--txtL);cursor:pointer;transition:var(--trans);border-right:1px solid var(--brd);text-align:center}
+.sim-tab:last-child{border-right:none}
+.sim-tab:hover{background:rgba(26,74,122,.04);color:var(--p)}
+.sim-tab.active{background:var(--card);color:var(--pl);box-shadow:inset 0 -3px 0 var(--pl)}
+.sim-tab .tab-sub{display:block;font-size:.68rem;font-weight:400;color:var(--txtL);margin-top:.15rem}
+.sim-tab.active .tab-sub{color:var(--pl)}
+
+/* === SIM YEAR OVERVIEW === */
+.sim-year-overview{margin-bottom:1.2rem}
+.sim-year-overview .profit-yr{cursor:pointer;transition:var(--trans)}
+.sim-year-overview .profit-yr:hover{background:rgba(26,74,122,.03)}
+.sim-year-overview .profit-yr.highlight{background:rgba(26,74,122,.06);box-shadow:inset 0 -3px 0 var(--pl)}
+
+/* === SIM YEAR DETAIL === */
+.sim-year-detail{animation:fadeIn .25s ease}
+.sim-year-verdict{margin-bottom:1rem}
+.sim-sensitivity{display:flex;flex-wrap:wrap;gap:.5rem;margin:.8rem 0 1.2rem}
+.sens-tag{font-size:.72rem;padding:.3rem .7rem;border-radius:16px;font-weight:500;border:1px solid var(--brd);background:#f8fafb;color:var(--txtL)}
+.sens-tag.high{border-color:var(--danger);color:var(--danger);background:rgba(214,48,49,.04)}
+.sens-tag.medium{border-color:var(--warn);color:#d68910;background:rgba(253,203,110,.08)}
+.sens-tag.low{border-color:var(--acc);color:#00755a;background:rgba(0,184,148,.04)}
+
+/* === SIM STRUCTURED SUMMARY === */
+.sim-summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:.8rem}
+.sim-summary-yr{border-radius:10px;padding:.9rem 1rem;background:#f8fafb;border-left:3px solid var(--brd)}
+.sim-summary-yr.y1{border-left-color:var(--pl)}
+.sim-summary-yr.y2{border-left-color:var(--acc2)}
+.sim-summary-yr.y3{border-left-color:var(--acc)}
+.sim-summary-yr h4{font-size:.78rem;font-weight:700;color:var(--p);margin-bottom:.4rem}
+.sim-summary-yr ul{list-style:none;font-size:.8rem;line-height:1.7;color:var(--txt)}
+.sim-summary-yr ul li::before{content:'\2022';color:var(--txtL);margin-right:.4rem}
+
+@media(max-width:768px){
+  .sim-year-tabs{flex-wrap:nowrap;overflow-x:auto}
+  .sim-tab{min-width:0;padding:.5rem .3rem;font-size:.72rem}
+  .sim-summary-grid{grid-template-columns:1fr}
+}
+
 /* === RESET BUTTON === */
 .btn-reset{background:none;border:1px solid var(--brd);color:var(--txtL);padding:.35rem .7rem;border-radius:8px;font-size:.72rem;cursor:pointer;transition:var(--trans)}
 .btn-reset:hover{border-color:var(--danger);color:var(--danger)}
@@ -521,12 +561,43 @@ table.dt tr:hover td{background:#f8fafb}
 
     <!-- RESULTS PANEL -->
     <div class="sim-results">
-      <div class="kpi-grid">
-        <div class="kpi green"><div class="lb">CA Ann&eacute;e 3 (simul&eacute;)</div><div class="vl" id="simCaY3">4,7M</div><div class="sb" id="simCaDelta"></div></div>
-        <div class="kpi green"><div class="lb">R&eacute;sultat net Y3 (simul&eacute;)</div><div class="vl" id="simResY3">1,15M</div><div class="sb" id="simResDelta"></div></div>
-        <div class="kpi"><div class="lb">R&eacute;sultat ajust&eacute; Y3</div><div class="vl" id="simResAdj">&mdash;</div><div class="sb">Apr&egrave;s charges manquantes + RC</div></div>
-        <div class="kpi"><div class="lb">Par associ&eacute; Y3</div><div class="vl" id="simPerAssoc">&mdash;</div><div class="sb" id="simPerAssocSub">R&eacute;sultat ajust&eacute; / associ&eacute;</div></div>
+      <!-- YEAR TABS -->
+      <div class="sim-year-tabs" id="simYearTabs">
+        <button class="sim-tab active" data-year="all" onclick="switchSimYear('all',this)">Vue 3 ans<span class="tab-sub">Synth&egrave;se</span></button>
+        <button class="sim-tab" data-year="1" onclick="switchSimYear('1',this)">Ann&eacute;e 1<span class="tab-sub">D&eacute;marrage</span></button>
+        <button class="sim-tab" data-year="2" onclick="switchSimYear('2',this)">Ann&eacute;e 2<span class="tab-sub">Croissance</span></button>
+        <button class="sim-tab" data-year="3" onclick="switchSimYear('3',this)">Ann&eacute;e 3<span class="tab-sub">Croisi&egrave;re</span></button>
       </div>
+      <!-- YEAR OVERVIEW TIMELINE -->
+      <div class="sim-year-overview">
+        <div class="profit-tl">
+          <div class="profit-yr" id="simYrCard1" onclick="switchSimYear('1',document.querySelector('[data-year=&quot;1&quot;]'))">
+            <div class="yl">Ann&eacute;e 1</div>
+            <div class="am" id="simOvCaY1">&mdash;</div>
+            <div class="pa" id="simOvResY1">&mdash;</div>
+            <div class="nt" id="simOvDeltaY1"></div>
+          </div>
+          <div class="profit-yr" id="simYrCard2" onclick="switchSimYear('2',document.querySelector('[data-year=&quot;2&quot;]'))">
+            <div class="yl">Ann&eacute;e 2</div>
+            <div class="am" id="simOvCaY2">&mdash;</div>
+            <div class="pa" id="simOvResY2">&mdash;</div>
+            <div class="nt" id="simOvDeltaY2"></div>
+          </div>
+          <div class="profit-yr" id="simYrCard3" onclick="switchSimYear('3',document.querySelector('[data-year=&quot;3&quot;]'))">
+            <div class="yl">Ann&eacute;e 3</div>
+            <div class="am" id="simOvCaY3">&mdash;</div>
+            <div class="pa" id="simOvResY3">&mdash;</div>
+            <div class="nt" id="simOvDeltaY3"></div>
+          </div>
+        </div>
+      </div>
+      <!-- YEAR DETAIL: VERDICT + KPIs + SENSITIVITY -->
+      <div id="simYearDetail">
+        <div id="simYearVerdict" class="verdict green" style="display:none"></div>
+        <div class="kpi-grid" id="simYearKpis"></div>
+        <div class="sim-sensitivity" id="simSensitivity"></div>
+      </div>
+      <!-- CHARTS -->
       <div class="card">
         <h2><span class="ic">&#128200;</span> Projection simul&eacute;e &mdash; CA &amp; R&eacute;sultat</h2>
         <div class="chart-box"><canvas id="cSim1"></canvas></div>
@@ -535,9 +606,10 @@ table.dt tr:hover td{background:#f8fafb}
         <h2><span class="ic">&#128202;</span> Tr&eacute;sorerie simul&eacute;e</h2>
         <div class="chart-box"><canvas id="cSim2"></canvas></div>
       </div>
+      <!-- STRUCTURED SUMMARY -->
       <div class="card">
         <h2><span class="ic">&#128176;</span> Synth&egrave;se du sc&eacute;nario simul&eacute;</h2>
-        <div id="simSummary" class="exp"></div>
+        <div class="sim-summary-grid" id="simSummary"></div>
       </div>
     </div>
   </div>
@@ -724,6 +796,7 @@ let currentPlanId = null;
 let allPlans = [];
 let OVERLAY = null;
 let overlayScenarioId = null;
+let simActiveYear = 'all';
 
 // ===== NAV =====
 const pageTitles = {overview:"Vue d'ensemble",simulator:"Simulateur",revenue:"Revenus",cashflow:"Tr\u00e9sorerie",team:"\u00c9quipe",risks:"Risques",profit:"Profit associ\u00e9s",optimize:"Optimisations",admin:"Administration"};
@@ -1120,6 +1193,14 @@ function setSimParams(p) {
   runSim();
 }
 
+// Shared delta helper (sim vs base comparison badge)
+function simDelta(simVal, baseVal){
+  if(!baseVal||!D)return '';
+  const d=((simVal/baseVal-1)*100);
+  if(Math.abs(d)<1) return '<span class="sim-delta neutral">= base</span>';
+  return '<span class="sim-delta '+(d>0?'up':'down')+'">'+(d>0?'+':'')+d.toFixed(0)+'%</span>';
+}
+
 function runSim(){
   const el=id=>document.getElementById(id);
   const params = getSimParams();
@@ -1131,7 +1212,6 @@ function runSim(){
   el('sExtraVal').textContent=fmt(params.extra); el('sRCVal').textContent=fmt(params.rc);
 
   const sim = computeSimulation(params);
-
   const simCA=sim.ca, simResult=sim.result, simCashflow=sim.cashflow;
   const simCaY1=sim.caY1, simCaY2=sim.caY2, simCaY3=sim.caY3;
   const simResY1=sim.resY1, simResY2=sim.resY2, simResY3=sim.resY3;
@@ -1139,54 +1219,209 @@ function runSim(){
 
   SIM={ca:simCA,result:simResult,cashflow:simCashflow,caY1:simCaY1,caY2:simCaY2,caY3:simCaY3,resY1:simResY1,resY2:simResY2,resY3:simResY3};
 
-  function delta(sim,base){
-    if(!base||!D)return '';
-    const d=((sim/base-1)*100);
-    if(Math.abs(d)<1) return '<span class="sim-delta neutral">= base</span>';
-    return '<span class="sim-delta '+(d>0?'up':'down')+'">'+(d>0?'+':'')+d.toFixed(0)+'%</span>';
-  }
+  // Populate year overview timeline
+  el('simOvCaY1').textContent='CA '+fmt(simCaY1);
+  el('simOvResY1').innerHTML='R\u00e9s. '+fmt(simResY1);
+  el('simOvDeltaY1').innerHTML=simDelta(simCaY1,D?D.caY1:1);
+  el('simOvCaY2').textContent='CA '+fmt(simCaY2);
+  el('simOvResY2').innerHTML='R\u00e9s. '+fmt(simResY2);
+  el('simOvDeltaY2').innerHTML=simDelta(simCaY2,D?D.caY2:1);
+  el('simOvCaY3').textContent='CA '+fmt(simCaY3);
+  el('simOvResY3').innerHTML='R\u00e9s. '+fmt(simResY3);
+  el('simOvDeltaY3').innerHTML=simDelta(simCaY3,D?D.caY3:1);
 
-  el('simCaY3').textContent=fmt(simCaY3);
-  el('simCaDelta').innerHTML='vs base '+fmt(D?D.caY3:0)+' '+delta(simCaY3,D?D.caY3:1);
-  el('simResY3').textContent=fmt(simResY3);
-  el('simResDelta').innerHTML='vs base '+fmt(D?D.resY3:0)+' '+delta(simResY3,D?D.resY3:1);
-  el('simResAdj').textContent=fmt(simResAdj);
-  el('simPerAssoc').textContent=fmt(simPerAssoc);
-  el('simPerAssocSub').textContent='R\u00e9sultat ajust\u00e9 / '+params.assoc+' associ\u00e9'+(params.assoc>1?'s':'');
+  // Structured per-year summary
+  const summaryData = [
+    {year:'1',cls:'y1',ca:simCaY1,res:simResY1,notes:[
+      'D\u00e9but activit\u00e9 mois '+params.start+', occupation '+params.occup+'%',
+      params.delay>=3?'<strong style="color:var(--danger)">\u26a0 D\u00e9lai '+params.delay+'m impacte la tr\u00e9so Y1</strong>':'D\u00e9lai paiement '+params.delay+' mois',
+      params.factoring?'Factoring actif \u2014 BFR s\u00e9curis\u00e9':'Sans factoring',
+      'Tr\u00e9so min : '+fmtCHF(Math.min(...simCashflow.slice(0,12)))]},
+    {year:'2',cls:'y2',ca:simCaY2,res:simResY2,notes:[
+      'Mont\u00e9e en puissance \u2014 occupation ~'+Math.round(Math.min(100,params.occup+(100-params.occup)*0.6))+'%',
+      'CA : '+fmtCHF(simCaY2)+(simCaY1>0?' (+'+Math.round((simCaY2/simCaY1-1)*100)+'% vs Y1)':''),
+      'R\u00e9sultat : '+fmtCHF(simResY2)]},
+    {year:'3',cls:'y3',ca:simCaY3,res:simResY3,notes:[
+      'Vitesse de croisi\u00e8re \u2014 pleine capacit\u00e9',
+      'CA : '+fmtCHF(simCaY3),
+      'R\u00e9sultat ajust\u00e9 : '+fmtCHF(simResAdj)+' (apr\u00e8s '+fmt(params.extra)+' charges + '+fmt(params.rc)+' RC)',
+      'Par associ\u00e9 : '+fmtCHF(simPerAssoc),
+      'Tr\u00e9so finale : '+fmtCHF(simCashflow[35])]}
+  ];
+  el('simSummary').innerHTML=summaryData.map(s=>
+    '<div class="sim-summary-yr '+s.cls+'"><h4>Ann\u00e9e '+s.year+' \u2014 CA '+fmt(s.ca)+' | R\u00e9s. '+fmt(s.res)+'</h4><ul>'+
+    s.notes.map(n=>'<li>'+n+'</li>').join('')+'</ul></div>'
+  ).join('');
 
-  el('simCaY3').parentElement.parentElement.className='kpi '+(simCaY3>(D?D.caY3:0)*0.9?'green':'orange');
-  el('simResY3').parentElement.parentElement.className='kpi '+(simResY3>(D?D.resY3:0)*0.9?'green':simResY3>0?'orange':'red');
-
-  const bfrMin=Math.min(...simCashflow);
-  el('simSummary').innerHTML=
-    '<strong>R\u00e9sum\u00e9 :</strong> Avec '+params.consult+' consultations/jour \u00e0 CHF '+params.fee+', '+params.assoc+' associ\u00e9(s), '+params.indep+' ind\u00e9pendant(s), '+params.interne+' interne(s), '+(params.factoring?'factoring activ\u00e9':'sans factoring')+', d\u00e9lai '+params.delay+' mois, '+params.cashPct+'% cash OI :<br><br>'+
-    '&bull; <strong>CA Ann\u00e9e 3 :</strong> CHF '+fmtN(simCaY3)+'<br>'+
-    '&bull; <strong>R\u00e9sultat brut Y3 :</strong> CHF '+fmtN(simResY3)+'<br>'+
-    '&bull; <strong>R\u00e9sultat ajust\u00e9 Y3</strong> (apr\u00e8s CHF '+fmtN(params.extra)+' charges + CHF '+fmtN(params.rc)+' RC) : <strong>CHF '+fmtN(simResAdj)+'</strong><br>'+
-    '&bull; <strong>Par associ\u00e9 :</strong> CHF '+fmtN(simPerAssoc)+' / an<br>'+
-    '&bull; <strong>Tr\u00e9sorerie min :</strong> CHF '+fmtN(bfrMin)+' '+(bfrMin<-250000?'\u26a0\ufe0f <span style="color:var(--danger)">BFR insuffisant</span>':bfrMin<0?'\u26a0\ufe0f N\u00e9gatif mais couvert par FdR':'\u2705 Positif')+'<br>'+
-    '&bull; <strong>Tr\u00e9sorerie finale :</strong> CHF '+fmtN(simCashflow[35]);
-
+  updateSimYearDetail();
   updateSimCharts();
 }
+
+// ===== YEAR TAB SWITCHING =====
+function switchSimYear(year, btn) {
+  simActiveYear = year;
+  document.querySelectorAll('.sim-tab').forEach(t=>t.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  document.querySelectorAll('.sim-year-overview .profit-yr').forEach(c=>c.classList.remove('highlight'));
+  if(year!=='all'){
+    const card=document.getElementById('simYrCard'+year);
+    if(card) card.classList.add('highlight');
+  }
+  updateSimYearDetail();
+  updateSimCharts();
+}
+
+function updateSimYearDetail() {
+  if(!SIM) return;
+  const el=id=>document.getElementById(id);
+  const params=getSimParams();
+  const year=simActiveYear;
+  const sum=(arr,s,e)=>arr.slice(s,e).reduce((a,b)=>a+b,0);
+
+  const perYear={
+    '1':{ca:SIM.caY1,res:SIM.resY1,s:0,e:12},
+    '2':{ca:SIM.caY2,res:SIM.resY2,s:12,e:24},
+    '3':{ca:SIM.caY3,res:SIM.resY3,s:24,e:36}
+  };
+  for(const k of['1','2','3']){
+    const y=perYear[k];
+    y.resAdj=y.res-(params.extra+params.rc)/3;
+    y.perAssoc=y.resAdj/params.assoc;
+    y.tresoMin=Math.min(...SIM.cashflow.slice(y.s,y.e));
+    y.tresoEnd=SIM.cashflow[y.e-1];
+    y.baseCa=D?(k==='1'?D.caY1:k==='2'?D.caY2:D.caY3):0;
+    y.baseRes=D?(k==='1'?D.resY1:k==='2'?D.resY2:D.resY3):0;
+  }
+
+  // Verdict
+  const verdictEl=el('simYearVerdict');
+  if(year==='all'){
+    verdictEl.style.display='none';
+  } else {
+    verdictEl.style.display='';
+    const y=perYear[year];
+    let cls,icon,text;
+    if(year==='1'){
+      const isBfrRisk=y.tresoMin<-100000;
+      cls=isBfrRisk?'red':y.res<0?'orange':'green';
+      icon=isBfrRisk?'\u26a0\ufe0f':'\u2699\ufe0f';
+      text='<strong>Ann\u00e9e 1 \u2014 D\u00e9marrage.</strong> Phase de mont\u00e9e en charge'
+        +(params.start>1?' (d\u00e9but mois '+params.start+')':'')+', occupation \u00e0 '+params.occup+'%.'
+        +(params.delay>=3?' <strong>Le d\u00e9lai de paiement de '+params.delay+' mois impacte fortement la tr\u00e9sorerie Y1.</strong>':'')
+        +(isBfrRisk?' <span style="color:var(--danger)">Risque BFR : tr\u00e9sorerie min '+fmtCHF(y.tresoMin)+'</span>':'')
+        +' R\u00e9sultat attendu : '+fmtCHF(y.res)+'.';
+    } else if(year==='2'){
+      cls=y.res>0?'green':'orange';
+      icon='\ud83d\udcc8';
+      text='<strong>Ann\u00e9e 2 \u2014 Croissance.</strong> Occupation en hausse vers ~'
+        +Math.round(Math.min(100,params.occup+(100-params.occup)*0.6))+'%. '
+        +'Le d\u00e9lai de paiement n\'impacte plus la tr\u00e9sorerie. '
+        +'R\u00e9sultat attendu : '+fmtCHF(y.res)+'.';
+    } else {
+      cls=y.resAdj>0?'green':y.res>0?'orange':'red';
+      icon='\u2705';
+      text='<strong>Ann\u00e9e 3 \u2014 Vitesse de croisi\u00e8re.</strong> Pleine capacit\u00e9, '
+        +params.assoc+' associ\u00e9'+(params.assoc>1?'s':'')+'. R\u00e9sultat ajust\u00e9 : '+fmtCHF(y.resAdj)
+        +', soit '+fmtCHF(y.perAssoc)+' par associ\u00e9.';
+    }
+    verdictEl.className='verdict '+cls;
+    verdictEl.innerHTML='<div class="ic">'+icon+'</div><div>'+text+'</div>';
+  }
+
+  // KPIs
+  const kpiC=el('simYearKpis');
+  if(year==='all'){
+    let html='';
+    for(const k of['1','2','3']){
+      const y=perYear[k];
+      const caC=y.ca>y.baseCa*0.9?'green':'orange';
+      const resC=y.res>0?'green':y.res>-50000?'orange':'red';
+      html+='<div class="kpi '+caC+'"><div class="lb">CA Ann\u00e9e '+k+'</div><div class="vl">'+fmt(y.ca)+'</div><div class="sb">vs base '+fmt(y.baseCa)+' '+simDelta(y.ca,y.baseCa)+'</div></div>';
+      html+='<div class="kpi '+resC+'"><div class="lb">R\u00e9sultat Y'+k+'</div><div class="vl">'+fmt(y.res)+'</div><div class="sb">vs base '+fmt(y.baseRes)+' '+simDelta(y.res,y.baseRes)+'</div></div>';
+    }
+    kpiC.innerHTML=html;
+  } else {
+    const y=perYear[year];
+    const caC=y.ca>y.baseCa*0.9?'green':'orange';
+    const resC=y.res>0?'green':y.res>-50000?'orange':'red';
+    const adjC=y.resAdj>0?'green':'orange';
+    const tresoC=y.tresoMin>=0?'green':y.tresoMin>-250000?'orange':'red';
+    kpiC.innerHTML=
+      '<div class="kpi '+caC+'"><div class="lb">CA Ann\u00e9e '+year+'</div><div class="vl">'+fmt(y.ca)+'</div><div class="sb">vs base '+fmt(y.baseCa)+' '+simDelta(y.ca,y.baseCa)+'</div></div>'+
+      '<div class="kpi '+resC+'"><div class="lb">R\u00e9sultat brut Y'+year+'</div><div class="vl">'+fmt(y.res)+'</div><div class="sb">vs base '+fmt(y.baseRes)+' '+simDelta(y.res,y.baseRes)+'</div></div>'+
+      '<div class="kpi '+adjC+'"><div class="lb">R\u00e9sultat ajust\u00e9 Y'+year+'</div><div class="vl">'+fmt(y.resAdj)+'</div><div class="sb">Apr\u00e8s charges + RC (prorata)</div></div>'+
+      '<div class="kpi blue"><div class="lb">Par associ\u00e9 Y'+year+'</div><div class="vl">'+fmt(y.perAssoc)+'</div><div class="sb">'+params.assoc+' associ\u00e9'+(params.assoc>1?'s':'')+'</div></div>'+
+      '<div class="kpi '+tresoC+'"><div class="lb">Tr\u00e9so min Y'+year+'</div><div class="vl">'+fmt(y.tresoMin)+'</div><div class="sb">Point le plus bas</div></div>'+
+      '<div class="kpi blue"><div class="lb">Tr\u00e9so fin Y'+year+'</div><div class="vl">'+fmt(y.tresoEnd)+'</div><div class="sb">Cumul fin de p\u00e9riode</div></div>';
+  }
+
+  // Sensitivity tags
+  const sensEl=el('simSensitivity');
+  if(year==='all'){sensEl.innerHTML='';return;}
+  sensEl.innerHTML=getYearSensitivity(year,params).map(t=>
+    '<span class="sens-tag '+t.level+'">'+t.label+'</span>'
+  ).join('');
+}
+
+function getYearSensitivity(year, params) {
+  const tags=[];
+  if(year==='1'){
+    tags.push({label:'\u26a0 D\u00e9lai paiement : impact '+(params.delay>=3?'FORT':'mod\u00e9r\u00e9'),level:params.delay>=3?'high':params.delay>=1?'medium':'low'});
+    tags.push({label:'\ud83d\ude80 Mois d\u00e9but ('+params.start+') : impact '+(params.start>6?'FORT':params.start>3?'mod\u00e9r\u00e9':'faible'),level:params.start>6?'high':params.start>3?'medium':'low'});
+    tags.push({label:'\ud83d\udcca Occupation '+params.occup+'% : impact FORT',level:params.occup<50?'high':params.occup<70?'medium':'low'});
+    tags.push(params.factoring?{label:'\u2705 Factoring actif : s\u00e9curise BFR',level:'low'}:{label:'\u26a0 Sans factoring : risque BFR',level:'high'});
+    tags.push({label:'\ud83c\udfe5 Cash OI '+params.cashPct+'% : impact moyen',level:params.cashPct>20?'low':'medium'});
+  } else if(year==='2'){
+    tags.push({label:'\ud83d\udcc8 Volume (consult/honor.) : levier principal',level:'medium'});
+    tags.push({label:'\ud83d\udc65 \u00c9quipe ('+(params.assoc+params.indep+params.interne)+' m\u00e9d.) : impact croissant',level:'medium'});
+    tags.push({label:'\u23f0 D\u00e9lai paiement : faible impact',level:'low'});
+    tags.push({label:'\ud83d\udcb0 Charges extra : impact '+(params.extra>200000?'mod\u00e9r\u00e9':'faible'),level:params.extra>200000?'medium':'low'});
+  } else {
+    tags.push({label:'\ud83d\udcc8 Volume (consult/honor.) : levier principal',level:'medium'});
+    tags.push({label:'\ud83d\udc65 \u00c9quipe ('+(params.assoc+params.indep+params.interne)+' m\u00e9d.) : levier principal',level:'medium'});
+    tags.push({label:'\ud83d\udcb0 Charges extra '+fmt(params.extra)+' : impact direct',level:params.extra>300000?'high':'medium'});
+    tags.push({label:'\u23f0 D\u00e9lai paiement : aucun impact',level:'low'});
+  }
+  return tags;
+}
+
+// ===== SIM CHARTS =====
+const yearHighlightPlugin={id:'yearHL',beforeDraw(chart){
+  if(simActiveYear==='all')return;
+  const ctx=chart.ctx,x=chart.scales.x,y=chart.scales.y;
+  const yi=parseInt(simActiveYear);
+  const s=(yi-1)*12, e=yi*12-1;
+  if(s>x.max||e<x.min)return;
+  const xS=x.getPixelForValue(Math.max(s,x.min)), xE=x.getPixelForValue(Math.min(e,x.max));
+  ctx.save();
+  ctx.fillStyle='rgba(26,74,122,.04)';
+  ctx.fillRect(xS,y.top,xE-xS,y.bottom-y.top);
+  ctx.fillStyle='rgba(26,74,122,.5)';
+  ctx.font='bold 11px Inter,sans-serif';
+  ctx.fillText('Ann\u00e9e '+simActiveYear,xS+4,y.top+14);
+  ctx.restore();
+}};
 
 function updateSimCharts(){
   if(!SIM)return;
   try{charts.sim1?.destroy()}catch(e){}
   try{charts.sim2?.destroy()}catch(e){}
 
+  const bA=simActiveYear==='all'?[.7,.7,.7]:['1','2','3'].map(y=>y===simActiveYear?.9:.15);
+  const bB=simActiveYear==='all'?[.2,.2,.2]:['1','2','3'].map(y=>y===simActiveYear?.3:.06);
+
   charts.sim1=new Chart(document.getElementById('cSim1'),{type:'bar',data:{labels:['Ann\u00e9e 1','Ann\u00e9e 2','Ann\u00e9e 3'],datasets:[
-    {label:"CA simul\u00e9",data:[SIM.caY1,SIM.caY2,SIM.caY3],backgroundColor:'rgba(26,74,122,.7)',borderRadius:8,barPercentage:.5},
-    {label:'CA base',data:[D.caY1,D.caY2,D.caY3],backgroundColor:'rgba(26,74,122,.2)',borderRadius:8,barPercentage:.5,borderWidth:1,borderColor:'rgba(26,74,122,.4)',borderDash:[4,4]},
-    {label:'R\u00e9sultat simul\u00e9',data:[SIM.resY1,SIM.resY2,SIM.resY3],backgroundColor:'rgba(0,184,148,.7)',borderRadius:8,barPercentage:.5},
-    {label:'R\u00e9sultat base',data:[D.resY1,D.resY2,D.resY3],backgroundColor:'rgba(0,184,148,.2)',borderRadius:8,barPercentage:.5,borderWidth:1,borderColor:'rgba(0,184,148,.4)'}
+    {label:"CA simul\u00e9",data:[SIM.caY1,SIM.caY2,SIM.caY3],backgroundColor:bA.map(a=>'rgba(26,74,122,'+a+')'),borderRadius:8,barPercentage:.5},
+    {label:'CA base',data:[D.caY1,D.caY2,D.caY3],backgroundColor:bB.map(a=>'rgba(26,74,122,'+a+')'),borderRadius:8,barPercentage:.5,borderWidth:1,borderColor:'rgba(26,74,122,.4)',borderDash:[4,4]},
+    {label:'R\u00e9sultat simul\u00e9',data:[SIM.resY1,SIM.resY2,SIM.resY3],backgroundColor:bA.map(a=>'rgba(0,184,148,'+a+')'),borderRadius:8,barPercentage:.5},
+    {label:'R\u00e9sultat base',data:[D.resY1,D.resY2,D.resY3],backgroundColor:bB.map(a=>'rgba(0,184,148,'+a+')'),borderRadius:8,barPercentage:.5,borderWidth:1,borderColor:'rgba(0,184,148,.4)'}
   ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:12}}},scales:{y:{grid:gridOpts,ticks:{callback:v=>fmt(v)}},x:{grid:{display:false}}}}});
 
   charts.sim2=new Chart(document.getElementById('cSim2'),{type:'line',data:{labels:labelsQ,datasets:[
     {label:'Tr\u00e9sorerie simul\u00e9e',data:SIM.cashflow,borderColor:'#1a4a7a',backgroundColor:'rgba(26,74,122,.06)',fill:true,tension:.3,pointRadius:0,borderWidth:2.5},
     {label:'Tr\u00e9sorerie base',data:D.cashflow,borderColor:'#b2bec3',tension:.3,pointRadius:0,borderWidth:1.5,borderDash:[4,4]},
     {label:'Seuil 0',data:Array(36).fill(0),borderColor:'rgba(214,48,49,.3)',borderWidth:1,pointRadius:0,borderDash:[2,2]}
-  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:12}}},scales:{y:{grid:gridOpts,ticks:{callback:v=>fmt(v)}},x:{grid:{display:false}}}},plugins:[yearPlugin]});
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:12}}},scales:{y:{grid:gridOpts,ticks:{callback:v=>fmt(v)}},x:{grid:{display:false}}}},plugins:[yearPlugin,yearHighlightPlugin]});
 }
 
 // ===== SCENARIO SAVE/LOAD =====
