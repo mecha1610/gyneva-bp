@@ -244,6 +244,35 @@ table.dt tr:hover td{background:#f8fafb}
 .profit-type .pt-total{font-size:.9rem;font-weight:800;margin-top:.5rem;padding-top:.5rem;border-top:2px solid var(--brd);display:flex;justify-content:space-between}
 .profit-type .pt-total .pt-value{color:var(--acc)}
 @media(max-width:768px){.profit-controls{flex-direction:column;align-items:stretch}.profit-breakdown{grid-template-columns:1fr}}
+/* === TEAM TAB === */
+.team-controls{display:flex;gap:1.2rem;flex-wrap:wrap;align-items:center;padding:1rem 1.2rem;background:#f8fafb;border-radius:var(--r);border:1px solid var(--brd);margin-bottom:1.2rem}
+.team-ctrl{display:flex;align-items:center;gap:.5rem;font-size:.8rem;font-weight:600;color:var(--p)}
+.team-ctrl label{white-space:nowrap}
+.team-ctrl .toggle-sw{width:40px;height:22px;border-radius:11px;background:#ccc;cursor:pointer;position:relative;transition:var(--trans)}
+.team-ctrl .toggle-sw.on{background:var(--acc)}
+.team-ctrl .toggle-sw::after{content:'';position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:var(--trans);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.team-ctrl .toggle-sw.on::after{left:20px}
+.team-year-btns{display:flex;gap:0;border-radius:8px;overflow:hidden;border:1px solid var(--brd)}
+.team-year-btn{padding:.4rem .8rem;border:none;background:var(--card);font-size:.78rem;font-weight:600;color:var(--txtL);cursor:pointer;transition:var(--trans);border-right:1px solid var(--brd)}
+.team-year-btn:last-child{border-right:none}
+.team-year-btn:hover{background:rgba(26,74,122,.04);color:var(--p)}
+.team-year-btn.active{background:var(--pl);color:#fff}
+.team-profiles{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem;margin-bottom:1.2rem}
+.team-profile{background:var(--card);border-radius:var(--r);padding:1rem;border:1px solid var(--brd);box-shadow:var(--sh);transition:var(--trans)}
+.team-profile:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.08)}
+.team-profile h4{font-size:.75rem;font-weight:700;color:var(--p);margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem}
+.team-profile .tp-fte{font-size:1.3rem;font-weight:800;color:var(--pl);margin:.2rem 0}
+.team-profile .tp-row{display:flex;justify-content:space-between;font-size:.72rem;padding:.2rem 0;border-bottom:1px solid #f0f3f5}
+.team-profile .tp-row:last-child{border-bottom:none}
+.team-profile .tp-label{color:var(--txtL)}
+.team-profile .tp-value{font-weight:700;color:var(--p)}
+.team-profile .tp-bar{height:4px;border-radius:2px;background:#f0f3f5;margin-top:.4rem;overflow:hidden}
+.team-profile .tp-bar-fill{height:100%;border-radius:2px;transition:width .4s ease}
+.team-profile.assoc .tp-bar-fill{background:#0f2b46}
+.team-profile.indep .tp-bar-fill{background:#1a4a7a}
+.team-profile.interne .tp-bar-fill{background:#5dade2}
+.team-profile.admin .tp-bar-fill{background:#aed6f1}
+@media(max-width:768px){.team-controls{flex-direction:column;align-items:stretch}.team-profiles{grid-template-columns:1fr 1fr}}
 
 /* === DROPZONE === */
 .dropzone{border:2px dashed var(--pl);border-radius:var(--r);padding:2rem;text-align:center;margin-bottom:1.2rem;background:rgba(26,74,122,.02);transition:var(--trans);cursor:pointer;position:relative}
@@ -794,16 +823,39 @@ table.dt tr:hover td{background:#f8fafb}
 
 <!-- ====== TEAM ====== -->
 <div class="section" id="team">
-  <div class="card">
-    <h2><span class="ic">&#128101;</span> Mont&eacute;e en charge de l'&eacute;quipe (ETP)</h2>
-    <div class="exp">L'&eacute;quipe passe de <strong>0 &agrave; 17 ETP</strong> sur 36 mois. Chaque recrutement est align&eacute; sur la croissance du CA.</div>
-    <div class="chart-box"><canvas id="cTeam"></canvas></div>
+  <div class="verdict green" id="teamVerdict">
+    <div class="ic">&#128101;</div>
+    <div id="teamVerdictText"><strong>Equipe en croissance.</strong></div>
+  </div>
+  <div class="team-controls">
+    <div class="team-ctrl">
+      <label>P&eacute;riode</label>
+      <div class="team-year-btns">
+        <button class="team-year-btn active" onclick="setTeamYear('all',this)">Tous</button>
+        <button class="team-year-btn" onclick="setTeamYear('1',this)">Y1</button>
+        <button class="team-year-btn" onclick="setTeamYear('2',this)">Y2</button>
+        <button class="team-year-btn" onclick="setTeamYear('3',this)">Y3</button>
+      </div>
+    </div>
+    <div class="team-ctrl">
+      <label>Productivit&eacute;</label>
+      <div class="toggle-sw on" id="teamProdToggle" onclick="this.classList.toggle('on');updateTeam()"></div>
+    </div>
   </div>
   <div class="kpi-grid">
-    <div class="kpi"><div class="lb">Mois 6</div><div class="vl" id="kFte6">8</div><div class="sb">ETP</div></div>
-    <div class="kpi"><div class="lb">Mois 12</div><div class="vl" id="kFte12">11</div><div class="sb">ETP</div></div>
-    <div class="kpi"><div class="lb">Mois 24</div><div class="vl" id="kFte24">14</div><div class="sb">ETP</div></div>
-    <div class="kpi green"><div class="lb">Mois 36</div><div class="vl" id="kFte36">17</div><div class="sb">ETP &middot; croisi&egrave;re</div></div>
+    <div class="kpi"><div class="lb">ETP total</div><div class="vl" id="tEtp">&mdash;</div><div class="sb" id="tEtpSub">Fin de p&eacute;riode</div></div>
+    <div class="kpi green"><div class="lb">CA / ETP</div><div class="vl" id="tCaEtp">&mdash;</div><div class="sb" id="tCaEtpSub">Productivit&eacute; moyenne</div></div>
+    <div class="kpi"><div class="lb">Admin / Praticiens</div><div class="vl" id="tRatio">&mdash;</div><div class="sb" id="tRatioSub">Ratio overhead</div></div>
+    <div class="kpi"><div class="lb">Croissance ETP</div><div class="vl" id="tGrowth">&mdash;</div><div class="sb" id="tGrowthSub">Sur la p&eacute;riode</div></div>
+  </div>
+  <div class="team-profiles" id="teamProfiles"></div>
+  <div class="card">
+    <h2><span class="ic">&#128101;</span> Mont&eacute;e en charge de l'&eacute;quipe (ETP)</h2>
+    <div class="chart-box"><canvas id="cTeam"></canvas></div>
+  </div>
+  <div class="card" id="teamProdCard">
+    <h2><span class="ic">&#128200;</span> Productivit&eacute; &mdash; CA par ETP (36 mois)</h2>
+    <div class="chart-box"><canvas id="cTeamProd"></canvas></div>
   </div>
 </div>
 
@@ -1002,6 +1054,7 @@ const CASH_SHARE_BASE = 0.15, FACT_COST = 0.015;
 let charts = {};
 let D = null;
 let SIM = null;
+let teamActiveYear='all';
 let currentUser = null;
 let currentPlanId = null;
 let allPlans = [];
@@ -1264,8 +1317,6 @@ function updateUI(){
   el('vCashMin').textContent=fmt(Math.abs(D.bfrWorst))+' CHF'; el('vCashOpt').textContent=fmt(Math.abs(D.bfrFact))+' CHF';
   el('scWorst').textContent=fmt(D.bfrWorst); el('scCash3m').textContent=fmt(D.bfrCash3m);
   el('scCash1m').textContent=fmt(D.bfrCash1m); el('scFact').textContent=fmt(D.bfrFact);
-  el('kFte6').textContent=D.fteTotal[5]||0; el('kFte12').textContent=D.fteTotal[11]||0;
-  el('kFte24').textContent=D.fteTotal[23]||0; el('kFte36').textContent=D.fteTotal[35]||0;
   if(el('rConsult'))el('rConsult').value=D.consultDay||16; if(el('rFee'))el('rFee').value=D.fee||225;
   const rr=getRetroRate();
   el('pillsAssumptions').innerHTML='<div class="pill"><b>'+D.consultDay+'</b> consult./jour</div><div class="pill"><b>CHF '+D.fee+'</b> /consultation</div><div class="pill"><b>'+D.daysYear+'</b> jours/an</div><div class="pill"><b>'+(100-rr)+'/'+rr+'</b> partage associ\u00e9s</div>';
@@ -1806,6 +1857,101 @@ function updateProfit(){
   ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:12}}},scales:{y:{grid:gridOpts,ticks:{callback:v=>fmt(v)+' CHF'}},x:{grid:{display:false}}}},plugins:[yearPlugin]});
 }
 
+// ===== TEAM TAB =====
+function setTeamYear(year,btn){
+  teamActiveYear=year;
+  document.querySelectorAll('.team-year-btn').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  updateTeam();
+}
+function updateTeam(){
+  if(!D)return;
+  const el=id=>document.getElementById(id);
+  // 1. Read controls
+  const year=teamActiveYear;
+  const showProd=el('teamProdToggle')&&el('teamProdToggle').classList.contains('on');
+  // 2. Period bounds
+  const periods={'all':{s:0,e:36,label:'36 mois'},'1':{s:0,e:12,label:'Ann\u00e9e 1'},'2':{s:12,e:24,label:'Ann\u00e9e 2'},'3':{s:24,e:36,label:'Ann\u00e9e 3'}};
+  const p=periods[year];
+  const sum=(arr,s,e)=>arr.slice(s,e).reduce((a,b)=>a+b,0);
+  const avg=(arr,s,e)=>{const sl=arr.slice(s,e);return sl.length?sl.reduce((a,b)=>a+b,0)/sl.length:0;};
+  // 3. Compute metrics
+  const fteEnd=D.fteTotal[p.e-1]||0;
+  const fteStart=p.s>0?(D.fteTotal[p.s-1]||0):(D.fteTotal[0]||0);
+  const totalCaPeriod=sum(D.ca,p.s,p.e);
+  const avgFte=avg(D.fteTotal,p.s,p.e);
+  const caPerFte=avgFte>0?totalCaPeriod/avgFte:0;
+  const avgAdmin=avg(D.fteAdmin,p.s,p.e);
+  const avgPrat=avg(D.fteAssoc,p.s,p.e)+avg(D.fteIndep,p.s,p.e)+avg(D.fteInterne,p.s,p.e);
+  const ratioAdmin=avgPrat>0?avgAdmin/avgPrat:0;
+  const growth=fteStart>0?((fteEnd-fteStart)/fteStart*100):fteEnd>0?100:0;
+  // 4. KPIs
+  el('tEtp').textContent=fteEnd;
+  el('tEtpSub').textContent='Fin '+p.label;
+  el('tCaEtp').textContent=fmtCHF(Math.round(caPerFte));
+  el('tCaEtpSub').textContent='Moyenne sur '+p.label;
+  el('tRatio').textContent=ratioAdmin.toFixed(2);
+  el('tRatioSub').textContent=Math.round(avgAdmin)+' admin / '+Math.round(avgPrat)+' praticiens';
+  el('tGrowth').textContent=(growth>=0?'+':'')+Math.round(growth)+'%';
+  el('tGrowthSub').textContent=fteStart+' \u2192 '+fteEnd+' ETP';
+  el('tGrowth').parentElement.className='kpi '+(growth>50?'green':growth>0?'orange':'red');
+  // 5. Profile cards
+  const profiles=[
+    {key:'assoc',label:'Associ\u00e9s',icon:'\ud83e\ude7a',data:D.fteAssoc,ca:D.caAssoc,css:'assoc'},
+    {key:'indep',label:'Ind\u00e9pendants',icon:'\ud83d\udc68\u200d\u2695\ufe0f',data:D.fteIndep,ca:D.caIndep,css:'indep'},
+    {key:'interne',label:'Internes',icon:'\ud83d\udcbc',data:D.fteInterne,ca:D.caInterne,css:'interne'},
+    {key:'admin',label:'Personnel admin',icon:'\ud83d\udcdd',data:D.fteAdmin,ca:null,css:'admin'}
+  ];
+  const maxFte=Math.max(D.fteTotal[35],1);
+  let profH='';
+  profiles.forEach(pr=>{
+    const fteY1=pr.data[11]||0,fteY2=pr.data[23]||0,fteY3=pr.data[35]||0;
+    const ftePeriod=pr.data[p.e-1]||0;
+    let startMonth='\u2014';
+    for(let m=0;m<36;m++){if(pr.data[m]>0){startMonth='M'+(m+1);break;}}
+    const caPeriod=pr.ca?sum(pr.ca,p.s,p.e):0;
+    const barPct=Math.round(fteY3/maxFte*100);
+    profH+='<div class="team-profile '+pr.css+'">';
+    profH+='<h4>'+pr.icon+' '+pr.label+'</h4>';
+    profH+='<div class="tp-fte">'+ftePeriod+' ETP</div>';
+    profH+='<div class="tp-row"><span class="tp-label">D\u00e9but</span><span class="tp-value">'+startMonth+'</span></div>';
+    profH+='<div class="tp-row"><span class="tp-label">Y1 / Y2 / Y3</span><span class="tp-value">'+fteY1+' / '+fteY2+' / '+fteY3+'</span></div>';
+    if(pr.ca){profH+='<div class="tp-row"><span class="tp-label">CA '+p.label+'</span><span class="tp-value">'+fmt(caPeriod)+'</span></div>';}
+    else{profH+='<div class="tp-row"><span class="tp-label">CA</span><span class="tp-value">\u2014 (co\u00fbt)</span></div>';}
+    profH+='<div class="tp-bar"><div class="tp-bar-fill" style="width:'+barPct+'%"></div></div>';
+    profH+='</div>';
+  });
+  el('teamProfiles').innerHTML=profH;
+  // 6. Verdict
+  const vd=el('teamVerdict'),vt=el('teamVerdictText');
+  if(year==='1'){vd.className='verdict orange';vt.innerHTML='<strong>Ann\u00e9e 1 \u2014 D\u00e9marrage.</strong> Recrutements initiaux, '+fteEnd+' ETP fin de p\u00e9riode. Productivit\u00e9 en mont\u00e9e.';}
+  else if(year==='2'){vd.className='verdict green';vt.innerHTML='<strong>Ann\u00e9e 2 \u2014 Croissance.</strong> \u00c9quipe \u00e0 '+fteEnd+' ETP. CA/ETP en progression \u00e0 '+fmtCHF(Math.round(caPerFte))+'.';}
+  else if(year==='3'){vd.className='verdict green';vt.innerHTML='<strong>Ann\u00e9e 3 \u2014 Croisi\u00e8re.</strong> \u00c9quipe compl\u00e8te \u00e0 '+fteEnd+' ETP. Productivit\u00e9 stabilis\u00e9e \u00e0 '+fmtCHF(Math.round(caPerFte))+'/ETP.';}
+  else{vd.className='verdict '+(fteEnd>=14?'green':fteEnd>=8?'orange':'red');vt.innerHTML='<strong>L\'\u00e9quipe passe de '+fteStart+' \u00e0 '+fteEnd+' ETP sur 36 mois.</strong> Productivit\u00e9 moyenne : '+fmtCHF(Math.round(caPerFte))+'/ETP.';}
+  // 7. Stacked bar chart with year highlighting
+  if(charts.team){try{charts.team.destroy()}catch(e){}}
+  const tColors=['#0f2b46','#1a4a7a','#5dade2','#aed6f1'];
+  const tLabels=['Associ\u00e9s','Ind\u00e9pendants','Internes','Personnel admin'];
+  const tData=[D.fteAssoc,D.fteIndep,D.fteInterne,D.fteAdmin];
+  const tDs=tData.map((d,i)=>({label:tLabels[i],data:d,backgroundColor:d.map((_,m)=>{
+    if(year==='all')return tColors[i];
+    const yIdx=+year;return(m>=(yIdx-1)*12&&m<yIdx*12)?tColors[i]:tColors[i]+'40';
+  }),borderRadius:1}));
+  charts.team=new Chart(document.getElementById('cTeam'),{type:'bar',data:{labels:labelsQ,datasets:tDs},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:12}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:gridOpts,title:{display:true,text:'ETP'}}}},plugins:[yearPlugin]});
+  // 8. Productivity line chart
+  const prodCard=el('teamProdCard');
+  if(prodCard)prodCard.style.display=showProd?'':'none';
+  if(showProd){
+    if(charts.teamProd){try{charts.teamProd.destroy()}catch(e){}}
+    const prodData=D.ca.map((c,m)=>D.fteTotal[m]>0?c/D.fteTotal[m]:0);
+    const prodSmooth=prodData.map((v,i)=>i<2?v:(prodData[i-2]+prodData[i-1]+v)/3);
+    charts.teamProd=new Chart(document.getElementById('cTeamProd'),{type:'line',data:{labels:labelsQ,datasets:[
+      {label:'CA/ETP (mensuel)',data:prodData,borderColor:'rgba(26,74,122,.3)',backgroundColor:'transparent',tension:.3,pointRadius:0,borderWidth:1,borderDash:[3,3],fill:false},
+      {label:'CA/ETP (moy. 3m)',data:prodSmooth,borderColor:'#1a4a7a',backgroundColor:'rgba(26,74,122,.05)',tension:.3,pointRadius:0,borderWidth:2.5,fill:true}
+    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:12}}},scales:{y:{grid:gridOpts,ticks:{callback:v=>fmt(v)+' CHF'},title:{display:true,text:'CHF / ETP / mois'}},x:{grid:{display:false}}}},plugins:[yearPlugin]});
+  }
+}
+
 // ===== CHARTS =====
 const labels=Array.from({length:36},(_,i)=>'M'+(i+1));
 const labelsQ=['','','M3','','','M6','','','M9','','','M12','','','M15','','','M18','','','M21','','','M24','','','M27','','','M30','','','M33','','','M36'];
@@ -1815,7 +1961,7 @@ const yearPlugin={id:'yl',beforeDraw(c){const ctx=c.ctx,x=c.scales.x,y=c.scales.
 
 function updateCharts(){
   if(!D)return;
-  Object.entries(charts).forEach(([k,c])=>{if(k!=='sim1'&&k!=='sim2'&&k!=='optimize'&&k!=='riskStress'&&k!=='charges'&&k!=='profit'&&k!=='profitCumul'){try{c.destroy()}catch(e){}}});
+  Object.entries(charts).forEach(([k,c])=>{if(k!=='sim1'&&k!=='sim2'&&k!=='optimize'&&k!=='riskStress'&&k!=='charges'&&k!=='profit'&&k!=='profitCumul'&&k!=='team'&&k!=='teamProd'){try{c.destroy()}catch(e){}}});
   // Overview chart — with optional overlay
   const ovDs=[{label:"Chiffre d'affaires",data:[D.caY1,D.caY2,D.caY3],backgroundColor:'rgba(26,74,122,.8)',borderRadius:8,barPercentage:.6},{label:'R\u00e9sultat net',data:[D.resY1,D.resY2,D.resY3],backgroundColor:'rgba(0,184,148,.8)',borderRadius:8,barPercentage:.6}];
   if(OVERLAY){ovDs.push({label:'CA sc\u00e9nario',data:[OVERLAY.caY1,OVERLAY.caY2,OVERLAY.caY3],backgroundColor:'rgba(26,74,122,.25)',borderRadius:8,barPercentage:.6,borderWidth:2,borderColor:'rgba(26,74,122,.6)',borderDash:[4,4]});ovDs.push({label:'R\u00e9sultat sc\u00e9nario',data:[OVERLAY.resY1,OVERLAY.resY2,OVERLAY.resY3],backgroundColor:'rgba(0,184,148,.25)',borderRadius:8,barPercentage:.6,borderWidth:2,borderColor:'rgba(0,184,148,.6)',borderDash:[4,4]});}
@@ -1827,7 +1973,7 @@ function updateCharts(){
   const cfDs=[{label:'Sans d\u00e9lai',data:D.cashflow,borderColor:'#00b894',backgroundColor:'rgba(0,184,148,.05)',fill:true,tension:.3,pointRadius:0,borderWidth:2},{label:'100% LAMal 3m',data:D.treso3m,borderColor:'#d63031',backgroundColor:'rgba(214,48,49,.03)',fill:true,tension:.3,pointRadius:0,borderWidth:2,borderDash:[6,3]},{label:'15% cash + Factoring',data:D.tresoFact,borderColor:'#1a4a7a',backgroundColor:'rgba(26,74,122,.05)',fill:true,tension:.3,pointRadius:0,borderWidth:2.5}];
   if(OVERLAY){cfDs.push({label:'Cashflow sc\u00e9nario',data:OVERLAY.cashflow,borderColor:'#e17055',borderWidth:2.5,borderDash:[6,3],pointRadius:0,tension:.3,fill:false});}
   charts.cashflow=new Chart(document.getElementById('cCashflow'),{type:'line',data:{labels:labelsQ,datasets:cfDs},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:12}}},scales:{y:{grid:gridOpts,ticks:{callback:v=>fmt(v)}},x:{grid:{display:false}}}},plugins:[yearPlugin]});
-  charts.team=new Chart(document.getElementById('cTeam'),{type:'bar',data:{labels:labelsQ,datasets:[{label:'Associ\u00e9s',data:D.fteAssoc,backgroundColor:'#0f2b46',borderRadius:1},{label:'Ind\u00e9pendants',data:D.fteIndep,backgroundColor:'#1a4a7a',borderRadius:1},{label:'Internes',data:D.fteInterne,backgroundColor:'#5dade2',borderRadius:1},{label:'Personnel admin',data:D.fteAdmin,backgroundColor:'#aed6f1',borderRadius:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:12}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:gridOpts,title:{display:true,text:'ETP'}}}},plugins:[yearPlugin]});
+  updateTeam();
   updateOptimize();
   updateRisks();
   updateProfit();
