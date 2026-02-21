@@ -1,6 +1,6 @@
 # GYNEVA Business Plan
 
-Interactive financial planning application for a gynecology clinic in Geneva. Provides 36-month revenue projections, cashflow scenario analysis, team ramp-up modeling, a real-time business simulator, Excel import with change tracking, and full version history with restore.
+Interactive financial planning application for a gynecology clinic in Geneva. Provides 36-month revenue projections, cashflow scenario analysis, team ramp-up modeling, a real-time business simulator, Excel import with change tracking, full version history with restore, multi-plan management, scenario overlay comparison, and PDF version comparison.
 
 **Production**: https://gyneva-bp-https.vercel.app
 
@@ -19,6 +19,7 @@ Interactive financial planning application for a gynecology clinic in Geneva. Pr
 - [Excel Import](#excel-import)
 - [Version History](#version-history)
 - [Deployment](#deployment)
+- [Changelog](CHANGELOG.md)
 
 ---
 
@@ -29,6 +30,7 @@ Interactive financial planning application for a gynecology clinic in Geneva. Pr
 - **Real-time KPI cards**: CAPEX, CA Y3, Net result Y3, ROI payback
 - **Interactive Chart.js visualizations** for revenue evolution, cashflow scenarios, team growth, profitability
 - **Verdict engine**: automatic viability assessment with color-coded indicators
+- **Scenario overlay**: overlay a saved simulator scenario on dashboard charts (semi-transparent bars for overview, dashed lines for revenue and cashflow) to compare projections vs. actuals
 
 ### Excel Import with Change Tracking
 - **Drag-and-drop or file picker** upload of `.xlsx` business plan models
@@ -50,11 +52,31 @@ Interactive financial planning application for a gynecology clinic in Geneva. Pr
 - **One-click restore**: fetches full version data, pushes it to the plan (which auto-snapshots the current state first), reloads the UI, and shows a diff of what changed
 - **Labeled snapshots**: every Excel import creates a version labeled "Import Excel: filename.xlsx"; restores create "Restauration v3"
 
+### Version Comparison (PDF Export)
+- **"Comparer" button in topbar** opens a full-screen comparison modal
+- **Side-by-side selectors**: choose two versions (or "Current data") from dropdowns
+- **10-metric comparison grid**: CA Y1-3, Result Y1-3, Cashflow Y3, CAPEX, Consult/day, Fee — with old/new values, absolute delta, and percentage change (color-coded green/red)
+- **2 comparison charts**: grouped bar chart (overview of 6 key metrics) + line chart (cashflow overlay)
+- **Print/PDF export**: dedicated `@media print` CSS for clean A4 output via `window.print()`
+
+### Multi-Plan Management
+- **Plan switcher in topbar**: dropdown showing all user plans with selection, create, rename, and delete
+- **Create new plan**: one-click creation with default GYNEVA data, auto-switch
+- **Rename/delete inline**: contextual actions per plan in the dropdown
+- **Plan-scoped data**: switching plans reloads all data, charts, scenarios, and version history
+
 ### Simulator
 - **13-parameter interactive simulator** with real-time slider feedback
 - **Parameters**: consultations/day, fees, working days, team composition (associates, independents, salaried), start month, occupancy rate, cash patients %, LAMal delay, factoring toggle, extra charges, professional liability
 - **Save/load named scenarios** for comparing alternative business models
 - **Delta indicators** showing impact vs. baseline on key metrics
+- **Year tabs (Y1 / Y2 / Y3 / Vue 3 ans)**: browse results per year instead of Y3-only
+- **Year overview timeline**: always-visible row with CA, Result, and delta for each year — clickable to switch
+- **Per-year KPIs**: 6 detailed indicators per year (CA, Result, Result ajuste, /Associe, Treso min, Treso fin)
+- **Contextual verdict**: Y1 "Demarrage" (ramp-up risks), Y2 "Croissance" (growth phase), Y3 "Croisiere" (steady-state profitability)
+- **Sensitivity tags**: colored badges showing which parameters impact the selected year (e.g., "Delai paiement: FORT" for Y1)
+- **Structured summary**: 3-column grid (Y1/Y2/Y3) with bullet-point highlights replacing the old single Y3 paragraph
+- **Chart year highlighting**: bar chart dims non-selected year bars; cashflow line chart draws a translucent highlight band over the selected year
 
 ### Authentication & Access Control
 - **Google OAuth 2.0** sign-in with server-side JWT verification
@@ -76,12 +98,12 @@ Browser (SPA)                    Vercel Serverless Functions
 | - Excel drag & drop   |        | api/admin/*   (whitelist) |
 | - Import diff summary |        +---------------------------+
 | - Version history     |                 |
-+-----------------------+           Prisma ORM
-                                         |
-                                +------------------+
-                                | PostgreSQL (Neon) |
-                                | 6 tables          |
-                                +------------------+
+| - Version comparison  |           Prisma ORM
+| - Multi-plan switcher |                |
+| - Scenario overlay    |        +------------------+
+| - Year-tab simulator  |        | PostgreSQL (Neon) |
++-----------------------+        | 6 tables          |
+                                 +------------------+
 ```
 
 The frontend is a single HTML file served as static content. All data operations go through the REST API. The simulator engine runs client-side for instant slider feedback; persistence and Excel parsing happen server-side via API calls.
