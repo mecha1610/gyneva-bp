@@ -220,6 +220,30 @@ table.dt tr:hover td{background:#f8fafb}
 .sc-card:hover{border-color:var(--pl)}.sc-card.rec{border-color:var(--acc);background:rgba(0,184,148,.03)}
 .sc-card h3{font-size:.82rem;margin-bottom:.4rem;display:flex;align-items:center;gap:.4rem}
 .sc-card .bn{font-size:1.4rem;font-weight:800}.sc-card .dt{font-size:.76rem;color:var(--txtL);margin-top:.2rem}
+/* === CASHFLOW TAB === */
+.cf-controls{display:flex;gap:1.2rem;flex-wrap:wrap;align-items:center;padding:1rem 1.2rem;background:#f8fafb;border-radius:var(--r);border:1px solid var(--brd);margin-bottom:1.2rem}
+.cf-ctrl{display:flex;align-items:center;gap:.5rem;font-size:.8rem;font-weight:600;color:var(--p)}
+.cf-ctrl label{white-space:nowrap}
+.cf-year-btns{display:flex;gap:0;border-radius:8px;overflow:hidden;border:1px solid var(--brd)}
+.cf-year-btn{padding:.4rem .8rem;border:none;background:var(--card);font-size:.78rem;font-weight:600;color:var(--txtL);cursor:pointer;transition:var(--trans);border-right:1px solid var(--brd)}
+.cf-year-btn:last-child{border-right:none}
+.cf-year-btn:hover{background:rgba(26,74,122,.04);color:var(--p)}
+.cf-year-btn.active{background:var(--pl);color:#fff}
+.cf-scenario-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:.9rem;margin:1rem 0}
+.cf-scenario{background:var(--card);border-radius:var(--r);padding:1rem;border:1px solid var(--brd);box-shadow:var(--sh);transition:var(--trans)}
+.cf-scenario:hover{border-color:var(--pl);box-shadow:0 4px 20px rgba(0,0,0,.08)}
+.cf-scenario.worst{border-left:3px solid var(--danger)}
+.cf-scenario.best{border-left:3px solid var(--acc)}
+.cf-scenario h4{font-size:.78rem;font-weight:700;color:var(--p);margin-bottom:.4rem;display:flex;align-items:center;gap:.4rem}
+.cf-scenario .cf-val{font-size:1.3rem;font-weight:800;margin:.3rem 0}
+.cf-scenario .cf-val.neg{color:var(--danger)}
+.cf-scenario .cf-val.pos{color:var(--acc)}
+.cf-scenario .cf-detail{font-size:.72rem;color:var(--txtL);line-height:1.4}
+.cf-scenario .cf-tag{display:inline-block;font-size:.65rem;font-weight:600;padding:.15rem .4rem;border-radius:10px;margin-top:.4rem}
+.cf-scenario .cf-tag.red{background:rgba(214,48,49,.1);color:var(--danger)}
+.cf-scenario .cf-tag.orange{background:rgba(225,112,85,.1);color:#e17055}
+.cf-scenario .cf-tag.green{background:rgba(0,184,148,.1);color:var(--acc)}
+@media(max-width:768px){.cf-controls{flex-direction:column;align-items:stretch}.cf-scenario-grid{grid-template-columns:1fr}}
 
 /* === PROFIT TIMELINE === */
 .profit-tl{display:flex;gap:0;margin:1rem 0;border-radius:var(--r);overflow:hidden;border:1px solid var(--brd)}
@@ -805,19 +829,35 @@ table.dt tr:hover td{background:#f8fafb}
 
 <!-- ====== CASHFLOW ====== -->
 <div class="section" id="cashflow">
-  <div class="verdict orange" id="verdictCash">
+  <div class="verdict orange" id="cfVerdict">
     <div class="ic">&#9888;&#65039;</div>
-    <div><strong>Point d'attention principal.</strong> Avec d&eacute;lai LAMal 3 mois sans optimisation, la tr&eacute;sorerie n&eacute;cessite un BFR de <strong id="vCashMin">273k CHF</strong>. Avec factoring + client&egrave;le OI, le besoin tombe &agrave; <strong id="vCashOpt">46k CHF</strong>.</div>
+    <div id="cfVerdictText"><strong>Analyse de la tr&eacute;sorerie en cours.</strong></div>
+  </div>
+  <div class="cf-controls">
+    <div class="cf-ctrl">
+      <label>P&eacute;riode</label>
+      <div class="cf-year-btns">
+        <button class="cf-year-btn active" onclick="setCfYear('all',this)">Tous</button>
+        <button class="cf-year-btn" onclick="setCfYear('1',this)">Y1</button>
+        <button class="cf-year-btn" onclick="setCfYear('2',this)">Y2</button>
+        <button class="cf-year-btn" onclick="setCfYear('3',this)">Y3</button>
+      </div>
+    </div>
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi"><div class="lb">Tr&eacute;sorerie finale</div><div class="vl" id="cfTresoFin">&mdash;</div><div class="sb" id="cfTresoFinSub">Fin de p&eacute;riode</div></div>
+    <div class="kpi red"><div class="lb">BFR minimum</div><div class="vl" id="cfBfrMin">&mdash;</div><div class="sb" id="cfBfrMinSub">Pire mois sur la p&eacute;riode</div></div>
+    <div class="kpi"><div class="lb">Mois critique</div><div class="vl" id="cfCritMonth">&mdash;</div><div class="sb" id="cfCritMonthSub">1er mois n&eacute;gatif</div></div>
+    <div class="kpi"><div class="lb">Ratio entr&eacute;es / sorties</div><div class="vl" id="cfRatio">&mdash;</div><div class="sb" id="cfRatioSub">Encaissements vs d&eacute;caissements</div></div>
   </div>
   <div class="card">
     <h2><span class="ic">&#128202;</span> Tr&eacute;sorerie cumul&eacute;e &mdash; Sc&eacute;narios compar&eacute;s</h2>
     <div class="chart-box"><canvas id="cCashflow"></canvas></div>
   </div>
-  <div class="sc-grid">
-    <div class="sc-card"><h3>&#128308; 100% LAMal 3 mois</h3><div class="bn" style="color:var(--danger)" id="scWorst">-273k</div><div class="dt">Creux maximum &middot; FdR 250k = insuffisant</div></div>
-    <div class="sc-card"><h3>&#128992; 15% cash + LAMal 3m</h3><div class="bn" style="color:#e17055" id="scCash3m">-155k</div><div class="dt">Creux r&eacute;duit &middot; FdR 250k = juste</div></div>
-    <div class="sc-card"><h3>&#128993; 15% cash + LAMal 1m</h3><div class="bn" style="color:var(--warn)" id="scCash1m">-75k</div><div class="dt">D&eacute;lai r&eacute;aliste &middot; FdR 250k = confortable</div></div>
-    <div class="sc-card rec"><h3>&#9989; 15% cash + Factoring</h3><div class="bn" style="color:var(--acc)" id="scFact">-46k</div><div class="dt">Avance imm&eacute;diate &middot; ~49k/an &middot; FdR largement OK</div></div>
+  <div class="cf-scenario-grid" id="cfScenarioGrid"></div>
+  <div class="card">
+    <h2><span class="ic">&#128200;</span> Flux de tr&eacute;sorerie mensuel net</h2>
+    <div class="chart-box"><canvas id="cCashWaterfall"></canvas></div>
   </div>
 </div>
 
@@ -1055,6 +1095,7 @@ let charts = {};
 let D = null;
 let SIM = null;
 let teamActiveYear='all';
+let cfActiveYear='all';
 let currentUser = null;
 let currentPlanId = null;
 let allPlans = [];
@@ -1314,9 +1355,6 @@ function updateUI(){
   el('kMargin').textContent='Marge ~'+Math.round(D.resY3/D.caY3*100)+'%';
   el('kRevSpec').textContent=fmt(D.revSpec); el('kCaY1').textContent=fmt(D.caY1); el('kCaY2').textContent=fmt(D.caY2);
   el('vTresoY3').textContent=fmtCHF(D.cashflow[35]);
-  el('vCashMin').textContent=fmt(Math.abs(D.bfrWorst))+' CHF'; el('vCashOpt').textContent=fmt(Math.abs(D.bfrFact))+' CHF';
-  el('scWorst').textContent=fmt(D.bfrWorst); el('scCash3m').textContent=fmt(D.bfrCash3m);
-  el('scCash1m').textContent=fmt(D.bfrCash1m); el('scFact').textContent=fmt(D.bfrFact);
   if(el('rConsult'))el('rConsult').value=D.consultDay||16; if(el('rFee'))el('rFee').value=D.fee||225;
   const rr=getRetroRate();
   el('pillsAssumptions').innerHTML='<div class="pill"><b>'+D.consultDay+'</b> consult./jour</div><div class="pill"><b>CHF '+D.fee+'</b> /consultation</div><div class="pill"><b>'+D.daysYear+'</b> jours/an</div><div class="pill"><b>'+(100-rr)+'/'+rr+'</b> partage associ\u00e9s</div>';
@@ -1857,6 +1895,133 @@ function updateProfit(){
   ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:12}}},scales:{y:{grid:gridOpts,ticks:{callback:v=>fmt(v)+' CHF'}},x:{grid:{display:false}}}},plugins:[yearPlugin]});
 }
 
+// ===== CASHFLOW TAB =====
+const cfYearPlugin={id:'cfYL',beforeDraw(chart){
+  if(cfActiveYear==='all')return;
+  const ctx=chart.ctx,x=chart.scales.x,y=chart.scales.y;
+  const yi=parseInt(cfActiveYear);
+  const s=(yi-1)*12,e=yi*12-1;
+  if(s>x.max||e<x.min)return;
+  const xS=x.getPixelForValue(Math.max(s,x.min)),xE=x.getPixelForValue(Math.min(e,x.max));
+  ctx.save();ctx.fillStyle='rgba(26,74,122,.04)';
+  ctx.fillRect(xS,y.top,xE-xS,y.bottom-y.top);
+  ctx.fillStyle='rgba(26,74,122,.5)';ctx.font='bold 11px Inter,sans-serif';
+  ctx.fillText('Ann\u00e9e '+cfActiveYear,xS+4,y.top+14);
+  ctx.restore();
+}};
+function setCfYear(year,btn){
+  cfActiveYear=year;
+  document.querySelectorAll('.cf-year-btn').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  updateCashflow();
+}
+function updateCashflow(){
+  if(!D)return;
+  const el=id=>document.getElementById(id);
+  // 1. Read controls
+  const year=cfActiveYear;
+  // 2. Period bounds
+  const periods={'all':{s:0,e:36,label:'36 mois'},'1':{s:0,e:12,label:'Ann\u00e9e 1'},'2':{s:12,e:24,label:'Ann\u00e9e 2'},'3':{s:24,e:36,label:'Ann\u00e9e 3'}};
+  const p=periods[year];
+  const sum=(arr,s,e)=>arr.slice(s,e).reduce((a,b)=>a+b,0);
+  // 3. Compute metrics
+  const tresoFin=D.cashflow[p.e-1];
+  const periodTreso3m=D.treso3m.slice(p.s,p.e);
+  const bfrMinPeriod=Math.min(...periodTreso3m);
+  const bfrMinIdx=periodTreso3m.indexOf(bfrMinPeriod);
+  const bfrMinMonth=p.s+bfrMinIdx+1;
+  // Critical month: first negative in treso3m within period
+  let critMonth='\u2014';
+  let critMonthSub='Aucun mois n\u00e9gatif';
+  for(let m=p.s;m<p.e;m++){if(D.treso3m[m]<0){critMonth='M'+(m+1);critMonthSub='Sc\u00e9nario LAMal 3m';break;}}
+  // Inflows vs outflows
+  const inflows=sum(D.ca,p.s,p.e);
+  const outflows=Math.abs(sum(D.admin,p.s,p.e))+Math.abs(sum(D.opex,p.s,p.e))+Math.abs(sum(D.lab,p.s,p.e));
+  const ratio=outflows>0?(inflows/outflows):0;
+  // 4. KPIs
+  el('cfTresoFin').textContent=fmtCHF(Math.round(tresoFin));
+  el('cfTresoFinSub').textContent='Fin '+p.label+' (sans d\u00e9lai)';
+  el('cfTresoFin').parentElement.className='kpi '+(tresoFin>0?'green':'red');
+  el('cfBfrMin').textContent=fmt(bfrMinPeriod);
+  el('cfBfrMinSub').textContent='M'+bfrMinMonth+' \u2014 sc\u00e9nario LAMal 3m';
+  el('cfBfrMin').parentElement.className='kpi '+(bfrMinPeriod<-150000?'red':bfrMinPeriod<-50000?'orange':'green');
+  el('cfCritMonth').textContent=critMonth;
+  el('cfCritMonthSub').textContent=critMonthSub;
+  el('cfCritMonth').parentElement.className='kpi '+(critMonth==='\u2014'?'green':'orange');
+  el('cfRatio').textContent=ratio.toFixed(2)+'x';
+  el('cfRatioSub').textContent=fmt(inflows)+' entr\u00e9es / '+fmt(outflows)+' sorties';
+  el('cfRatio').parentElement.className='kpi '+(ratio>=1.3?'green':ratio>=1?'orange':'red');
+  // 5. Verdict
+  const vd=el('cfVerdict'),vt=el('cfVerdictText');
+  if(bfrMinPeriod>=-50000){
+    vd.className='verdict green';
+    vt.innerHTML='<strong>Tr\u00e9sorerie ma\u00eetris\u00e9e.</strong> Sur '+p.label+', le BFR minimum ('+fmt(bfrMinPeriod)+') reste g\u00e9rable. Ratio entr\u00e9es/sorties de '+ratio.toFixed(2)+'x.';
+  } else if(bfrMinPeriod>=-150000){
+    vd.className='verdict orange';
+    vt.innerHTML='<strong>Attention \u00e0 la tr\u00e9sorerie.</strong> Sur '+p.label+', le BFR atteint <strong>'+fmt(bfrMinPeriod)+'</strong> au mois M'+bfrMinMonth+'. Le factoring est recommand\u00e9 pour s\u00e9curiser le d\u00e9marrage.';
+  } else {
+    vd.className='verdict red';
+    vt.innerHTML='<strong>Risque de tr\u00e9sorerie \u00e9lev\u00e9.</strong> Sur '+p.label+', le BFR plonge \u00e0 <strong>'+fmt(bfrMinPeriod)+'</strong> au mois M'+bfrMinMonth+'. Sans optimisation, un financement relais est indispensable.';
+  }
+  // 6. Scenario cards
+  const scenarios=[
+    {title:'\ud83d\udd34 100% LAMal 3m',data:D.treso3m},
+    {title:'\ud83d\udfe0 15% cash + LAMal 3m',data:D.tresoCash3m},
+    {title:'\ud83d\udfe1 15% cash + LAMal 1m',data:D.tresoCash1m},
+    {title:'\u2705 15% cash + Factoring',data:D.tresoFact}
+  ];
+  const bfrAll=scenarios.map(s=>Math.min(...s.data.slice(p.s,p.e)));
+  const bestBfr=Math.max(...bfrAll),worstBfr=Math.min(...bfrAll);
+  let gridH='';
+  scenarios.forEach((sc,i)=>{
+    const pd=sc.data.slice(p.s,p.e);
+    const periodBfr=Math.min(...pd);
+    const periodBfrIdx=pd.indexOf(periodBfr);
+    const critM=p.s+periodBfrIdx+1;
+    let negMonth='\u2014';
+    for(let m=0;m<pd.length;m++){if(pd[m]<0){negMonth='M'+(p.s+m+1);break;}}
+    const isBest=periodBfr===bestBfr,isWorst=periodBfr===worstBfr;
+    let cls='cf-scenario'+(isWorst?' worst':'')+(isBest?' best':'');
+    let tag='';
+    if(periodBfr<-150000) tag='<span class="cf-tag red">Risque \u00e9lev\u00e9</span>';
+    else if(periodBfr<-50000) tag='<span class="cf-tag orange">Mod\u00e9r\u00e9</span>';
+    else tag='<span class="cf-tag green">S\u00e9curis\u00e9</span>';
+    gridH+='<div class="'+cls+'">';
+    gridH+='<h4>'+sc.title+'</h4>';
+    gridH+='<div class="cf-val '+(periodBfr<0?'neg':'pos')+'">'+fmt(periodBfr)+'</div>';
+    gridH+='<div class="cf-detail">BFR min \u2014 mois M'+critM+'</div>';
+    gridH+='<div class="cf-detail">1er mois n\u00e9gatif : '+negMonth+'</div>';
+    gridH+=tag;
+    gridH+='</div>';
+  });
+  el('cfScenarioGrid').innerHTML=gridH;
+  // 7. Line chart
+  if(charts.cashflow){try{charts.cashflow.destroy()}catch(e){}}
+  const cfDs=[
+    {label:'Sans d\u00e9lai',data:D.cashflow,borderColor:'#00b894',backgroundColor:'rgba(0,184,148,.05)',fill:true,tension:.3,pointRadius:0,borderWidth:2},
+    {label:'100% LAMal 3m',data:D.treso3m,borderColor:'#d63031',backgroundColor:'rgba(214,48,49,.03)',fill:true,tension:.3,pointRadius:0,borderWidth:2,borderDash:[6,3]},
+    {label:'15% cash + Factoring',data:D.tresoFact,borderColor:'#1a4a7a',backgroundColor:'rgba(26,74,122,.05)',fill:true,tension:.3,pointRadius:0,borderWidth:2.5}
+  ];
+  if(OVERLAY){cfDs.push({label:'Cashflow sc\u00e9nario',data:OVERLAY.cashflow,borderColor:'#e17055',borderWidth:2.5,borderDash:[6,3],pointRadius:0,tension:.3,fill:false});}
+  charts.cashflow=new Chart(document.getElementById('cCashflow'),{type:'line',data:{labels:labelsQ,datasets:cfDs},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:12}}},scales:{y:{grid:gridOpts,ticks:{callback:v=>fmt(v)}},x:{grid:{display:false}}}},plugins:[yearPlugin,cfYearPlugin]});
+  // 8. Waterfall chart
+  if(charts.cashWaterfall){try{charts.cashWaterfall.destroy()}catch(e){}}
+  const monthlyNet=D.ca.map((c,m)=>c+D.admin[m]+D.opex[m]+D.lab[m]);
+  const wfColors=monthlyNet.map((v,m)=>{
+    const inYear=year==='all'||(m>=(+year-1)*12&&m<+year*12);
+    if(!inYear) return v>=0?'rgba(0,184,148,.15)':'rgba(214,48,49,.15)';
+    return v>=0?'rgba(0,184,148,.8)':'rgba(214,48,49,.8)';
+  });
+  const wfBorders=monthlyNet.map((v,m)=>{
+    const inYear=year==='all'||(m>=(+year-1)*12&&m<+year*12);
+    if(!inYear) return v>=0?'rgba(0,184,148,.3)':'rgba(214,48,49,.3)';
+    return v>=0?'#00b894':'#d63031';
+  });
+  charts.cashWaterfall=new Chart(document.getElementById('cCashWaterfall'),{type:'bar',data:{labels:labelsQ,datasets:[{
+    label:'Flux mensuel net',data:monthlyNet,backgroundColor:wfColors,borderColor:wfBorders,borderWidth:1,borderRadius:2
+  }]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>fmt(ctx.raw)+' CHF'}}},scales:{y:{grid:gridOpts,ticks:{callback:v=>fmt(v)}},x:{grid:{display:false}}}},plugins:[yearPlugin]});
+}
+
 // ===== TEAM TAB =====
 function setTeamYear(year,btn){
   teamActiveYear=year;
@@ -1961,7 +2126,7 @@ const yearPlugin={id:'yl',beforeDraw(c){const ctx=c.ctx,x=c.scales.x,y=c.scales.
 
 function updateCharts(){
   if(!D)return;
-  Object.entries(charts).forEach(([k,c])=>{if(k!=='sim1'&&k!=='sim2'&&k!=='optimize'&&k!=='riskStress'&&k!=='charges'&&k!=='profit'&&k!=='profitCumul'&&k!=='team'&&k!=='teamProd'){try{c.destroy()}catch(e){}}});
+  Object.entries(charts).forEach(([k,c])=>{if(k!=='sim1'&&k!=='sim2'&&k!=='optimize'&&k!=='riskStress'&&k!=='charges'&&k!=='profit'&&k!=='profitCumul'&&k!=='team'&&k!=='teamProd'&&k!=='cashflow'&&k!=='cashWaterfall'){try{c.destroy()}catch(e){}}});
   // Overview chart — with optional overlay
   const ovDs=[{label:"Chiffre d'affaires",data:[D.caY1,D.caY2,D.caY3],backgroundColor:'rgba(26,74,122,.8)',borderRadius:8,barPercentage:.6},{label:'R\u00e9sultat net',data:[D.resY1,D.resY2,D.resY3],backgroundColor:'rgba(0,184,148,.8)',borderRadius:8,barPercentage:.6}];
   if(OVERLAY){ovDs.push({label:'CA sc\u00e9nario',data:[OVERLAY.caY1,OVERLAY.caY2,OVERLAY.caY3],backgroundColor:'rgba(26,74,122,.25)',borderRadius:8,barPercentage:.6,borderWidth:2,borderColor:'rgba(26,74,122,.6)',borderDash:[4,4]});ovDs.push({label:'R\u00e9sultat sc\u00e9nario',data:[OVERLAY.resY1,OVERLAY.resY2,OVERLAY.resY3],backgroundColor:'rgba(0,184,148,.25)',borderRadius:8,barPercentage:.6,borderWidth:2,borderColor:'rgba(0,184,148,.6)',borderDash:[4,4]});}
@@ -1969,10 +2134,7 @@ function updateCharts(){
   // Revenue chart — delegated to updateRevenueChart() for profile filter support
   updateRevenueChart();
   updateRevDetail();
-  // Cashflow chart — with optional overlay line
-  const cfDs=[{label:'Sans d\u00e9lai',data:D.cashflow,borderColor:'#00b894',backgroundColor:'rgba(0,184,148,.05)',fill:true,tension:.3,pointRadius:0,borderWidth:2},{label:'100% LAMal 3m',data:D.treso3m,borderColor:'#d63031',backgroundColor:'rgba(214,48,49,.03)',fill:true,tension:.3,pointRadius:0,borderWidth:2,borderDash:[6,3]},{label:'15% cash + Factoring',data:D.tresoFact,borderColor:'#1a4a7a',backgroundColor:'rgba(26,74,122,.05)',fill:true,tension:.3,pointRadius:0,borderWidth:2.5}];
-  if(OVERLAY){cfDs.push({label:'Cashflow sc\u00e9nario',data:OVERLAY.cashflow,borderColor:'#e17055',borderWidth:2.5,borderDash:[6,3],pointRadius:0,tension:.3,fill:false});}
-  charts.cashflow=new Chart(document.getElementById('cCashflow'),{type:'line',data:{labels:labelsQ,datasets:cfDs},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:12}}},scales:{y:{grid:gridOpts,ticks:{callback:v=>fmt(v)}},x:{grid:{display:false}}}},plugins:[yearPlugin]});
+  updateCashflow();
   updateTeam();
   updateOptimize();
   updateRisks();
