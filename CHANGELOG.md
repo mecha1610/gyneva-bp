@@ -2,6 +2,19 @@
 
 All notable changes to the GYNEVA Business Plan application are documented here.
 
+## [0.13.0] - 2026-02-21
+
+### Added
+- **Dynamic verdict**: composite health score (0-12) from margin, BFR, growth, payback — green (>=9), orange (>=5), red (<5) with contextual messages
+- **4 persistent top-level KPIs**: CA total 3 ans, resultat total 3 ans, BFR minimum, treso finale M36 — always visible regardless of year tab, with delta badges vs base
+- **Comparison panel**: 6-metric ecart vs base (CA total, resultat, BFR, treso M36, CA Y1, CA Y3) — auto-shown when parameters differ from BASE, hidden on reset
+- **Phase labels in summary**: Demarrage (Y1, orange), Croissance (Y2, yellow), Croisiere (Y3, green) badges in the 3-year summary cards
+
+### Changed
+- `SIM` global object now stores `bfrMin` and `tresoFinal` for reuse across `updateSimVerdict()`, `updateSimTopKpis()`, `updateSimCompare()`
+- `runSim()` calls 3 new functions (`updateSimVerdict`, `updateSimTopKpis`, `updateSimCompare`) before `updateSimYearDetail` and `updateSimCharts`
+- Verdict div has `id="simVerdict"` and `id="simVerdictText"` for dynamic updates
+
 ## [0.12.0] - 2026-02-21
 
 ### Added
