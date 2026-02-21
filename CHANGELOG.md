@@ -2,6 +2,18 @@
 
 All notable changes to the GYNEVA Business Plan application are documented here.
 
+## [0.6.0] - 2026-02-21
+
+### Added
+- **Adjustable retrocession rate**: new simulator slider (20-60%) to configure the revenue sharing split between practitioners and GynEva (previously hardcoded at 40%)
+- `retro` parameter added to `SimulatorParams` type, `SIMULATOR_DEFAULTS`, and Zod validation schema (backward-compatible with existing scenarios defaulting to 40%)
+
+### Changed
+- `computeSimulation()` and `runSimulation()` use `params.retro / 100` instead of hardcoded `0.4`
+- Revenue detail cards dynamically display the current retrocession rate
+- Revenue model description text updates in real-time when the slider changes
+- Assumptions pill shows the dynamic split ratio (e.g., "60/40" or "70/30")
+
 ## [0.5.0] - 2026-02-21
 
 ### Added
