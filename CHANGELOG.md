@@ -2,6 +2,23 @@
 
 All notable changes to the GYNEVA Business Plan application are documented here.
 
+## [0.14.0] - 2026-02-21
+
+### Added
+- **Dynamic verdict**: composite score (0-12) from growth, diversification, ramp-up health, CA Y3 absolute — green (>=10), orange (>=6), red (<6) with contextual messages adapting to year selection
+- **Year selector**: period buttons (Tous/Y1/Y2/Y3) to focus revenue analysis on a specific year with chart bar highlighting (dimmed bars for non-selected period)
+- **4 enriched KPIs**: potentiel/specialiste (CHF/an), CA periode (year+profile aware), croissance (% vs previous year, color-coded), diversification (active sources count with threshold coloring)
+- **Year highlight plugin** (`revYearPlugin`): translucent band + label on bar chart for selected year
+- **Per-year detail cards**: quarterly breakdown (T1-T4) with average/month when specific year selected, Y1/Y2/Y3 view in Tous mode
+- **Combined controls bar**: year selector + profile filter buttons in unified `.rev-controls` row
+
+### Changed
+- Revenue chart managed by `updateRevenue()` master function (calls `updateRevenueChart()` + `updateRevDetail()` + `updateRevVerdict()`)
+- `updateUI()` no longer updates kCaY3b/kRevSpec/kCaY1/kCaY2 (delegated to `updateRevDetail()`)
+- Chart destroy loop excludes `revenue` key (lifecycle managed by `updateRevenue()`)
+- `toggleRevProfile()` calls `updateRevenue()` instead of separate chart+detail calls
+- KPI IDs renamed from kRevSpec/kCaY1/kCaY2/kCaY3b to revKpiSpec/revKpiCa/revKpiGrowth/revKpiDiversif
+
 ## [0.13.0] - 2026-02-21
 
 ### Added
