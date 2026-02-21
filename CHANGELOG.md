@@ -2,6 +2,21 @@
 
 All notable changes to the GYNEVA Business Plan application are documented here.
 
+## [0.10.0] - 2026-02-21
+
+### Added
+- **Year selector**: period buttons (Tous/Y1/Y2/Y3) to focus team view on a specific year with chart bar highlighting (dimmed bars for non-selected period)
+- **4 dynamic KPIs**: ETP total (end of period), CA/ETP productivity (average FTE over period), admin/praticiens ratio (overhead), croissance ETP (growth percentage)
+- **4 profile cards**: Associes, Independants, Internes, Personnel admin — each showing start month, FTE Y1/Y2/Y3, CA contribution per period, proportional bar
+- **Productivity line chart** (`cTeamProd`): CA per ETP over 36 months with raw monthly line (dashed) and 3-month rolling average (solid filled)
+- **Productivity toggle**: show/hide the CA/ETP chart
+- **Dynamic verdict**: adapts to selected year — Demarrage (Y1, orange), Croissance (Y2, green), Croisiere (Y3, green), or global summary (Tous)
+
+### Changed
+- Team chart managed by `updateTeam()` instead of inline construction in `updateCharts()`
+- `updateUI()` no longer updates kFte6/kFte12/kFte24/kFte36 (delegated to `updateTeam()`)
+- Chart destroy loop excludes `team` and `teamProd` keys (lifecycle managed by `updateTeam()`)
+
 ## [0.9.0] - 2026-02-21
 
 ### Added
