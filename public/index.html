@@ -80,6 +80,30 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans
 /* === CHARTS === */
 .chart-box{position:relative;height:300px;margin:.5rem 0}.chart-box.sm{height:240px}
 
+/* === REVENUE PROFILE FILTERS === */
+.rev-profile-bar{display:flex;gap:.4rem;margin-bottom:1rem;flex-wrap:wrap}
+.rev-prof{padding:.45rem .9rem;border-radius:20px;border:2px solid var(--brd);background:var(--card);font-size:.78rem;font-weight:600;cursor:pointer;transition:var(--trans);display:flex;align-items:center;gap:.4rem}
+.rev-prof:hover{border-color:var(--pl);background:rgba(26,74,122,.04)}
+.rev-prof .prof-dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.rev-prof.active{color:#fff;border-color:transparent}
+.rev-prof[data-prof="all"].active{background:var(--pl);color:#fff}
+.rev-prof[data-prof="assoc"].active{background:#0f2b46}
+.rev-prof[data-prof="indep"].active{background:#1a4a7a}
+.rev-prof[data-prof="interne"].active{background:#5dade2;color:#0f2b46}
+.rev-prof[data-prof="sage"].active{background:#aed6f1;color:#0f2b46}
+.rev-detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:.9rem;margin-bottom:1.2rem}
+.rev-prof-card{background:var(--card);border-radius:var(--r);padding:1.2rem;border:1px solid var(--brd);box-shadow:var(--sh);border-left:4px solid var(--pl)}
+.rev-prof-card.assoc{border-left-color:#0f2b46}
+.rev-prof-card.indep{border-left-color:#1a4a7a}
+.rev-prof-card.interne{border-left-color:#5dade2}
+.rev-prof-card.sage{border-left-color:#aed6f1}
+.rev-prof-card h4{font-size:.82rem;font-weight:700;color:var(--p);margin-bottom:.6rem}
+.rev-prof-card .prof-kpis{display:flex;flex-direction:column;gap:.35rem}
+.rev-prof-card .prof-kpi{display:flex;justify-content:space-between;font-size:.78rem}
+.rev-prof-card .prof-kpi .pk-label{color:var(--txtL)}
+.rev-prof-card .prof-kpi .pk-value{font-weight:700;color:var(--p)}
+.rev-prof-card .prof-ramp{margin-top:.6rem;font-size:.72rem;color:var(--txtL);font-style:italic}
+
 /* === TABLES === */
 table.dt{width:100%;border-collapse:separate;border-spacing:0;font-size:.82rem}
 table.dt th{background:#f8fafb;padding:.65rem .9rem;text-align:left;font-weight:600;color:var(--p);border-bottom:2px solid var(--brd);white-space:nowrap}
@@ -289,6 +313,8 @@ table.dt tr:hover td{background:#f8fafb}
   .sim-year-tabs{flex-wrap:nowrap;overflow-x:auto}
   .sim-tab{min-width:0;padding:.5rem .3rem;font-size:.72rem}
   .sim-summary-grid{grid-template-columns:1fr}
+  .rev-profile-bar{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch}
+  .rev-detail-grid{grid-template-columns:1fr}
 }
 
 /* === RESET BUTTON === */
@@ -619,9 +645,16 @@ table.dt tr:hover td{background:#f8fafb}
 <div class="section" id="revenue">
   <div class="card">
     <h2><span class="ic">&#128176;</span> Chiffre d'affaires mensuel par source</h2>
-    <div class="exp"><strong>Associ&eacute;s</strong> (vous) &middot; <strong>Ind&eacute;pendants</strong> (locataires) &middot; <strong>Internes</strong> (salari&eacute;s) &middot; <strong>Sage-femme</strong>. La mont&eacute;e en charge est progressive sur 36 mois.</div>
+    <div class="rev-profile-bar" id="revProfileBar">
+      <button class="rev-prof active" data-prof="all" onclick="toggleRevProfile('all',this)">Tous</button>
+      <button class="rev-prof active" data-prof="assoc" onclick="toggleRevProfile('assoc',this)"><span class="prof-dot" style="background:#0f2b46"></span> Associ&eacute;s</button>
+      <button class="rev-prof active" data-prof="indep" onclick="toggleRevProfile('indep',this)"><span class="prof-dot" style="background:#1a4a7a"></span> Ind&eacute;pendants</button>
+      <button class="rev-prof active" data-prof="interne" onclick="toggleRevProfile('interne',this)"><span class="prof-dot" style="background:#5dade2"></span> Internes</button>
+      <button class="rev-prof active" data-prof="sage" onclick="toggleRevProfile('sage',this)"><span class="prof-dot" style="background:#aed6f1"></span> Sage-femme</button>
+    </div>
     <div class="chart-box"><canvas id="cRevenue"></canvas></div>
   </div>
+  <div class="rev-detail-grid" id="revDetailGrid"></div>
   <div class="kpi-grid">
     <div class="kpi blue"><div class="lb">Potentiel / sp&eacute;cialiste</div><div class="vl" id="kRevSpec">923k</div><div class="sb">CHF/an &agrave; 100%</div></div>
     <div class="kpi"><div class="lb">CA Ann&eacute;e 1</div><div class="vl" id="kCaY1">1,9M</div><div class="sb">D&eacute;marrage progressif</div></div>
@@ -1067,6 +1100,116 @@ function updateUI(){
   updateCharts();
 }
 
+// ===== REVENUE PROFILE FILTERS =====
+let revActiveProfiles = new Set(['assoc','indep','interne','sage']);
+
+const REV_PROFILES = {
+  assoc: {key:'caAssoc',fte:'fteAssoc',color:'#0f2b46',label:'Associ\u00e9s',share:'40% pour GynEva',css:'assoc'},
+  indep: {key:'caIndep',fte:'fteIndep',color:'#1a4a7a',label:'Ind\u00e9pendants',share:'40% pour GynEva',css:'indep'},
+  interne:{key:'caInterne',fte:'fteInterne',color:'#5dade2',label:'Internes',share:'100% pour GynEva',css:'interne'},
+  sage:  {key:'caSage',fte:null,color:'#aed6f1',label:'Sage-femme',share:'Contribution nette',css:'sage'},
+};
+
+function toggleRevProfile(prof, btn){
+  if(prof==='all'){
+    revActiveProfiles=new Set(['assoc','indep','interne','sage']);
+    document.querySelectorAll('.rev-prof').forEach(b=>b.classList.add('active'));
+  } else {
+    if(revActiveProfiles.has(prof)) revActiveProfiles.delete(prof); else revActiveProfiles.add(prof);
+    btn.classList.toggle('active');
+    if(revActiveProfiles.size===0){
+      revActiveProfiles=new Set(['assoc','indep','interne','sage']);
+      document.querySelectorAll('.rev-prof').forEach(b=>b.classList.add('active'));
+    }
+    const allBtn=document.querySelector('.rev-prof[data-prof="all"]');
+    if(allBtn){if(revActiveProfiles.size===4) allBtn.classList.add('active'); else allBtn.classList.remove('active');}
+  }
+  updateRevenueChart();
+  updateRevDetail();
+}
+
+function updateRevenueChart(){
+  if(!D)return;
+  if(charts.revenue){try{charts.revenue.destroy()}catch(e){}}
+  const revDs=[];
+  const profOrder=['assoc','indep','interne','sage'];
+  profOrder.forEach(p=>{
+    if(revActiveProfiles.has(p)){
+      const pr=REV_PROFILES[p];
+      revDs.push({label:pr.label,data:D[pr.key],backgroundColor:pr.color,borderRadius:1});
+    }
+  });
+  if(OVERLAY){revDs.push({type:'line',label:'CA sc\u00e9nario',data:OVERLAY.ca,borderColor:'#d63031',borderWidth:2.5,borderDash:[6,3],pointRadius:0,tension:.3,fill:false,stack:false});}
+  const single=revActiveProfiles.size===1;
+  charts.revenue=new Chart(document.getElementById('cRevenue'),{
+    type:'bar',
+    data:{labels:labelsQ,datasets:revDs},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:12}}},
+      scales:{x:{stacked:!single,grid:{display:false}},y:{stacked:!single,grid:gridOpts,ticks:{callback:v=>fmt(v)}}}
+    },
+    plugins:[yearPlugin]
+  });
+}
+
+function updateRevDetail(){
+  if(!D)return;
+  const el=document.getElementById('revDetailGrid');
+  if(!el)return;
+  const sum12=(arr,s)=>arr.slice(s,s+12).reduce((a,b)=>a+b,0);
+  const profOrder=['assoc','indep','interne','sage'];
+  let html='';
+  profOrder.forEach(p=>{
+    if(!revActiveProfiles.has(p))return;
+    const pr=REV_PROFILES[p];
+    const arr=D[pr.key];
+    const y1=sum12(arr,0),y2=sum12(arr,12),y3=sum12(arr,24);
+    const totY1=D.caY1||1,totY2=D.caY2||1,totY3=D.caY3||1;
+    const pctY1=Math.round(y1/totY1*100),pctY2=Math.round(y2/totY2*100),pctY3=Math.round(y3/totY3*100);
+    let ramp='';
+    if(pr.fte&&D[pr.fte]){
+      const fteArr=D[pr.fte];
+      let startM=0,maxM=0,maxV=Math.max(...fteArr);
+      for(let i=0;i<36;i++){if(fteArr[i]>0){startM=i+1;break;}}
+      for(let i=0;i<36;i++){if(fteArr[i]>=maxV&&maxV>0){maxM=i+1;break;}}
+      if(startM>0) ramp='D\u00e9but mois '+startM+(maxM>startM?' \u2192 capacit\u00e9 max mois '+maxM:'');
+    } else {
+      let startM=0,stableM=0;
+      for(let i=0;i<36;i++){if(arr[i]>0){startM=i+1;break;}}
+      const maxV=Math.max(...arr);
+      for(let i=0;i<36;i++){if(arr[i]>=maxV&&maxV>0){stableM=i+1;break;}}
+      if(startM>0) ramp='D\u00e9but mois '+startM+(stableM>startM?' \u2192 stable mois '+stableM:'');
+    }
+    html+='<div class="rev-prof-card '+pr.css+'">';
+    html+='<h4>'+pr.label+'</h4>';
+    html+='<div class="prof-kpis">';
+    html+='<div class="prof-kpi"><span class="pk-label">CA Ann\u00e9e 1</span><span class="pk-value">'+fmt(y1)+' ('+pctY1+'%)</span></div>';
+    html+='<div class="prof-kpi"><span class="pk-label">CA Ann\u00e9e 2</span><span class="pk-value">'+fmt(y2)+' ('+pctY2+'%)</span></div>';
+    html+='<div class="prof-kpi"><span class="pk-label">CA Ann\u00e9e 3</span><span class="pk-value">'+fmt(y3)+' ('+pctY3+'%)</span></div>';
+    html+='<div class="prof-kpi"><span class="pk-label">Part GynEva</span><span class="pk-value">'+pr.share+'</span></div>';
+    html+='</div>';
+    if(ramp) html+='<div class="prof-ramp">\u2191 '+ramp+'</div>';
+    html+='</div>';
+  });
+  el.innerHTML=html;
+  // Update KPIs based on active filter
+  const elId=id=>document.getElementById(id);
+  if(revActiveProfiles.size===4){
+    elId('kCaY1').textContent=fmt(D.caY1);
+    elId('kCaY2').textContent=fmt(D.caY2);
+    elId('kCaY3b').textContent=fmt(D.caY3);
+  } else {
+    let fY1=0,fY2=0,fY3=0;
+    revActiveProfiles.forEach(p=>{
+      const arr=D[REV_PROFILES[p].key];
+      fY1+=sum12(arr,0); fY2+=sum12(arr,12); fY3+=sum12(arr,24);
+    });
+    elId('kCaY1').textContent=fmt(fY1);
+    elId('kCaY2').textContent=fmt(fY2);
+    elId('kCaY3b').textContent=fmt(fY3);
+  }
+}
+
 // ===== CHARTS =====
 const labels=Array.from({length:36},(_,i)=>'M'+(i+1));
 const labelsQ=['','','M3','','','M6','','','M9','','','M12','','','M15','','','M18','','','M21','','','M24','','','M27','','','M30','','','M33','','','M36'];
@@ -1081,10 +1224,9 @@ function updateCharts(){
   const ovDs=[{label:"Chiffre d'affaires",data:[D.caY1,D.caY2,D.caY3],backgroundColor:'rgba(26,74,122,.8)',borderRadius:8,barPercentage:.6},{label:'R\u00e9sultat net',data:[D.resY1,D.resY2,D.resY3],backgroundColor:'rgba(0,184,148,.8)',borderRadius:8,barPercentage:.6}];
   if(OVERLAY){ovDs.push({label:'CA sc\u00e9nario',data:[OVERLAY.caY1,OVERLAY.caY2,OVERLAY.caY3],backgroundColor:'rgba(26,74,122,.25)',borderRadius:8,barPercentage:.6,borderWidth:2,borderColor:'rgba(26,74,122,.6)',borderDash:[4,4]});ovDs.push({label:'R\u00e9sultat sc\u00e9nario',data:[OVERLAY.resY1,OVERLAY.resY2,OVERLAY.resY3],backgroundColor:'rgba(0,184,148,.25)',borderRadius:8,barPercentage:.6,borderWidth:2,borderColor:'rgba(0,184,148,.6)',borderDash:[4,4]});}
   charts.overview=new Chart(document.getElementById('cOverview'),{type:'bar',data:{labels:['Ann\u00e9e 1','Ann\u00e9e 2','Ann\u00e9e 3'],datasets:ovDs},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:16}}},scales:{y:{grid:gridOpts,ticks:{callback:v=>fmt(v)}},x:{grid:{display:false}}}}});
-  // Revenue chart — with optional overlay line
-  const revDs=[{label:'Associ\u00e9s',data:D.caAssoc,backgroundColor:'#0f2b46',borderRadius:1},{label:'Ind\u00e9pendants',data:D.caIndep,backgroundColor:'#1a4a7a',borderRadius:1},{label:'Internes',data:D.caInterne,backgroundColor:'#5dade2',borderRadius:1},{label:'Sage-femme',data:D.caSage,backgroundColor:'#aed6f1',borderRadius:1}];
-  if(OVERLAY){revDs.push({type:'line',label:'CA sc\u00e9nario',data:OVERLAY.ca,borderColor:'#d63031',borderWidth:2.5,borderDash:[6,3],pointRadius:0,tension:.3,fill:false,stack:false});}
-  charts.revenue=new Chart(document.getElementById('cRevenue'),{type:'bar',data:{labels:labelsQ,datasets:revDs},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:12}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:gridOpts,ticks:{callback:v=>fmt(v)}}}},plugins:[yearPlugin]});
+  // Revenue chart — delegated to updateRevenueChart() for profile filter support
+  updateRevenueChart();
+  updateRevDetail();
   // Cashflow chart — with optional overlay line
   const cfDs=[{label:'Sans d\u00e9lai',data:D.cashflow,borderColor:'#00b894',backgroundColor:'rgba(0,184,148,.05)',fill:true,tension:.3,pointRadius:0,borderWidth:2},{label:'100% LAMal 3m',data:D.treso3m,borderColor:'#d63031',backgroundColor:'rgba(214,48,49,.03)',fill:true,tension:.3,pointRadius:0,borderWidth:2,borderDash:[6,3]},{label:'15% cash + Factoring',data:D.tresoFact,borderColor:'#1a4a7a',backgroundColor:'rgba(26,74,122,.05)',fill:true,tension:.3,pointRadius:0,borderWidth:2.5}];
   if(OVERLAY){cfDs.push({label:'Cashflow sc\u00e9nario',data:OVERLAY.cashflow,borderColor:'#e17055',borderWidth:2.5,borderDash:[6,3],pointRadius:0,tension:.3,fill:false});}
