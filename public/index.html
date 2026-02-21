@@ -77,6 +77,35 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans
 .verdict.orange{background:rgba(253,203,110,.12);border:1px solid rgba(253,203,110,.3);color:#7d5a12}
 .verdict.red{background:rgba(214,48,49,.08);border:1px solid rgba(214,48,49,.2);color:#8b2020}
 
+/* === OVERVIEW TAB === */
+.ov-year-tl{display:grid;grid-template-columns:repeat(3,1fr);gap:.9rem;margin-bottom:1.2rem}
+.ov-year{background:var(--card);border-radius:var(--r);padding:1rem;border:1px solid var(--brd);box-shadow:var(--sh);position:relative;overflow:hidden}
+.ov-year::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.ov-year.y1::before{background:linear-gradient(90deg,#e17055,#fdcb6e)}
+.ov-year.y2::before{background:linear-gradient(90deg,#fdcb6e,#00b894)}
+.ov-year.y3::before{background:#00b894}
+.ov-year h4{font-size:.82rem;font-weight:700;color:var(--p);margin-bottom:.5rem;display:flex;justify-content:space-between;align-items:center}
+.ov-phase{font-size:.65rem;font-weight:600;padding:.15rem .45rem;border-radius:10px}
+.ov-phase.start{background:rgba(225,112,85,.1);color:#e17055}
+.ov-phase.grow{background:rgba(253,203,110,.15);color:#7d5a12}
+.ov-phase.cruise{background:rgba(0,184,148,.1);color:var(--acc)}
+.ov-year .ov-metric{display:flex;justify-content:space-between;font-size:.78rem;padding:.25rem 0;border-bottom:1px solid rgba(0,0,0,.03)}
+.ov-year .ov-metric:last-child{border-bottom:none}
+.ov-year .ov-metric .ov-ml{color:var(--txtL)}
+.ov-year .ov-metric .ov-mv{font-weight:700;color:var(--txt)}
+.ov-summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.9rem;margin-bottom:1.2rem}
+.ov-summary{background:var(--card);border-radius:var(--r);padding:1rem;border:1px solid var(--brd);box-shadow:var(--sh);text-align:center}
+.ov-summary .ov-sic{font-size:1.4rem;margin-bottom:.3rem}
+.ov-summary h4{font-size:.78rem;font-weight:700;color:var(--p);margin-bottom:.3rem}
+.ov-summary .ov-sv{font-size:1.1rem;font-weight:800;margin:.2rem 0}
+.ov-summary .ov-sv.green{color:var(--acc)}.ov-summary .ov-sv.orange{color:#e17055}.ov-summary .ov-sv.red{color:var(--danger)}
+.ov-summary .ov-sd{font-size:.7rem;color:var(--txtL)}
+.ov-summary .ov-tag{display:inline-block;font-size:.63rem;font-weight:600;padding:.12rem .4rem;border-radius:10px;margin-top:.3rem}
+.ov-summary .ov-tag.green{background:rgba(0,184,148,.1);color:var(--acc)}
+.ov-summary .ov-tag.orange{background:rgba(225,112,85,.1);color:#e17055}
+.ov-summary .ov-tag.red{background:rgba(214,48,49,.1);color:var(--danger)}
+@media(max-width:768px){.ov-year-tl{grid-template-columns:1fr}.ov-summary-grid{grid-template-columns:1fr 1fr}}
+
 /* === CHARTS === */
 .chart-box{position:relative;height:300px;margin:.5rem 0}.chart-box.sm{height:240px}
 
@@ -618,20 +647,24 @@ table.dt tr:hover td{background:#f8fafb}
 
 <!-- ====== OVERVIEW ====== -->
 <div class="section active" id="overview">
-  <div class="verdict green" id="verdictMain">
+  <div class="verdict green" id="ovVerdict">
     <div class="ic">&#9989;</div>
-    <div><strong>Projet &eacute;conomiquement viable.</strong> Le mod&egrave;le atteint la rentabilit&eacute; d&egrave;s le 5e mois d'activit&eacute; et d&eacute;gage un r&eacute;sultat cumul&eacute; de <span id="vTresoY3">CHF 2,3M</span> sur 3 ans. Les risques principaux sont ma&icirc;trisables avec les optimisations propos&eacute;es.</div>
+    <div id="ovVerdictText"><strong>Analyse du projet en cours.</strong></div>
   </div>
   <div class="kpi-grid">
-    <div class="kpi blue"><div class="lb">Investissement total</div><div class="vl" id="kCapex">523k</div><div class="sb">CAPEX + &eacute;quipements</div></div>
-    <div class="kpi green"><div class="lb">CA Ann&eacute;e 3</div><div class="vl" id="kCaY3">4,7M</div><div class="sb" id="kCaGrowth">Vitesse de croisi&egrave;re</div></div>
-    <div class="kpi green"><div class="lb">R&eacute;sultat net Ann&eacute;e 3</div><div class="vl" id="kResY3">1,15M</div><div class="sb" id="kMargin">Marge ~24%</div></div>
-    <div class="kpi blue"><div class="lb">Retour sur investissement</div><div class="vl" id="kPayback">11 mois</div><div class="sb">Payback period</div></div>
+    <div class="kpi blue"><div class="lb">Investissement total</div><div class="vl" id="ovCapex">&mdash;</div><div class="sb">CAPEX + &eacute;quipements</div></div>
+    <div class="kpi green"><div class="lb">CA Ann&eacute;e 3</div><div class="vl" id="ovCaY3">&mdash;</div><div class="sb" id="ovCaGrowth">Croissance</div></div>
+    <div class="kpi green"><div class="lb">R&eacute;sultat net Ann&eacute;e 3</div><div class="vl" id="ovResY3">&mdash;</div><div class="sb" id="ovMargin">Marge</div></div>
+    <div class="kpi"><div class="lb">Marge nette Y3</div><div class="vl" id="ovMarginPct">&mdash;</div><div class="sb">R&eacute;sultat / CA</div></div>
+    <div class="kpi blue"><div class="lb">Retour sur investissement</div><div class="vl" id="ovPayback">&mdash;</div><div class="sb">Payback period</div></div>
+    <div class="kpi"><div class="lb">BFR minimum</div><div class="vl" id="ovBfr">&mdash;</div><div class="sb" id="ovBfrSub">Besoin en fonds de roulement</div></div>
   </div>
+  <div class="ov-year-tl" id="ovYearTl"></div>
   <div class="card">
     <h2><span class="ic">&#128200;</span> &Eacute;volution sur 3 ans</h2>
     <div class="chart-box"><canvas id="cOverview"></canvas></div>
   </div>
+  <div class="ov-summary-grid" id="ovSummaryGrid"></div>
   <div class="card">
     <h2><span class="ic">&#9881;</span> Hypoth&egrave;ses cl&eacute;s du mod&egrave;le</h2>
     <div class="exp">Le mod&egrave;le repose sur les standards TARMED pour la gyn&eacute;cologie &agrave; Gen&egrave;ve. Chaque hypoth&egrave;se est modifiable via le <strong>Simulateur</strong> ou dans le fichier Excel.</div>
@@ -1350,16 +1383,11 @@ function computeScenarios(ca,admin,opex,lab,cashShare){
 function updateUI(){
   if(!D)return;
   const el=id=>document.getElementById(id);
-  el('kCapex').textContent=fmt(D.capex); el('kCaY3').textContent=fmt(D.caY3); el('kCaY3b').textContent=fmt(D.caY3);
-  el('kCaGrowth').textContent='Vitesse de croisi\u00e8re'; el('kResY3').textContent=fmt(D.resY3);
-  el('kMargin').textContent='Marge ~'+Math.round(D.resY3/D.caY3*100)+'%';
+  el('kCaY3b').textContent=fmt(D.caY3);
   el('kRevSpec').textContent=fmt(D.revSpec); el('kCaY1').textContent=fmt(D.caY1); el('kCaY2').textContent=fmt(D.caY2);
-  el('vTresoY3').textContent=fmtCHF(D.cashflow[35]);
   if(el('rConsult'))el('rConsult').value=D.consultDay||16; if(el('rFee'))el('rFee').value=D.fee||225;
   const rr=getRetroRate();
   el('pillsAssumptions').innerHTML='<div class="pill"><b>'+D.consultDay+'</b> consult./jour</div><div class="pill"><b>CHF '+D.fee+'</b> /consultation</div><div class="pill"><b>'+D.daysYear+'</b> jours/an</div><div class="pill"><b>'+(100-rr)+'/'+rr+'</b> partage associ\u00e9s</div>';
-  let pb=36,cumR=0;for(let m=0;m<36;m++){cumR+=D.result[m];if(cumR>0&&D.result[m]>0){pb=m+1;break;}}
-  el('kPayback').textContent=pb+' mois';
   updateCharts();
 }
 
@@ -2117,6 +2145,100 @@ function updateTeam(){
   }
 }
 
+// ===== OVERVIEW TAB =====
+function updateOverview(){
+  if(!D)return;
+  const el=id=>document.getElementById(id);
+  const sum=(arr,s,e)=>arr.slice(s,e).reduce((a,b)=>a+b,0);
+  // 1. Compute metrics
+  const margin3=D.caY3>0?Math.round(D.resY3/D.caY3*100):0;
+  const caGrowth=D.caY1>0?Math.round(((D.caY3-D.caY1)/D.caY1)*100):0;
+  let payback=36,cumR=0;
+  for(let m=0;m<36;m++){cumR+=D.result[m];if(cumR>0&&D.result[m]>0){payback=m+1;break;}}
+  const bfrWorst=D.bfrWorst;
+  // 2. KPIs
+  el('ovCapex').textContent=fmt(D.capex);
+  el('ovCaY3').textContent=fmt(D.caY3);
+  el('ovCaGrowth').textContent=caGrowth>0?'+'+caGrowth+'% vs Y1':'Croissance';
+  el('ovResY3').textContent=fmt(D.resY3);
+  el('ovMargin').textContent='Marge ~'+margin3+'%';
+  el('ovResY3').parentElement.className='kpi '+(margin3>=20?'green':margin3>=10?'orange':'red');
+  el('ovMarginPct').textContent=margin3+'%';
+  el('ovMarginPct').parentElement.className='kpi '+(margin3>=20?'green':margin3>=10?'orange':'red');
+  el('ovPayback').textContent=payback+' mois';
+  el('ovPayback').parentElement.className='kpi '+(payback<=12?'green':payback<=18?'blue':'orange');
+  el('ovBfr').textContent=fmt(bfrWorst)+' CHF';
+  el('ovBfr').parentElement.className='kpi '+(bfrWorst>=-50000?'green':bfrWorst>=-150000?'orange':'red');
+  el('ovBfrSub').textContent=bfrWorst>=0?'Aucun besoin':'Trou de tr\u00e9sorerie max';
+  // 3. Year timeline cards
+  const years=[
+    {n:1,s:0,e:12,phase:'D\u00e9marrage',phaseCSS:'start',cls:'y1'},
+    {n:2,s:12,e:24,phase:'Croissance',phaseCSS:'grow',cls:'y2'},
+    {n:3,s:24,e:36,phase:'Croisi\u00e8re',phaseCSS:'cruise',cls:'y3'}
+  ];
+  let tlH='';
+  years.forEach(y=>{
+    const ca=sum(D.ca,y.s,y.e),res=sum(D.result,y.s,y.e);
+    const m=ca>0?Math.round(res/ca*100):0;
+    const fte=D.fteTotal[y.e-1]||0;
+    tlH+='<div class="ov-year '+y.cls+'">';
+    tlH+='<h4>Ann\u00e9e '+y.n+' <span class="ov-phase '+y.phaseCSS+'">'+y.phase+'</span></h4>';
+    tlH+='<div class="ov-metric"><span class="ov-ml">Chiffre d\'affaires</span><span class="ov-mv">'+fmt(ca)+'</span></div>';
+    tlH+='<div class="ov-metric"><span class="ov-ml">R\u00e9sultat net</span><span class="ov-mv">'+(res>=0?'+':'')+fmt(res)+'</span></div>';
+    tlH+='<div class="ov-metric"><span class="ov-ml">Marge nette</span><span class="ov-mv">'+m+'%</span></div>';
+    tlH+='<div class="ov-metric"><span class="ov-ml">\u00c9quipe (ETP)</span><span class="ov-mv">'+fte+'</span></div>';
+    tlH+='</div>';
+  });
+  el('ovYearTl').innerHTML=tlH;
+  // 4. Section summary grid
+  const bfrTag=bfrWorst>=-50000?{t:'Ma\u00eetris\u00e9e',c:'green'}:bfrWorst>=-150000?{t:'Attention',c:'orange'}:{t:'Risque',c:'red'};
+  const fteEnd=D.fteTotal[35]||0;
+  const fteStart=D.fteTotal[0]||0;
+  const fteGrowth=fteStart>0?Math.round((fteEnd-fteStart)/fteStart*100):fteEnd>0?100:0;
+  const riskScoreEl=el('riskScore');
+  const riskScore=riskScoreEl?parseInt(riskScoreEl.textContent)||0:0;
+  const riskTag=riskScore<=33?{t:'Faible',c:'green'}:riskScore<=60?{t:'Mod\u00e9r\u00e9',c:'orange'}:{t:'\u00c9lev\u00e9',c:'red'};
+  const cumRes3=D.resY1+D.resY2+D.resY3;
+  const roi=D.capex>0?(cumRes3/D.capex).toFixed(1)+'x':'N/A';
+  const roiVal=D.capex>0?cumRes3/D.capex:0;
+  const roiTag=roiVal>=3?{t:'Excellent',c:'green'}:roiVal>=1?{t:'Correct',c:'orange'}:{t:'Insuffisant',c:'red'};
+  let sH='';
+  sH+='<div class="ov-summary"><div class="ov-sic">&#128176;</div><h4>Tr\u00e9sorerie</h4><div class="ov-sv '+bfrTag.c+'">'+fmt(bfrWorst)+' CHF</div><div class="ov-sd">BFR minimum (pire cas)</div><span class="ov-tag '+bfrTag.c+'">'+bfrTag.t+'</span></div>';
+  sH+='<div class="ov-summary"><div class="ov-sic">&#128101;</div><h4>\u00c9quipe</h4><div class="ov-sv">'+fteEnd+' ETP</div><div class="ov-sd">'+(fteGrowth>0?'+':'')+fteGrowth+'% croissance</div><span class="ov-tag '+(fteEnd>=14?'green':fteEnd>=8?'orange':'red')+'">'+fteEnd+' collaborateurs</span></div>';
+  sH+='<div class="ov-summary"><div class="ov-sic">&#9888;&#65039;</div><h4>Risques</h4><div class="ov-sv '+riskTag.c+'">'+riskScore+'/100</div><div class="ov-sd">Score composite</div><span class="ov-tag '+riskTag.c+'">'+riskTag.t+'</span></div>';
+  sH+='<div class="ov-summary"><div class="ov-sic">&#128200;</div><h4>Profit</h4><div class="ov-sv '+(roiVal>=2?'green':roiVal>=1?'orange':'red')+'">'+roi+'</div><div class="ov-sd">ROI cumul\u00e9 3 ans</div><span class="ov-tag '+roiTag.c+'">'+roiTag.t+'</span></div>';
+  el('ovSummaryGrid').innerHTML=sH;
+  // 5. Verdict dynamique (composite multi-facteurs)
+  let score=0;
+  score+=margin3>=20?3:margin3>=10?2:margin3>=5?1:0;
+  score+=payback<=12?3:payback<=18?2:payback<=24?1:0;
+  score+=bfrWorst>=-50000?3:bfrWorst>=-150000?2:1;
+  score+=roiVal>=3?3:roiVal>=1.5?2:roiVal>=1?1:0;
+  const vd=el('ovVerdict'),vt=el('ovVerdictText');
+  if(score>=10){
+    vd.className='verdict green';
+    vt.innerHTML='<strong>Projet \u00e9conomiquement viable.</strong> Marge Y3 de '+margin3+'%, payback en '+payback+' mois, tr\u00e9sorerie cumul\u00e9e de '+fmtCHF(D.cashflow[35])+' \u00e0 M36. Les indicateurs sont au vert.';
+  } else if(score>=6){
+    vd.className='verdict orange';
+    vt.innerHTML='<strong>Projet viable sous conditions.</strong> Marge de '+margin3+'%, payback '+payback+' mois. Attention au BFR ('+fmt(bfrWorst)+' CHF). Optimisations recommand\u00e9es.';
+  } else {
+    vd.className='verdict red';
+    vt.innerHTML='<strong>Projet \u00e0 risque \u00e9lev\u00e9.</strong> Marge de '+margin3+'%, BFR de '+fmt(bfrWorst)+' CHF. R\u00e9visez les hypoth\u00e8ses et renforcez le plan de financement.';
+  }
+  // 6. Chart: grouped bar (CA + R\u00e9sultat) + cashflow cumulative line
+  if(charts.overview){try{charts.overview.destroy()}catch(e){}}
+  const ovDs=[
+    {type:'bar',label:"Chiffre d'affaires",data:[D.caY1,D.caY2,D.caY3],backgroundColor:'rgba(26,74,122,.8)',borderRadius:8,barPercentage:.6,yAxisID:'y'},
+    {type:'bar',label:'R\u00e9sultat net',data:[D.resY1,D.resY2,D.resY3],backgroundColor:'rgba(0,184,148,.8)',borderRadius:8,barPercentage:.6,yAxisID:'y'},
+    {type:'line',label:'Tr\u00e9sorerie cumul\u00e9e',data:[D.cashflow[11],D.cashflow[23],D.cashflow[35]],borderColor:'#e17055',backgroundColor:'rgba(225,112,85,.08)',borderWidth:2.5,pointRadius:5,pointBackgroundColor:'#e17055',tension:.3,fill:true,yAxisID:'y'}
+  ];
+  if(OVERLAY){
+    ovDs.push({type:'bar',label:'CA sc\u00e9nario',data:[OVERLAY.caY1,OVERLAY.caY2,OVERLAY.caY3],backgroundColor:'rgba(26,74,122,.25)',borderRadius:8,barPercentage:.6,borderWidth:2,borderColor:'rgba(26,74,122,.6)',borderDash:[4,4],yAxisID:'y'});
+    ovDs.push({type:'bar',label:'R\u00e9sultat sc\u00e9nario',data:[OVERLAY.resY1,OVERLAY.resY2,OVERLAY.resY3],backgroundColor:'rgba(0,184,148,.25)',borderRadius:8,barPercentage:.6,borderWidth:2,borderColor:'rgba(0,184,148,.6)',borderDash:[4,4],yAxisID:'y'});
+  }
+  charts.overview=new Chart(document.getElementById('cOverview'),{type:'bar',data:{labels:['Ann\u00e9e 1','Ann\u00e9e 2','Ann\u00e9e 3'],datasets:ovDs},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:16}}},scales:{y:{grid:gridOpts,ticks:{callback:v=>fmt(v)}},x:{grid:{display:false}}}}});
+}
+
 // ===== CHARTS =====
 const labels=Array.from({length:36},(_,i)=>'M'+(i+1));
 const labelsQ=['','','M3','','','M6','','','M9','','','M12','','','M15','','','M18','','','M21','','','M24','','','M27','','','M30','','','M33','','','M36'];
@@ -2126,11 +2248,7 @@ const yearPlugin={id:'yl',beforeDraw(c){const ctx=c.ctx,x=c.scales.x,y=c.scales.
 
 function updateCharts(){
   if(!D)return;
-  Object.entries(charts).forEach(([k,c])=>{if(k!=='sim1'&&k!=='sim2'&&k!=='optimize'&&k!=='riskStress'&&k!=='charges'&&k!=='profit'&&k!=='profitCumul'&&k!=='team'&&k!=='teamProd'&&k!=='cashflow'&&k!=='cashWaterfall'){try{c.destroy()}catch(e){}}});
-  // Overview chart — with optional overlay
-  const ovDs=[{label:"Chiffre d'affaires",data:[D.caY1,D.caY2,D.caY3],backgroundColor:'rgba(26,74,122,.8)',borderRadius:8,barPercentage:.6},{label:'R\u00e9sultat net',data:[D.resY1,D.resY2,D.resY3],backgroundColor:'rgba(0,184,148,.8)',borderRadius:8,barPercentage:.6}];
-  if(OVERLAY){ovDs.push({label:'CA sc\u00e9nario',data:[OVERLAY.caY1,OVERLAY.caY2,OVERLAY.caY3],backgroundColor:'rgba(26,74,122,.25)',borderRadius:8,barPercentage:.6,borderWidth:2,borderColor:'rgba(26,74,122,.6)',borderDash:[4,4]});ovDs.push({label:'R\u00e9sultat sc\u00e9nario',data:[OVERLAY.resY1,OVERLAY.resY2,OVERLAY.resY3],backgroundColor:'rgba(0,184,148,.25)',borderRadius:8,barPercentage:.6,borderWidth:2,borderColor:'rgba(0,184,148,.6)',borderDash:[4,4]});}
-  charts.overview=new Chart(document.getElementById('cOverview'),{type:'bar',data:{labels:['Ann\u00e9e 1','Ann\u00e9e 2','Ann\u00e9e 3'],datasets:ovDs},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:16}}},scales:{y:{grid:gridOpts,ticks:{callback:v=>fmt(v)}},x:{grid:{display:false}}}}});
+  Object.entries(charts).forEach(([k,c])=>{if(k!=='sim1'&&k!=='sim2'&&k!=='optimize'&&k!=='riskStress'&&k!=='charges'&&k!=='profit'&&k!=='profitCumul'&&k!=='team'&&k!=='teamProd'&&k!=='cashflow'&&k!=='cashWaterfall'&&k!=='overview'){try{c.destroy()}catch(e){}}});
   // Revenue chart — delegated to updateRevenueChart() for profile filter support
   updateRevenueChart();
   updateRevDetail();
@@ -2139,6 +2257,7 @@ function updateCharts(){
   updateOptimize();
   updateRisks();
   updateProfit();
+  updateOverview();
 }
 
 // ===== SIMULATOR ENGINE =====
