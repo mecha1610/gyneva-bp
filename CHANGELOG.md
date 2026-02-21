@@ -2,6 +2,22 @@
 
 All notable changes to the GYNEVA Business Plan application are documented here.
 
+## [0.7.0] - 2026-02-21
+
+### Added
+- **Interactive optimization controls**: inline factoring toggle, cash OI/ONU slider (0-30%), and LAMal delay selector directly in the Optimizations tab
+- **4 dynamic KPIs**: worst-case BFR, current-config BFR (color-coded red/orange/green), BFR savings amount + percentage, factoring annual cost + percentage of net result
+- **Dynamic verdict**: green/orange/red banner adapts to current configuration risk level (optimal, moderate, elevated)
+- **Smart recommendation**: calculates factoring ROI (cost vs. BFR reduction) or warns about BFR risk when factoring is off
+- **4-scenario comparison grid**: cards for "100% LAMal 3m", "Cash X% + LAMal 3m", "Cash X% + LAMal 1m", "Cash X% + Factoring" with BFR min, critical month, risk tags, and active config highlight
+- **`computeOptScenario()`**: flexible cashflow scenario calculator supporting any cash%, delay, and factoring combination
+- **Enhanced chart**: current-config line drawn thick/filled, other scenarios thin/dashed for visual emphasis
+
+### Changed
+- Optimization chart managed by `updateOptimize()` instead of inline construction in `updateCharts()`
+- Chart destroy loop skips 'optimize' key (lifecycle managed independently)
+- Removed static factoring/OI-ONU info cards in favor of interactive controls
+
 ## [0.6.0] - 2026-02-21
 
 ### Added

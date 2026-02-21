@@ -1,6 +1,6 @@
 # GYNEVA Business Plan
 
-Interactive financial planning application for a gynecology clinic in Geneva. Provides 36-month revenue projections, cashflow scenario analysis, team ramp-up modeling, a real-time business simulator, Excel import with change tracking, full version history with restore, multi-plan management, scenario overlay comparison, and PDF version comparison.
+Interactive financial planning application for a gynecology clinic in Geneva. Provides 36-month revenue projections, cashflow scenario analysis, team ramp-up modeling, a real-time business simulator with configurable retrocession rate, Excel import with change tracking, full version history with restore, multi-plan management, scenario overlay comparison, PDF version comparison, revenue profile filters, and interactive optimization controls with dynamic recommendations.
 
 **Production**: https://gyneva-bp-https.vercel.app
 
@@ -66,8 +66,8 @@ Interactive financial planning application for a gynecology clinic in Geneva. Pr
 - **Plan-scoped data**: switching plans reloads all data, charts, scenarios, and version history
 
 ### Simulator
-- **13-parameter interactive simulator** with real-time slider feedback
-- **Parameters**: consultations/day, fees, working days, team composition (associates, independents, salaried), start month, occupancy rate, cash patients %, LAMal delay, factoring toggle, extra charges, professional liability
+- **14-parameter interactive simulator** with real-time slider feedback
+- **Parameters**: consultations/day, fees, working days, team composition (associates, independents, salaried), start month, occupancy rate, cash patients %, LAMal delay, factoring toggle, extra charges, professional liability, retrocession rate (20-60%)
 - **Save/load named scenarios** for comparing alternative business models
 - **Delta indicators** showing impact vs. baseline on key metrics
 - **Year tabs (Y1 / Y2 / Y3 / Vue 3 ans)**: browse results per year instead of Y3-only
@@ -77,6 +77,20 @@ Interactive financial planning application for a gynecology clinic in Geneva. Pr
 - **Sensitivity tags**: colored badges showing which parameters impact the selected year (e.g., "Delai paiement: FORT" for Y1)
 - **Structured summary**: 3-column grid (Y1/Y2/Y3) with bullet-point highlights replacing the old single Y3 paragraph
 - **Chart year highlighting**: bar chart dims non-selected year bars; cashflow line chart draws a translucent highlight band over the selected year
+
+### Optimizations
+- **Interactive controls**: factoring toggle, cash OI/ONU slider (0-30%), LAMal delay selector (0/1/3 months) — directly in the tab, no need to switch to the simulator
+- **4 dynamic KPIs**: worst-case BFR, current-config BFR (color-coded), BFR savings with percentage, factoring annual cost as % of net result
+- **Dynamic verdict**: green (optimal), orange (moderate risk), red (elevated risk) based on current control settings
+- **Smart recommendation**: compares factoring cost vs. BFR reduction to show ROI, or warns about BFR risk when factoring is disabled
+- **4-scenario comparison grid**: side-by-side cards (100% LAMal 3m, Cash + LAMal 3m, Cash + LAMal 1m, Cash + Factoring) with BFR min, critical month, risk tags, and active config highlight
+- **Enhanced chart**: current-config scenario line is thick and filled, other scenarios are thin and dashed
+
+### Revenue Profile Filters
+- **Pill button filters**: toggle revenue sources (Tous, Associes, Independants, Internes, Sage-femme) on the Revenue chart
+- **Single-profile view**: selecting one profile unstacks bars for clear ramp-up visualization
+- **Profile detail cards**: per-profile CA Y1/Y2/Y3, percentage of total, ramp-up timeline, GynEva revenue share
+- **Dynamic KPIs**: CA Year 1/2/3 update to reflect only selected profiles
 
 ### Authentication & Access Control
 - **Google OAuth 2.0** sign-in with server-side JWT verification
@@ -102,7 +116,9 @@ Browser (SPA)                    Vercel Serverless Functions
 | - Multi-plan switcher |                |
 | - Scenario overlay    |        +------------------+
 | - Year-tab simulator  |        | PostgreSQL (Neon) |
-+-----------------------+        | 6 tables          |
+| - Revenue prof.filter |        | 6 tables          |
+| - Optimize controls   |
++-----------------------+
                                  +------------------+
 ```
 
@@ -260,7 +276,7 @@ Copy `.env.example` to `.env.local` and fill in your values.
 | **AllowedEmail** | Email whitelist checked during login |
 | **BusinessPlan** | 36-month financial model (17 arrays as JSONB + 5 scalar constants), soft-deletable |
 | **BusinessPlanVersion** | Auto-snapshot before each plan update; stores full data + constants at that point |
-| **SimulatorScenario** | Saved simulator parameter sets (13 parameters), optionally shared or linked to a plan |
+| **SimulatorScenario** | Saved simulator parameter sets (14 parameters), optionally shared or linked to a plan |
 
 ### Seed Data
 
@@ -404,8 +420,8 @@ The application models a 36-month financial projection for a medical clinic with
 
 | Source | Description | Revenue Model |
 |--------|-------------|--------------|
-| Associes | Partner specialists | 40% of specialist revenue potential |
-| Independants | Independent doctors | 40% of specialist revenue potential |
+| Associes | Partner specialists | Configurable retrocession rate (20-60%, default 40%) of specialist revenue potential |
+| Independants | Independent doctors | Same configurable retrocession rate as Associes |
 | Internes | Salaried doctors | 100% of specialist revenue potential |
 | Sages-femmes | Midwives | Fixed CHF 13,333/month at capacity |
 
