@@ -134,6 +134,64 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans
 .opt-scenario .sc-tag.orange{background:rgba(225,112,85,.1);color:#e17055}
 .opt-scenario .sc-tag.green{background:rgba(0,184,148,.1);color:var(--acc)}
 
+/* === RISK TAB === */
+.risk-gauge{display:flex;align-items:center;gap:1.2rem;padding:1.2rem 1.4rem;background:var(--card);border-radius:var(--r);border:1px solid var(--brd);box-shadow:var(--sh);margin-bottom:1.2rem}
+.risk-gauge-ring{width:80px;height:80px;border-radius:50%;position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.risk-gauge-ring svg{position:absolute;top:0;left:0;transform:rotate(-90deg)}
+.risk-gauge-score{font-size:1.6rem;font-weight:800;z-index:1}
+.risk-gauge-info{flex:1}
+.risk-gauge-label{font-size:.95rem;font-weight:700;color:var(--p);margin-bottom:.2rem}
+.risk-gauge-sub{font-size:.8rem;color:var(--txtL);line-height:1.5}
+.risk-gauge.low .risk-gauge-score{color:var(--acc)}
+.risk-gauge.medium .risk-gauge-score{color:#e17055}
+.risk-gauge.high .risk-gauge-score{color:var(--danger)}
+.risk-controls{display:flex;gap:1.2rem;flex-wrap:wrap;align-items:center;padding:1rem 1.2rem;background:#f8fafb;border-radius:var(--r);border:1px solid var(--brd);margin-bottom:1.2rem}
+.risk-ctrl{display:flex;align-items:center;gap:.5rem;font-size:.8rem;font-weight:600;color:var(--p)}
+.risk-ctrl label{white-space:nowrap}
+.risk-ctrl input[type="range"]{width:110px;accent-color:var(--pl)}
+.risk-ctrl .risk-val{font-weight:700;min-width:3.5rem;text-align:right}
+.risk-scenario-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;margin-bottom:1.2rem}
+.risk-scenario{background:var(--card);border-radius:var(--r);padding:1rem;border:1px solid var(--brd);box-shadow:var(--sh);text-align:center;transition:var(--trans)}
+.risk-scenario.pessimiste{border-left:3px solid var(--danger)}
+.risk-scenario.base{border-left:3px solid var(--pl)}
+.risk-scenario.optimiste{border-left:3px solid var(--acc)}
+.risk-scenario h4{font-size:.75rem;font-weight:700;color:var(--p);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.3px}
+.risk-scenario .rs-val{font-size:1.15rem;font-weight:800;margin:.2rem 0}
+.risk-scenario .rs-val.neg{color:var(--danger)}
+.risk-scenario .rs-val.pos{color:var(--acc)}
+.risk-scenario .rs-detail{font-size:.7rem;color:var(--txtL);line-height:1.4}
+.risk-sensitivity{margin-bottom:1.2rem}
+.risk-sens-row{display:flex;align-items:center;gap:.7rem;margin-bottom:.6rem;font-size:.8rem}
+.risk-sens-label{width:160px;font-weight:600;color:var(--p);flex-shrink:0}
+.risk-sens-bar-ct{flex:1;position:relative;height:22px;background:#f0f3f5;border-radius:11px;overflow:hidden}
+.risk-sens-bar{height:100%;border-radius:11px;transition:width .4s ease}
+.risk-sens-bar.low{background:var(--acc)}
+.risk-sens-bar.medium{background:var(--warn)}
+.risk-sens-bar.high{background:var(--danger)}
+.risk-sens-pct{width:50px;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.risk-matrix-interactive table.dt th.sortable{cursor:pointer;user-select:none}
+.risk-matrix-interactive table.dt th.sortable:hover{color:var(--acc)}
+.risk-matrix-interactive table.dt th.sortable::after{content:' \25B4';font-size:.6rem;opacity:.4}
+.risk-matrix-interactive table.dt th.sorted-desc::after{content:' \25BE';opacity:1}
+.risk-matrix-interactive table.dt th.sorted-asc::after{content:' \25B4';opacity:1}
+.risk-score-cell{font-weight:800;font-size:.9rem;font-variant-numeric:tabular-nums}
+.risk-exposure{display:flex;align-items:center;gap:.7rem;margin-top:.8rem;padding:.6rem .9rem;background:#f8fafb;border-radius:8px;font-size:.82rem}
+.risk-exposure .re-label{color:var(--txtL);font-weight:500}
+.risk-exposure .re-value{font-weight:800;color:var(--p)}
+.badge.clickable{cursor:pointer;transition:var(--trans)}
+.badge.clickable:hover{filter:brightness(1.1);transform:scale(1.05)}
+.charges-summary{display:flex;gap:1.2rem;align-items:center;margin-bottom:.8rem}
+.charges-chart-box{width:160px;height:160px;flex-shrink:0}
+.charges-total{font-size:.82rem;color:var(--txtL);line-height:1.6}
+.charges-total strong{color:var(--p);font-size:1.1rem;display:block;margin-bottom:.2rem}
+@media(max-width:768px){
+  .risk-controls{flex-direction:column;align-items:stretch}
+  .risk-scenario-grid{grid-template-columns:1fr}
+  .risk-sens-label{width:100px;font-size:.72rem}
+  .risk-gauge{flex-direction:column;text-align:center}
+  .charges-summary{flex-direction:column}
+}
+
 /* === TABLES === */
 table.dt{width:100%;border-collapse:separate;border-spacing:0;font-size:.82rem}
 table.dt th{background:#f8fafb;padding:.65rem .9rem;text-align:left;font-weight:600;color:var(--p);border-bottom:2px solid var(--brd);white-space:nowrap}
@@ -736,44 +794,60 @@ table.dt tr:hover td{background:#f8fafb}
 
 <!-- ====== RISKS ====== -->
 <div class="section" id="risks">
-  <div class="card">
-    <h2><span class="ic">&#9888;&#65039;</span> Matrice des risques</h2>
-    <table class="dt"><thead><tr><th>Risque</th><th>Probabilit&eacute;</th><th>Impact</th><th>Mitigation</th></tr></thead>
-    <tbody>
-      <tr><td>Retard autorisation cantonale</td><td><span class="badge moyen">Moyen</span></td><td><span class="badge eleve">&Eacute;lev&eacute;</span></td><td>Anticiper d&eacute;p&ocirc;t 6 mois avant</td></tr>
-      <tr><td>D&eacute;lais paiement LAMal &gt; 3 mois</td><td><span class="badge moyen">Moyen</span></td><td><span class="badge eleve">&Eacute;lev&eacute;</span></td><td>Factoring Caisse des M&eacute;decins</td></tr>
-      <tr><td>Sous-occupation prolong&eacute;e Y1</td><td><span class="badge moyen">Moyen</span></td><td><span class="badge moyen">Moyen</span></td><td>Plan marketing, r&eacute;seau r&eacute;f&eacute;rents</td></tr>
-      <tr><td>D&eacute;part m&eacute;decin ind&eacute;pendant</td><td><span class="badge moyen">Moyen</span></td><td><span class="badge eleve">&Eacute;lev&eacute;</span></td><td>Clause non-concurrence, conditions attractives</td></tr>
-      <tr><td>&Eacute;volution tarifaire TARMED/TARDOC</td><td><span class="badge moyen">Moyen</span></td><td><span class="badge eleve">&Eacute;lev&eacute;</span></td><td>Diversification anti-&acirc;ge, actes priv&eacute;s</td></tr>
-      <tr><td>Litige obst&eacute;trique (RC pro)</td><td><span class="badge faible">Faible</span></td><td><span class="badge tres-eleve">Tr&egrave;s &eacute;lev&eacute;</span></td><td>RC pro adapt&eacute;e, protocoles stricts</td></tr>
-      <tr><td>Sous-estimation CAPEX</td><td><span class="badge moyen">Moyen</span></td><td><span class="badge faible">Faible</span></td><td>R&eacute;serve CHF 20k, leasing possible</td></tr>
-    </tbody></table>
+  <!-- Global risk indicator -->
+  <div class="risk-gauge low" id="riskGauge">
+    <div class="risk-gauge-ring">
+      <svg width="80" height="80" viewBox="0 0 80 80">
+        <circle cx="40" cy="40" r="34" fill="none" stroke="#eee" stroke-width="6"/>
+        <circle cx="40" cy="40" r="34" fill="none" stroke="var(--acc)" stroke-width="6" stroke-dasharray="213.6" stroke-dashoffset="213.6" stroke-linecap="round" id="riskArc"/>
+      </svg>
+      <div class="risk-gauge-score" id="riskScore">&mdash;</div>
+    </div>
+    <div class="risk-gauge-info">
+      <div class="risk-gauge-label" id="riskLabel">Risque global</div>
+      <div class="risk-gauge-sub" id="riskSub">Score composite int&eacute;grant la sensibilit&eacute; du stress test et la matrice des risques.</div>
+    </div>
   </div>
+
+  <!-- Interactive stress test -->
   <div class="card">
-    <h2><span class="ic">&#128680;</span> Charges non budg&eacute;t&eacute;es identifi&eacute;es (~CHF 150-270k/an)</h2>
-    <table class="dt"><thead><tr><th>Poste</th><th>Estimation</th><th>Criticit&eacute;</th></tr></thead>
-    <tbody>
-      <tr><td>RC professionnelle (obst&eacute;trique)</td><td class="num">CHF 40-80k</td><td><span class="badge critique">critique</span></td></tr>
-      <tr><td>Provision litiges</td><td class="num">CHF 20-50k</td><td><span class="badge critique">critique</span></td></tr>
-      <tr><td>Entretien &eacute;quipements</td><td class="num">CHF 15-25k</td><td><span class="badge important">important</span></td></tr>
-      <tr><td>Logiciels / licences</td><td class="num">CHF 10-20k</td><td><span class="badge important">important</span></td></tr>
-      <tr><td>D&eacute;chets m&eacute;dicaux</td><td class="num">CHF 8-15k</td><td><span class="badge important">important</span></td></tr>
-      <tr><td>Formation continue</td><td class="num">CHF 5-10k</td><td><span class="badge moyen">moyen</span></td></tr>
-      <tr><td>Cotisations FMH</td><td class="num">CHF 5-8k</td><td><span class="badge moyen">moyen</span></td></tr>
-      <tr><td>Autorisations cantonales</td><td class="num">CHF 3-5k</td><td><span class="badge moyen">moyen</span></td></tr>
-    </tbody></table>
+    <h2><span class="ic">&#127919;</span> Stress test interactif</h2>
+    <div class="exp">Ajustez les variables cl&eacute;s pour &eacute;valuer la sensibilit&eacute; du projet. Les sc&eacute;narios pessimiste/optimiste sont recalcul&eacute;s dynamiquement (&plusmn;25%).</div>
+    <div class="risk-controls">
+      <div class="risk-ctrl"><label>Consult./jour</label><input type="range" id="rConsult" min="8" max="24" step="1" value="16" oninput="updateRisks()"><span class="risk-val" id="rConsultVal">16</span></div>
+      <div class="risk-ctrl"><label>Honoraires</label><input type="range" id="rFee" min="120" max="350" step="5" value="225" oninput="updateRisks()"><span class="risk-val" id="rFeeVal">CHF 225</span></div>
+      <div class="risk-ctrl"><label>Occup. Y1</label><input type="range" id="rOccup" min="30" max="100" step="5" value="60" oninput="updateRisks()"><span class="risk-val" id="rOccupVal">60%</span></div>
+      <div class="risk-ctrl"><label>D&eacute;lai mont&eacute;e</label><input type="range" id="rStart" min="1" max="12" step="1" value="4" oninput="updateRisks()"><span class="risk-val" id="rStartVal">4 mois</span></div>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi"><div class="lb">CA Ann&eacute;e 3</div><div class="vl" id="rCaY3">&mdash;</div><div class="sb" id="rCaY3Delta"></div></div>
+      <div class="kpi"><div class="lb">R&eacute;sultat Ann&eacute;e 3</div><div class="vl" id="rResY3">&mdash;</div><div class="sb" id="rResY3Delta"></div></div>
+      <div class="kpi"><div class="lb">BFR minimum</div><div class="vl" id="rBfrMin">&mdash;</div><div class="sb">Tr&eacute;sorerie pire mois</div></div>
+      <div class="kpi"><div class="lb">Tr&eacute;so finale (M36)</div><div class="vl" id="rTresoFinal">&mdash;</div><div class="sb">Cumul&eacute; fin de p&eacute;riode</div></div>
+    </div>
+    <div class="risk-scenario-grid" id="riskScenarioGrid"></div>
+    <h3 style="margin:1rem 0 .6rem;font-size:.85rem;color:var(--p)">Sensibilit&eacute; &mdash; Impact relatif sur le r&eacute;sultat Y3</h3>
+    <div class="risk-sensitivity" id="riskSensitivity"></div>
+    <div class="chart-box"><canvas id="cRiskStress"></canvas></div>
   </div>
+
+  <!-- Interactive risk matrix -->
   <div class="card">
-    <h2><span class="ic">&#127919;</span> Stress test &mdash; Seuils critiques</h2>
-    <div class="exp">En dessous du <strong>seuil critique</strong>, le projet n'est plus viable. Comparez avec la valeur de base pour &eacute;valuer votre marge de s&eacute;curit&eacute;.</div>
-    <table class="dt"><thead><tr><th>Variable</th><th style="color:var(--danger)">Pessimiste</th><th><strong>Base</strong></th><th style="color:var(--acc)">Optimiste</th><th style="color:var(--danger)">Seuil critique</th></tr></thead>
-    <tbody>
-      <tr><td><strong>Consultations/jour</strong></td><td>12 (-25%)</td><td><strong id="stConsult">16</strong></td><td>20 (+25%)</td><td style="color:var(--danger);font-weight:600">10</td></tr>
-      <tr><td><strong>Honoraires moyens</strong></td><td>CHF 180</td><td><strong id="stFee">CHF 225</strong></td><td>CHF 270</td><td style="color:var(--danger);font-weight:600">CHF 160</td></tr>
-      <tr><td><strong>Taux occupation Y1</strong></td><td>40%</td><td><strong>60%</strong></td><td>80%</td><td style="color:var(--danger);font-weight:600">35%</td></tr>
-      <tr><td><strong>D&eacute;lai mont&eacute;e charge</strong></td><td>8 mois</td><td><strong>5 mois</strong></td><td>3 mois</td><td style="color:var(--danger);font-weight:600">12 mois</td></tr>
-      <tr><td><strong>D&eacute;lai paiement LAMal</strong></td><td>3 mois</td><td><strong>1 mois</strong></td><td>&lt; 1 mois</td><td style="color:var(--danger);font-weight:600">4 mois</td></tr>
-    </tbody></table>
+    <h2><span class="ic">&#9888;&#65039;</span> Matrice des risques interactive</h2>
+    <div class="exp">Cliquez sur les badges de probabilit&eacute; ou d'impact pour ajuster le scoring (cycle 1&rarr;5). Triez par colonne en cliquant sur les en-t&ecirc;tes.</div>
+    <div class="risk-matrix-interactive" id="riskMatrixContainer"></div>
+    <div class="risk-exposure"><span class="re-label">Exposition totale :</span><span class="re-value" id="riskExposureVal">&mdash;</span></div>
+  </div>
+
+  <!-- Charges non budgetees -->
+  <div class="card">
+    <h2><span class="ic">&#128680;</span> Charges non budg&eacute;t&eacute;es identifi&eacute;es</h2>
+    <div class="charges-summary">
+      <div class="charges-chart-box"><canvas id="cCharges"></canvas></div>
+      <div class="charges-total"><strong id="chargesTotalLabel">&mdash;</strong>R&eacute;partition par criticit&eacute; et poste. Total int&eacute;gr&eacute; dans le calcul du risque global.</div>
+    </div>
+    <table class="dt"><thead><tr><th>Poste</th><th>Estimation min</th><th>Estimation max</th><th>Criticit&eacute;</th></tr></thead>
+    <tbody id="chargesBody"></tbody></table>
   </div>
 </div>
 
@@ -1154,7 +1228,7 @@ function updateUI(){
   el('pResY1').textContent=fmtCHF(D.resY1); el('pResY2').textContent=fmtCHF(D.resY2); el('pResY3').textContent=fmtCHF(D.resY3);
   el('pPerY1').textContent='~'+fmt(D.resY1/2)+' / associ\u00e9'; el('pPerY2').textContent='~'+fmt(D.resY2/2)+' / associ\u00e9'; el('pPerY3').textContent='~'+fmt(D.resY3/2)+' / associ\u00e9';
   el('pAdjY1').textContent='Apr\u00e8s charges manquantes: ~'+fmt(Math.max(0,D.resY1/2-adj/2)); el('pAdjY2').textContent='Apr\u00e8s charges manquantes: ~'+fmt(D.resY2/2-adj/2); el('pAdjY3').textContent='Apr\u00e8s charges manquantes: ~'+fmt(D.resY3/2-adj/2);
-  el('stConsult').textContent=D.consultDay; el('stFee').textContent='CHF '+D.fee;
+  if(el('rConsult'))el('rConsult').value=D.consultDay||16; if(el('rFee'))el('rFee').value=D.fee||225;
   const rr=getRetroRate();
   el('pillsAssumptions').innerHTML='<div class="pill"><b>'+D.consultDay+'</b> consult./jour</div><div class="pill"><b>CHF '+D.fee+'</b> /consultation</div><div class="pill"><b>'+D.daysYear+'</b> jours/an</div><div class="pill"><b>'+(100-rr)+'/'+rr+'</b> partage associ\u00e9s</div>';
   let pb=36,cumR=0;for(let m=0;m<36;m++){cumR+=D.result[m];if(cumR>0&&D.result[m]>0){pb=m+1;break;}}
@@ -1402,6 +1476,188 @@ function updateOptimize(){
   charts.optimize=new Chart(document.getElementById('cOptimize'),{type:'line',data:{labels:labelsQ,datasets:ds},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:12}}},scales:{y:{grid:gridOpts,ticks:{callback:v=>fmt(v)}},x:{grid:{display:false}}}},plugins:[yearPlugin]});
 }
 
+// ===== RISKS TAB =====
+const RISK_MATRIX=[
+  {id:'r1',name:'Retard autorisation cantonale',prob:3,impact:4,mitigation:'Anticiper d\u00e9p\u00f4t 6 mois avant'},
+  {id:'r2',name:'D\u00e9lais paiement LAMal > 3 mois',prob:3,impact:4,mitigation:'Factoring Caisse des M\u00e9decins'},
+  {id:'r3',name:'Sous-occupation prolong\u00e9e Y1',prob:3,impact:3,mitigation:'Plan marketing, r\u00e9seau r\u00e9f\u00e9rents'},
+  {id:'r4',name:'D\u00e9part m\u00e9decin ind\u00e9pendant',prob:3,impact:4,mitigation:'Clause non-concurrence, conditions attractives'},
+  {id:'r5',name:'\u00c9volution tarifaire TARMED/TARDOC',prob:3,impact:4,mitigation:'Diversification anti-\u00e2ge, actes priv\u00e9s'},
+  {id:'r6',name:'Litige obst\u00e9trique (RC pro)',prob:1,impact:5,mitigation:'RC pro adapt\u00e9e, protocoles stricts'},
+  {id:'r7',name:'Sous-estimation CAPEX',prob:3,impact:2,mitigation:'R\u00e9serve CHF 20k, leasing possible'},
+];
+const CHARGES_DATA=[
+  {name:'RC professionnelle (obst\u00e9trique)',min:40000,max:80000,criticite:'critique'},
+  {name:'Provision litiges',min:20000,max:50000,criticite:'critique'},
+  {name:'Entretien \u00e9quipements',min:15000,max:25000,criticite:'important'},
+  {name:'Logiciels / licences',min:10000,max:20000,criticite:'important'},
+  {name:'D\u00e9chets m\u00e9dicaux',min:8000,max:15000,criticite:'important'},
+  {name:'Formation continue',min:5000,max:10000,criticite:'moyen'},
+  {name:'Cotisations FMH',min:5000,max:8000,criticite:'moyen'},
+  {name:'Autorisations cantonales',min:3000,max:5000,criticite:'moyen'},
+];
+let riskSortField='score',riskSortAsc=false;
+
+function cycleRiskValue(riskId,field){
+  const r=RISK_MATRIX.find(x=>x.id===riskId);
+  if(!r)return;
+  r[field]=r[field]>=5?1:r[field]+1;
+  updateRisks();
+}
+function sortRisksBy(field){
+  if(riskSortField===field) riskSortAsc=!riskSortAsc; else {riskSortField=field;riskSortAsc=false;}
+  updateRisks();
+}
+
+function updateRisks(){
+  if(!D)return;
+  const el=id=>document.getElementById(id);
+
+  // 1. Read sliders
+  const consult=+(el('rConsult')?el('rConsult').value:16);
+  const fee=+(el('rFee')?el('rFee').value:225);
+  const occup=+(el('rOccup')?el('rOccup').value:60);
+  const start=+(el('rStart')?el('rStart').value:4);
+  if(el('rConsultVal')) el('rConsultVal').textContent=consult;
+  if(el('rFeeVal')) el('rFeeVal').textContent='CHF '+fee;
+  if(el('rOccupVal')) el('rOccupVal').textContent=occup+'%';
+  if(el('rStartVal')) el('rStartVal').textContent=start+' mois';
+
+  // 2. Compute 3 scenarios
+  const bp={consult:consult,fee:fee,days:BASE.days,assoc:BASE.assoc,indep:BASE.indep,interne:BASE.interne,start:start,occup:occup,cashPct:BASE.cashPct,delay:BASE.delay,factoring:BASE.factoring,extra:BASE.extra,rc:BASE.rc,retro:BASE.retro};
+  const simBase=computeSimulation(bp);
+  const simPess=computeSimulation({...bp,consult:Math.max(8,Math.round(consult*0.75)),fee:Math.round(fee*0.75),occup:Math.max(30,Math.round(occup*0.75)),start:Math.min(12,start+2)});
+  const simOpt=computeSimulation({...bp,consult:Math.min(24,Math.round(consult*1.25)),fee:Math.min(350,Math.round(fee*1.25)),occup:Math.min(100,Math.round(occup*1.25)),start:Math.max(1,start-1)});
+
+  // 3. KPIs
+  el('rCaY3').textContent=fmt(simBase.caY3);
+  el('rResY3').textContent=fmt(simBase.resY3);
+  el('rBfrMin').textContent=fmt(simBase.bfrMin);
+  el('rTresoFinal').textContent=fmt(simBase.tresoFinal);
+  if(D.caY3) el('rCaY3Delta').textContent='vs plan: '+(simBase.caY3/D.caY3*100-100>=0?'+':'')+Math.round(simBase.caY3/D.caY3*100-100)+'%';
+  if(D.resY3) el('rResY3Delta').textContent='vs plan: '+(simBase.resY3/D.resY3*100-100>=0?'+':'')+Math.round(simBase.resY3/D.resY3*100-100)+'%';
+  el('rBfrMin').parentElement.className='kpi '+(simBase.bfrMin<-150000?'red':simBase.bfrMin<-50000?'orange':'green');
+  el('rTresoFinal').parentElement.className='kpi '+(simBase.tresoFinal<0?'red':simBase.tresoFinal<500000?'orange':'green');
+
+  // 4. Scenario grid
+  const scenarios=[
+    {label:'Pessimiste (-25%)',sim:simPess,css:'pessimiste'},
+    {label:'Base (actuel)',sim:simBase,css:'base'},
+    {label:'Optimiste (+25%)',sim:simOpt,css:'optimiste'},
+  ];
+  let sgH='';
+  scenarios.forEach(sc=>{
+    sgH+='<div class="risk-scenario '+sc.css+'">';
+    sgH+='<h4>'+sc.label+'</h4>';
+    sgH+='<div class="rs-val '+(sc.sim.resY3<0?'neg':'pos')+'">'+fmtCHF(sc.sim.resY3)+'</div>';
+    sgH+='<div class="rs-detail">CA Y3: '+fmt(sc.sim.caY3)+'</div>';
+    sgH+='<div class="rs-detail">BFR min: '+fmt(sc.sim.bfrMin)+'</div>';
+    sgH+='<div class="rs-detail">Tr\u00e9so M36: '+fmt(sc.sim.tresoFinal)+'</div>';
+    sgH+='</div>';
+  });
+  el('riskScenarioGrid').innerHTML=sgH;
+
+  // 5. Sensitivity analysis
+  const sensVars=[
+    {label:'Consultations/jour',key:'consult',pess:Math.max(8,Math.round(consult*0.75))},
+    {label:'Honoraires moyens',key:'fee',pess:Math.round(fee*0.75)},
+    {label:'Taux occupation Y1',key:'occup',pess:Math.max(30,Math.round(occup*0.75))},
+    {label:'D\u00e9lai mont\u00e9e charge',key:'start',pess:Math.min(12,start+3)},
+  ];
+  const impacts=sensVars.map(v=>{
+    const p={...bp,[v.key]:v.pess};
+    const r=computeSimulation(p);
+    return {label:v.label,delta:Math.abs(simBase.resY3-r.resY3)};
+  });
+  const maxImp=Math.max(...impacts.map(i=>i.delta),1);
+  let sensH='';
+  impacts.forEach(imp=>{
+    const pct=Math.round(imp.delta/maxImp*100);
+    const lv=pct>70?'high':pct>40?'medium':'low';
+    sensH+='<div class="risk-sens-row">';
+    sensH+='<div class="risk-sens-label">'+imp.label+'</div>';
+    sensH+='<div class="risk-sens-bar-ct"><div class="risk-sens-bar '+lv+'" style="width:'+pct+'%"></div></div>';
+    sensH+='<div class="risk-sens-pct">'+fmt(imp.delta)+'</div>';
+    sensH+='</div>';
+  });
+  el('riskSensitivity').innerHTML=sensH;
+
+  // 6. Stress chart (horizontal bar)
+  if(charts.riskStress){try{charts.riskStress.destroy()}catch(e){}}
+  charts.riskStress=new Chart(el('cRiskStress'),{type:'bar',data:{labels:impacts.map(i=>i.label),datasets:[{label:'Impact sur R\u00e9sultat Y3',data:impacts.map(i=>i.delta),backgroundColor:impacts.map(i=>{const p=i.delta/maxImp;return p>0.7?'rgba(214,48,49,.7)':p>0.4?'rgba(253,203,110,.7)':'rgba(0,184,148,.7)';}),borderRadius:8,barPercentage:.6}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:gridOpts,ticks:{callback:v=>fmt(v)}},y:{grid:{display:false}}}}});
+
+  // 7. Risk matrix
+  const lvlLabel=v=>[,'Tr\u00e8s faible','Faible','Moyen','\u00c9lev\u00e9','Tr\u00e8s \u00e9lev\u00e9'][v]||'';
+  const lvlClass=v=>[,'faible','faible','moyen','eleve','tres-eleve'][v]||'';
+  const scoreColor=s=>s>=16?'var(--danger)':s>=9?'#e17055':s>=4?'var(--pl)':'var(--acc)';
+  const sorted=[...RISK_MATRIX].sort((a,b)=>{
+    const as=a.prob*a.impact,bs=b.prob*b.impact;
+    if(riskSortField==='score')return riskSortAsc?as-bs:bs-as;
+    if(riskSortField==='prob')return riskSortAsc?a.prob-b.prob:b.prob-a.prob;
+    if(riskSortField==='impact')return riskSortAsc?a.impact-b.impact:b.impact-a.impact;
+    return 0;
+  });
+  let totalExposure=0;
+  let mH='<table class="dt"><thead><tr><th>Risque</th>';
+  mH+='<th class="sortable'+(riskSortField==='prob'?' sorted-'+(riskSortAsc?'asc':'desc'):'')+'" onclick="sortRisksBy(\'prob\')">Probabilit\u00e9</th>';
+  mH+='<th class="sortable'+(riskSortField==='impact'?' sorted-'+(riskSortAsc?'asc':'desc'):'')+'" onclick="sortRisksBy(\'impact\')">Impact</th>';
+  mH+='<th class="sortable'+(riskSortField==='score'?' sorted-'+(riskSortAsc?'asc':'desc'):'')+'" onclick="sortRisksBy(\'score\')">Score</th>';
+  mH+='<th>Mitigation</th></tr></thead><tbody>';
+  sorted.forEach(r=>{
+    const sc=r.prob*r.impact;totalExposure+=sc;
+    mH+='<tr><td>'+r.name+'</td>';
+    mH+='<td><span class="badge clickable '+lvlClass(r.prob)+'" onclick="cycleRiskValue(\''+r.id+'\',\'prob\')">'+lvlLabel(r.prob)+'</span></td>';
+    mH+='<td><span class="badge clickable '+lvlClass(r.impact)+'" onclick="cycleRiskValue(\''+r.id+'\',\'impact\')">'+lvlLabel(r.impact)+'</span></td>';
+    mH+='<td class="risk-score-cell" style="color:'+scoreColor(sc)+'">'+sc+'</td>';
+    mH+='<td>'+r.mitigation+'</td></tr>';
+  });
+  mH+='</tbody></table>';
+  el('riskMatrixContainer').innerHTML=mH;
+  el('riskExposureVal').textContent=totalExposure+' / '+(RISK_MATRIX.length*25)+' (max)';
+
+  // 8. Charges table + donut
+  let totalMin=0,totalMax=0;
+  let cH='';
+  CHARGES_DATA.forEach(c=>{
+    totalMin+=c.min;totalMax+=c.max;
+    cH+='<tr><td>'+c.name+'</td><td class="num">'+fmtCHF(c.min)+'</td><td class="num">'+fmtCHF(c.max)+'</td><td><span class="badge '+c.criticite+'">'+c.criticite+'</span></td></tr>';
+  });
+  cH+='<tr style="font-weight:700;border-top:2px solid var(--brd)"><td>TOTAL</td><td class="num">'+fmtCHF(totalMin)+'</td><td class="num">'+fmtCHF(totalMax)+'</td><td></td></tr>';
+  el('chargesBody').innerHTML=cH;
+  el('chargesTotalLabel').textContent='~CHF '+fmt(totalMin)+'\u2013'+fmt(totalMax)+'/an';
+  if(charts.charges){try{charts.charges.destroy()}catch(e){}}
+  const crit={critique:0,important:0,moyen:0};
+  CHARGES_DATA.forEach(c=>{crit[c.criticite]=(crit[c.criticite]||0)+(c.min+c.max)/2;});
+  charts.charges=new Chart(el('cCharges'),{type:'doughnut',data:{labels:['Critique','Important','Moyen'],datasets:[{data:[crit.critique,crit.important,crit.moyen],backgroundColor:['#d63031','#fdcb6e','#74b9ff'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{position:'bottom',labels:{font:{size:10},usePointStyle:true,padding:8}}},cutout:'65%'}});
+
+  // 9. Global risk indicator
+  const stressSens=impacts.reduce((s,i)=>s+i.delta,0);
+  const maxSens=maxImp*sensVars.length;
+  const stressScore=maxSens>0?(stressSens/maxSens)*50:25;
+  const matrixScore=(totalExposure/(RISK_MATRIX.length*25))*50;
+  const composite=Math.round(stressScore+matrixScore);
+  const circ=2*Math.PI*34;
+  const offset=circ*(1-composite/100);
+  el('riskScore').textContent=composite;
+  const arc=el('riskArc');
+  arc.setAttribute('stroke-dasharray',circ);
+  arc.setAttribute('stroke-dashoffset',offset);
+  const gauge=el('riskGauge');
+  if(composite<=33){
+    gauge.className='risk-gauge low';arc.setAttribute('stroke','var(--acc)');
+    el('riskLabel').textContent='Risque global : Faible';
+    el('riskSub').textContent='Le projet pr\u00e9sente une bonne r\u00e9silience aux variations de param\u00e8tres et un profil de risque ma\u00eetris\u00e9.';
+  } else if(composite<=60){
+    gauge.className='risk-gauge medium';arc.setAttribute('stroke','#e17055');
+    el('riskLabel').textContent='Risque global : Mod\u00e9r\u00e9';
+    el('riskSub').textContent='Certaines variables pr\u00e9sentent une sensibilit\u00e9 significative. Renforcez les mesures de mitigation.';
+  } else {
+    gauge.className='risk-gauge high';arc.setAttribute('stroke','var(--danger)');
+    el('riskLabel').textContent='Risque global : \u00c9lev\u00e9';
+    el('riskSub').textContent='Le projet est tr\u00e8s sensible aux variations. R\u00e9visez les hypoth\u00e8ses cl\u00e9s et renforcez le plan de contingence.';
+  }
+}
+
 // ===== CHARTS =====
 const labels=Array.from({length:36},(_,i)=>'M'+(i+1));
 const labelsQ=['','','M3','','','M6','','','M9','','','M12','','','M15','','','M18','','','M21','','','M24','','','M27','','','M30','','','M33','','','M36'];
@@ -1411,7 +1667,7 @@ const yearPlugin={id:'yl',beforeDraw(c){const ctx=c.ctx,x=c.scales.x,y=c.scales.
 
 function updateCharts(){
   if(!D)return;
-  Object.entries(charts).forEach(([k,c])=>{if(k!=='sim1'&&k!=='sim2'&&k!=='optimize'){try{c.destroy()}catch(e){}}});
+  Object.entries(charts).forEach(([k,c])=>{if(k!=='sim1'&&k!=='sim2'&&k!=='optimize'&&k!=='riskStress'&&k!=='charges'){try{c.destroy()}catch(e){}}});
   // Overview chart — with optional overlay
   const ovDs=[{label:"Chiffre d'affaires",data:[D.caY1,D.caY2,D.caY3],backgroundColor:'rgba(26,74,122,.8)',borderRadius:8,barPercentage:.6},{label:'R\u00e9sultat net',data:[D.resY1,D.resY2,D.resY3],backgroundColor:'rgba(0,184,148,.8)',borderRadius:8,barPercentage:.6}];
   if(OVERLAY){ovDs.push({label:'CA sc\u00e9nario',data:[OVERLAY.caY1,OVERLAY.caY2,OVERLAY.caY3],backgroundColor:'rgba(26,74,122,.25)',borderRadius:8,barPercentage:.6,borderWidth:2,borderColor:'rgba(26,74,122,.6)',borderDash:[4,4]});ovDs.push({label:'R\u00e9sultat sc\u00e9nario',data:[OVERLAY.resY1,OVERLAY.resY2,OVERLAY.resY3],backgroundColor:'rgba(0,184,148,.25)',borderRadius:8,barPercentage:.6,borderWidth:2,borderColor:'rgba(0,184,148,.6)',borderDash:[4,4]});}
@@ -1426,6 +1682,7 @@ function updateCharts(){
   charts.team=new Chart(document.getElementById('cTeam'),{type:'bar',data:{labels:labelsQ,datasets:[{label:'Associ\u00e9s',data:D.fteAssoc,backgroundColor:'#0f2b46',borderRadius:1},{label:'Ind\u00e9pendants',data:D.fteIndep,backgroundColor:'#1a4a7a',borderRadius:1},{label:'Internes',data:D.fteInterne,backgroundColor:'#5dade2',borderRadius:1},{label:'Personnel admin',data:D.fteAdmin,backgroundColor:'#aed6f1',borderRadius:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:12}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:gridOpts,title:{display:true,text:'ETP'}}}},plugins:[yearPlugin]});
   charts.profit=new Chart(document.getElementById('cProfit'),{type:'bar',data:{labels:['Ann\u00e9e 1','Ann\u00e9e 2','Ann\u00e9e 3'],datasets:[{label:'R\u00e9sultat brut / associ\u00e9',data:[D.resY1/2,D.resY2/2,D.resY3/2],backgroundColor:'rgba(26,74,122,.8)',borderRadius:8,barPercentage:.5},{label:'Apr\u00e8s charges manquantes',data:[Math.max(0,D.resY1/2-100000),D.resY2/2-100000,D.resY3/2-100000],backgroundColor:'rgba(0,184,148,.8)',borderRadius:8,barPercentage:.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:16}}},scales:{y:{grid:gridOpts,ticks:{callback:v=>fmt(v)+' CHF'}},x:{grid:{display:false}}}}});
   updateOptimize();
+  updateRisks();
 }
 
 // ===== SIMULATOR ENGINE =====
