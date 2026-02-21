@@ -10,6 +10,7 @@ async function main() {
   const allowedEmails = [
     'marine.claver29@gmail.com',
     'electronight@gmail.com',
+    'heiner.a.weber@gmail.com',
   ];
 
   for (const email of allowedEmails) {
