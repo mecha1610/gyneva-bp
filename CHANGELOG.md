@@ -2,6 +2,21 @@
 
 All notable changes to the GYNEVA Business Plan application are documented here.
 
+## [0.9.0] - 2026-02-21
+
+### Added
+- **Interactive profit controls**: sliders for number of associates (1-4) and annual missing charges (0-400k CHF)
+- **4 dynamic KPIs**: ROI cumule 3 ans (with color-coded thresholds), payback period in months, resultat/associe Y3 after charges, investissement/associe (CAPEX share)
+- **Dynamic verdict**: adapts to ROI level — excellent (>=5x), attractif (>=2x), modere (>=1x), insuffisant (<1x)
+- **Medecin vs non-medecin breakdown**: two detail cards showing retrocession propre CA (uses dynamic retrocession rate) + part resultat for medecin, resultat seul for non-medecin, with 3-year cumulative totals
+- **Enriched bar chart**: 3 datasets (resultat brut/associe, apres charges manquantes, revenu medecin total including retrocession)
+- **Cumulative profit line chart**: 36-month profit cumule per associate with CAPEX/associate investment threshold line (dashed red)
+
+### Changed
+- All profit calculations delegated to `updateProfit()` function (removed hardcoded division by 2 and 200k charges)
+- `updateUI()` no longer directly updates profit elements (delegated to `updateProfit()`)
+- Chart destroy loop excludes `profit` and `profitCumul` keys (lifecycle managed by `updateProfit()`)
+
 ## [0.8.0] - 2026-02-21
 
 ### Added
