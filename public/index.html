@@ -165,6 +165,67 @@ table.dt tr:hover td{background:#f8fafb}
 .version-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.2);z-index:299}
 .version-overlay.show{display:block}
 
+/* === PLAN SWITCHER === */
+.plan-switcher{position:relative;display:flex;align-items:center;margin-left:.8rem}
+.plan-name{background:none;border:1px solid var(--brd);color:var(--p);padding:.35rem .8rem;border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:var(--trans);display:flex;align-items:center;gap:.4rem}
+.plan-name:hover{border-color:var(--pl);color:var(--pl)}
+.plan-name::after{content:'\25BC';font-size:.55rem;opacity:.5}
+.plan-dropdown{display:none;position:absolute;top:calc(100% + 6px);left:0;min-width:300px;max-height:400px;overflow-y:auto;background:var(--card);border:1px solid var(--brd);border-radius:var(--r);box-shadow:0 8px 32px rgba(0,0,0,.12);z-index:150;padding:.4rem 0}
+.plan-dropdown.show{display:block}
+.pd-item{display:flex;align-items:center;padding:.6rem 1rem;cursor:pointer;transition:var(--trans);border-left:3px solid transparent;gap:.6rem}
+.pd-item:hover{background:#f8fafb}
+.pd-item.active{border-left-color:var(--acc);background:rgba(0,184,148,.04)}
+.pd-item .pd-info{flex:1;min-width:0}
+.pd-item .pd-plan-name{font-size:.82rem;font-weight:600;color:var(--p);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pd-item .pd-date{font-size:.7rem;color:var(--txtL)}
+.pd-item .pd-actions{display:flex;gap:.3rem;opacity:0;transition:opacity .2s}
+.pd-item:hover .pd-actions{opacity:1}
+.pd-item .pd-btn{background:none;border:none;cursor:pointer;font-size:.72rem;color:var(--txtL);padding:.2rem .4rem;border-radius:4px;transition:var(--trans)}
+.pd-item .pd-btn:hover{background:rgba(26,74,122,.08);color:var(--pl)}
+.pd-item .pd-btn.del:hover{color:var(--danger);background:rgba(214,48,49,.06)}
+.pd-footer{padding:.5rem 1rem;border-top:1px solid var(--brd)}
+.pd-footer button{width:100%;background:none;border:1px dashed var(--brd);color:var(--pl);padding:.5rem;border-radius:8px;font-size:.8rem;font-weight:500;cursor:pointer;transition:var(--trans)}
+.pd-footer button:hover{background:rgba(26,74,122,.04);border-color:var(--pl)}
+
+/* === OVERLAY CONTROL === */
+.overlay-control{display:flex;align-items:center;gap:.7rem;padding:.7rem 1.2rem;background:var(--card);border:1px solid var(--brd);border-radius:var(--r);margin-bottom:1.2rem;font-size:.82rem}
+.overlay-control label{display:flex;align-items:center;gap:.4rem;font-weight:500;color:var(--p);white-space:nowrap}
+.overlay-indicator{width:8px;height:8px;border-radius:50%;background:#ccc;flex-shrink:0;transition:var(--trans)}
+.overlay-indicator.active{background:var(--acc);animation:pulse 2s infinite}
+.overlay-control select{flex:1;padding:.35rem .6rem;border:1px solid var(--brd);border-radius:8px;font-size:.8rem;background:var(--card);cursor:pointer;max-width:260px}
+.overlay-control button{background:none;border:1px solid var(--brd);padding:.3rem .6rem;border-radius:6px;font-size:.72rem;cursor:pointer;color:var(--txtL);transition:var(--trans)}
+.overlay-control button:hover{border-color:var(--pl);color:var(--pl)}
+
+/* === COMPARE MODAL === */
+.compare-modal{display:none;position:fixed;inset:0;z-index:400;background:var(--bg);overflow-y:auto;padding:2rem}
+.compare-modal.open{display:block}
+.compare-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+.compare-header h2{font-size:1.1rem;font-weight:700;color:var(--p);display:flex;align-items:center;gap:.5rem}
+.compare-header .close-btn{background:none;border:1px solid var(--brd);padding:.4rem .8rem;border-radius:8px;cursor:pointer;font-size:.85rem;color:var(--txtL);transition:var(--trans)}
+.compare-header .close-btn:hover{border-color:var(--pl);color:var(--pl)}
+.compare-selectors{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;margin-bottom:1.5rem;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--brd);border-radius:var(--r)}
+.compare-selectors select{padding:.4rem .7rem;border:1px solid var(--brd);border-radius:8px;font-size:.82rem;background:var(--card);min-width:200px}
+.compare-selectors .vs-label{font-size:.85rem;font-weight:700;color:var(--txtL)}
+.compare-grid{display:grid;grid-template-columns:1fr repeat(3,auto);gap:0;background:var(--card);border:1px solid var(--brd);border-radius:var(--r);overflow:hidden;margin-bottom:1.5rem}
+.compare-grid .cg-head{background:#f8fafb;padding:.6rem 1rem;font-size:.75rem;font-weight:600;color:var(--p);text-transform:uppercase;letter-spacing:.4px;border-bottom:2px solid var(--brd)}
+.compare-grid .cg-cell{padding:.55rem 1rem;font-size:.82rem;border-bottom:1px solid #f0f3f5;display:flex;align-items:center}
+.compare-grid .cg-cell.label{font-weight:500;color:var(--p)}
+.compare-grid .cg-cell.num{justify-content:flex-end;font-variant-numeric:tabular-nums}
+.compare-grid .cg-cell .delta-badge{font-size:.7rem;font-weight:600;padding:.1rem .45rem;border-radius:8px;margin-left:.4rem}
+.compare-grid .cg-cell .delta-badge.pos{background:rgba(0,184,148,.1);color:#00b894}
+.compare-grid .cg-cell .delta-badge.neg{background:rgba(214,48,49,.1);color:var(--danger)}
+.compare-grid .cg-cell .delta-badge.zero{background:rgba(99,110,114,.08);color:var(--txtL)}
+.compare-charts{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1.5rem}
+@media(max-width:900px){.compare-charts{grid-template-columns:1fr}}
+.compare-charts .card{margin-bottom:0}
+.compare-charts .chart-box{height:250px}
+@media print{
+  .compare-modal{position:static;padding:1rem;overflow:visible}
+  .compare-selectors,.compare-header .close-btn,.compare-header button{display:none!important}
+  .compare-charts{grid-template-columns:1fr 1fr}
+  .compare-charts .chart-box{height:200px}
+}
+
 /* ===== SIMULATOR ===== */
 .sim-layout{display:grid;grid-template-columns:340px 1fr;gap:1.5rem}
 @media(max-width:900px){.sim-layout{grid-template-columns:1fr}}
@@ -292,11 +353,19 @@ table.dt tr:hover td{background:#f8fafb}
 <div class="main-area">
 <div class="topbar">
   <div class="page-title" id="pageTitle">Vue d'ensemble</div>
+  <div class="plan-switcher" id="planSwitcher">
+    <span class="plan-name" onclick="togglePlanDropdown()" id="planNameDisplay">Plan initial</span>
+    <div class="plan-dropdown" id="planDropdown">
+      <div id="planListItems"></div>
+      <div class="pd-footer"><button onclick="createNewPlan()">+ Nouveau plan</button></div>
+    </div>
+  </div>
   <div class="spacer"></div>
   <div class="status-pill static" id="statusPill"><div class="status-dot static" id="statusDot"></div><span id="statusLabel">Donn&eacute;es int&eacute;gr&eacute;es</span></div>
   <button class="btn" onclick="document.getElementById('fileInput').click()">&#128196; Importer Excel</button>
   <input type="file" id="fileInput" accept=".xlsx,.xls" style="display:none" onchange="handleFile(this.files[0])">
   <button class="btn" onclick="openVersionPanel()">&#128338; Versions</button>
+  <button class="btn" onclick="openCompare()">&#128200; Comparer</button>
   <button class="btn primary" onclick="exportPDF()">&#128424; Export PDF</button>
 </div>
 
@@ -314,6 +383,15 @@ table.dt tr:hover td{background:#f8fafb}
 <div class="import-summary" id="importSummary">
   <h3>&#128203; R&eacute;sum&eacute; de l'import</h3>
   <div id="importDiffContent"></div>
+</div>
+
+<!-- OVERLAY CONTROL -->
+<div class="overlay-control" id="overlayControl" style="display:none">
+  <label><span class="overlay-indicator" id="overlayDot"></span> Sc&eacute;nario overlay :</label>
+  <select id="overlayScenarioSelect" onchange="applyScenarioOverlay()">
+    <option value="">Aucun (d&eacute;sactiv&eacute;)</option>
+  </select>
+  <button onclick="refreshOverlayScenarios()">&#8635; Rafra&icirc;chir</button>
 </div>
 
 <!-- ====== OVERVIEW ====== -->
@@ -643,6 +721,9 @@ let D = null;
 let SIM = null;
 let currentUser = null;
 let currentPlanId = null;
+let allPlans = [];
+let OVERLAY = null;
+let overlayScenarioId = null;
 
 // ===== NAV =====
 const pageTitles = {overview:"Vue d'ensemble",simulator:"Simulateur",revenue:"Revenus",cashflow:"Tr\u00e9sorerie",team:"\u00c9quipe",risks:"Risques",profit:"Profit associ\u00e9s",optimize:"Optimisations",admin:"Administration"};
@@ -923,9 +1004,18 @@ const yearPlugin={id:'yl',beforeDraw(c){const ctx=c.ctx,x=c.scales.x,y=c.scales.
 function updateCharts(){
   if(!D)return;
   Object.entries(charts).forEach(([k,c])=>{if(k!=='sim1'&&k!=='sim2'){try{c.destroy()}catch(e){}}});
-  charts.overview=new Chart(document.getElementById('cOverview'),{type:'bar',data:{labels:['Ann\u00e9e 1','Ann\u00e9e 2','Ann\u00e9e 3'],datasets:[{label:"Chiffre d'affaires",data:[D.caY1,D.caY2,D.caY3],backgroundColor:'rgba(26,74,122,.8)',borderRadius:8,barPercentage:.6},{label:'R\u00e9sultat net',data:[D.resY1,D.resY2,D.resY3],backgroundColor:'rgba(0,184,148,.8)',borderRadius:8,barPercentage:.6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:16}}},scales:{y:{grid:gridOpts,ticks:{callback:v=>fmt(v)}},x:{grid:{display:false}}}}});
-  charts.revenue=new Chart(document.getElementById('cRevenue'),{type:'bar',data:{labels:labelsQ,datasets:[{label:'Associ\u00e9s',data:D.caAssoc,backgroundColor:'#0f2b46',borderRadius:1},{label:'Ind\u00e9pendants',data:D.caIndep,backgroundColor:'#1a4a7a',borderRadius:1},{label:'Internes',data:D.caInterne,backgroundColor:'#5dade2',borderRadius:1},{label:'Sage-femme',data:D.caSage,backgroundColor:'#aed6f1',borderRadius:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:12}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:gridOpts,ticks:{callback:v=>fmt(v)}}}},plugins:[yearPlugin]});
-  charts.cashflow=new Chart(document.getElementById('cCashflow'),{type:'line',data:{labels:labelsQ,datasets:[{label:'Sans d\u00e9lai',data:D.cashflow,borderColor:'#00b894',backgroundColor:'rgba(0,184,148,.05)',fill:true,tension:.3,pointRadius:0,borderWidth:2},{label:'100% LAMal 3m',data:D.treso3m,borderColor:'#d63031',backgroundColor:'rgba(214,48,49,.03)',fill:true,tension:.3,pointRadius:0,borderWidth:2,borderDash:[6,3]},{label:'15% cash + Factoring',data:D.tresoFact,borderColor:'#1a4a7a',backgroundColor:'rgba(26,74,122,.05)',fill:true,tension:.3,pointRadius:0,borderWidth:2.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:12}}},scales:{y:{grid:gridOpts,ticks:{callback:v=>fmt(v)}},x:{grid:{display:false}}}},plugins:[yearPlugin]});
+  // Overview chart — with optional overlay
+  const ovDs=[{label:"Chiffre d'affaires",data:[D.caY1,D.caY2,D.caY3],backgroundColor:'rgba(26,74,122,.8)',borderRadius:8,barPercentage:.6},{label:'R\u00e9sultat net',data:[D.resY1,D.resY2,D.resY3],backgroundColor:'rgba(0,184,148,.8)',borderRadius:8,barPercentage:.6}];
+  if(OVERLAY){ovDs.push({label:'CA sc\u00e9nario',data:[OVERLAY.caY1,OVERLAY.caY2,OVERLAY.caY3],backgroundColor:'rgba(26,74,122,.25)',borderRadius:8,barPercentage:.6,borderWidth:2,borderColor:'rgba(26,74,122,.6)',borderDash:[4,4]});ovDs.push({label:'R\u00e9sultat sc\u00e9nario',data:[OVERLAY.resY1,OVERLAY.resY2,OVERLAY.resY3],backgroundColor:'rgba(0,184,148,.25)',borderRadius:8,barPercentage:.6,borderWidth:2,borderColor:'rgba(0,184,148,.6)',borderDash:[4,4]});}
+  charts.overview=new Chart(document.getElementById('cOverview'),{type:'bar',data:{labels:['Ann\u00e9e 1','Ann\u00e9e 2','Ann\u00e9e 3'],datasets:ovDs},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:16}}},scales:{y:{grid:gridOpts,ticks:{callback:v=>fmt(v)}},x:{grid:{display:false}}}}});
+  // Revenue chart — with optional overlay line
+  const revDs=[{label:'Associ\u00e9s',data:D.caAssoc,backgroundColor:'#0f2b46',borderRadius:1},{label:'Ind\u00e9pendants',data:D.caIndep,backgroundColor:'#1a4a7a',borderRadius:1},{label:'Internes',data:D.caInterne,backgroundColor:'#5dade2',borderRadius:1},{label:'Sage-femme',data:D.caSage,backgroundColor:'#aed6f1',borderRadius:1}];
+  if(OVERLAY){revDs.push({type:'line',label:'CA sc\u00e9nario',data:OVERLAY.ca,borderColor:'#d63031',borderWidth:2.5,borderDash:[6,3],pointRadius:0,tension:.3,fill:false,stack:false});}
+  charts.revenue=new Chart(document.getElementById('cRevenue'),{type:'bar',data:{labels:labelsQ,datasets:revDs},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:12}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:gridOpts,ticks:{callback:v=>fmt(v)}}}},plugins:[yearPlugin]});
+  // Cashflow chart — with optional overlay line
+  const cfDs=[{label:'Sans d\u00e9lai',data:D.cashflow,borderColor:'#00b894',backgroundColor:'rgba(0,184,148,.05)',fill:true,tension:.3,pointRadius:0,borderWidth:2},{label:'100% LAMal 3m',data:D.treso3m,borderColor:'#d63031',backgroundColor:'rgba(214,48,49,.03)',fill:true,tension:.3,pointRadius:0,borderWidth:2,borderDash:[6,3]},{label:'15% cash + Factoring',data:D.tresoFact,borderColor:'#1a4a7a',backgroundColor:'rgba(26,74,122,.05)',fill:true,tension:.3,pointRadius:0,borderWidth:2.5}];
+  if(OVERLAY){cfDs.push({label:'Cashflow sc\u00e9nario',data:OVERLAY.cashflow,borderColor:'#e17055',borderWidth:2.5,borderDash:[6,3],pointRadius:0,tension:.3,fill:false});}
+  charts.cashflow=new Chart(document.getElementById('cCashflow'),{type:'line',data:{labels:labelsQ,datasets:cfDs},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:12}}},scales:{y:{grid:gridOpts,ticks:{callback:v=>fmt(v)}},x:{grid:{display:false}}}},plugins:[yearPlugin]});
   charts.team=new Chart(document.getElementById('cTeam'),{type:'bar',data:{labels:labelsQ,datasets:[{label:'Associ\u00e9s',data:D.fteAssoc,backgroundColor:'#0f2b46',borderRadius:1},{label:'Ind\u00e9pendants',data:D.fteIndep,backgroundColor:'#1a4a7a',borderRadius:1},{label:'Internes',data:D.fteInterne,backgroundColor:'#5dade2',borderRadius:1},{label:'Personnel admin',data:D.fteAdmin,backgroundColor:'#aed6f1',borderRadius:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:12}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:gridOpts,title:{display:true,text:'ETP'}}}},plugins:[yearPlugin]});
   charts.profit=new Chart(document.getElementById('cProfit'),{type:'bar',data:{labels:['Ann\u00e9e 1','Ann\u00e9e 2','Ann\u00e9e 3'],datasets:[{label:'R\u00e9sultat brut / associ\u00e9',data:[D.resY1/2,D.resY2/2,D.resY3/2],backgroundColor:'rgba(26,74,122,.8)',borderRadius:8,barPercentage:.5},{label:'Apr\u00e8s charges manquantes',data:[Math.max(0,D.resY1/2-100000),D.resY2/2-100000,D.resY3/2-100000],backgroundColor:'rgba(0,184,148,.8)',borderRadius:8,barPercentage:.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:16}}},scales:{y:{grid:gridOpts,ticks:{callback:v=>fmt(v)+' CHF'}},x:{grid:{display:false}}}}});
   charts.optimize=new Chart(document.getElementById('cOptimize'),{type:'line',data:{labels:labelsQ,datasets:[{label:'100% LAMal 3m (pire)',data:D.treso3m,borderColor:'#d63031',tension:.3,pointRadius:0,borderWidth:2,borderDash:[6,3]},{label:'15% cash + LAMal 3m',data:D.tresoCash3m,borderColor:'#e17055',tension:.3,pointRadius:0,borderWidth:2},{label:'15% cash + Factoring',data:D.tresoFact,borderColor:'#00b894',tension:.3,pointRadius:0,borderWidth:2.5},{label:'Sans d\u00e9lai',data:D.cashflow,borderColor:'#b2bec3',tension:.3,pointRadius:0,borderWidth:1.5,borderDash:[3,3]}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:12}}},scales:{y:{grid:gridOpts,ticks:{callback:v=>fmt(v)}},x:{grid:{display:false}}}},plugins:[yearPlugin]});
@@ -933,6 +1023,61 @@ function updateCharts(){
 
 // ===== SIMULATOR ENGINE =====
 const BASE = {consult:16, fee:225, days:215, assoc:2, indep:3, interne:2, start:4, occup:60, cashPct:15, delay:1, factoring:true, extra:200000, rc:60000};
+
+// Pure simulation function (no DOM side effects)
+function computeSimulation(params){
+  const V={
+    consult:params.consult, fee:params.fee, days:params.days,
+    assoc:params.assoc, indep:params.indep, interne:params.interne,
+    start:params.start, occup:params.occup/100, cashPct:params.cashPct/100,
+    delay:params.delay, factoring:params.factoring,
+    extra:params.extra, rc:params.rc
+  };
+  const annualCA_per_spec = V.consult * V.fee * V.days;
+  const monthlyCA_per_spec = annualCA_per_spec/12;
+  const simCA=[], simResult=[], simCashflow=[];
+  let cumCash=0;
+  for(let m=0;m<36;m++){
+    const year=m<12?1:m<24?2:3;
+    let occ=0;
+    if(m >= V.start-1){
+      const monthsSinceStart = m - (V.start-1);
+      if(year===1) occ = Math.min(V.occup, V.occup * Math.min(1, (monthsSinceStart+1)/8));
+      else if(year===2) occ = Math.min(1, V.occup + (1-V.occup)*0.6);
+      else occ = 1;
+    }
+    const caAssoc = monthlyCA_per_spec * V.assoc * occ * 0.4;
+    const caIndep = monthlyCA_per_spec * V.indep * occ * 0.4;
+    const caInterne = monthlyCA_per_spec * V.interne * occ;
+    const caSage = occ > 0 ? 13333 : 0;
+    const totalCA = caAssoc + caIndep + caInterne + caSage;
+    const baseMonthlyAdmin = 52650 * (1 + (V.assoc+V.indep+V.interne-7)*0.08);
+    const baseMonthlyOpex = 45584 * (1 + (V.assoc+V.indep+V.interne-7)*0.05);
+    const totalCosts = -(Math.abs(baseMonthlyAdmin) + Math.abs(baseMonthlyOpex)) * occ - (V.extra+V.rc)/12;
+    const salInterne = monthlyCA_per_spec * V.interne * occ * 0.55;
+    const netResult = totalCA + totalCosts - salInterne*(occ>0?1:0);
+    simCA.push(totalCA);
+    simResult.push(netResult);
+    let cashIn = 0;
+    if(V.factoring){
+      cashIn = totalCA * V.cashPct + totalCA * (1-V.cashPct) * (1-FACT_COST);
+    } else {
+      cashIn = totalCA * V.cashPct;
+      if(m >= V.delay) cashIn += simCA[m-V.delay] * (1-V.cashPct);
+    }
+    cumCash += cashIn + totalCosts - salInterne*(occ>0?1:0);
+    simCashflow.push(cumCash);
+  }
+  const sum=(arr,s,e)=>arr.slice(s,e).reduce((a,b)=>a+b,0);
+  return {
+    ca:simCA, result:simResult, cashflow:simCashflow,
+    caY1:sum(simCA,0,12), caY2:sum(simCA,12,24), caY3:sum(simCA,24,36),
+    resY1:sum(simResult,0,12), resY2:sum(simResult,12,24), resY3:sum(simResult,24,36),
+    resAdj:sum(simResult,24,36) - params.extra - params.rc,
+    perAssoc:(sum(simResult,24,36) - params.extra - params.rc)/params.assoc,
+    bfrMin:Math.min(...simCashflow), tresoFinal:simCashflow[35]
+  };
+}
 
 function resetSim(){
   document.getElementById('sConsult').value=BASE.consult;
@@ -977,71 +1122,20 @@ function setSimParams(p) {
 
 function runSim(){
   const el=id=>document.getElementById(id);
-  const V={
-    consult:+el('sConsult').value, fee:+el('sFee').value, days:+el('sDays').value,
-    assoc:+el('sAssoc').value, indep:+el('sIndep').value, interne:+el('sInterne').value,
-    start:+el('sStart').value, occup:+el('sOccup').value/100, cashPct:+el('sCash').value/100,
-    delay:+el('sDelay').value, factoring:el('sFactToggle').classList.contains('on'),
-    extra:+el('sExtra').value, rc:+el('sRC').value
-  };
+  const params = getSimParams();
 
-  el('sConsultVal').textContent=V.consult; el('sFeeVal').textContent=V.fee; el('sDaysVal').textContent=V.days;
-  el('sAssocVal').textContent=V.assoc; el('sIndepVal').textContent=V.indep; el('sInterneVal').textContent=V.interne;
-  el('sStartVal').textContent=V.start; el('sOccupVal').textContent=Math.round(V.occup*100)+'%';
-  el('sCashVal').textContent=Math.round(V.cashPct*100)+'%';
-  el('sExtraVal').textContent=fmt(V.extra); el('sRCVal').textContent=fmt(V.rc);
+  el('sConsultVal').textContent=params.consult; el('sFeeVal').textContent=params.fee; el('sDaysVal').textContent=params.days;
+  el('sAssocVal').textContent=params.assoc; el('sIndepVal').textContent=params.indep; el('sInterneVal').textContent=params.interne;
+  el('sStartVal').textContent=params.start; el('sOccupVal').textContent=params.occup+'%';
+  el('sCashVal').textContent=params.cashPct+'%';
+  el('sExtraVal').textContent=fmt(params.extra); el('sRCVal').textContent=fmt(params.rc);
 
-  const annualCA_per_spec = V.consult * V.fee * V.days;
-  const monthlyCA_per_spec = annualCA_per_spec/12;
+  const sim = computeSimulation(params);
 
-  const simCA=[], simResult=[], simCashflow=[];
-  let cumCash=0;
-
-  for(let m=0;m<36;m++){
-    const year=m<12?1:m<24?2:3;
-    let occ = 0;
-    if(m >= V.start-1){
-      const monthsSinceStart = m - (V.start-1);
-      if(year===1) occ = Math.min(V.occup, V.occup * Math.min(1, (monthsSinceStart+1)/8));
-      else if(year===2) occ = Math.min(1, V.occup + (1-V.occup)*0.6);
-      else occ = 1;
-    }
-
-    const caAssoc = monthlyCA_per_spec * V.assoc * occ * 0.4;
-    const caIndep = monthlyCA_per_spec * V.indep * occ * 0.4;
-    const caInterne = monthlyCA_per_spec * V.interne * occ;
-    const caSage = occ > 0 ? 13333 : 0;
-    const totalCA = caAssoc + caIndep + caInterne + caSage;
-
-    const baseMonthlyAdmin = 52650 * (1 + (V.assoc+V.indep+V.interne-7)*0.08);
-    const baseMonthlyOpex = 45584 * (1 + (V.assoc+V.indep+V.interne-7)*0.05);
-    const totalCosts = -(Math.abs(baseMonthlyAdmin) + Math.abs(baseMonthlyOpex)) * occ - (V.extra+V.rc)/12;
-    const salInterne = monthlyCA_per_spec * V.interne * occ * 0.55;
-
-    const netResult = totalCA + totalCosts - salInterne*(occ>0?1:0);
-
-    simCA.push(totalCA);
-    simResult.push(netResult);
-
-    let cashIn = 0;
-    if(V.factoring){
-      cashIn = totalCA * V.cashPct + totalCA * (1-V.cashPct) * (1-FACT_COST);
-    } else {
-      cashIn = totalCA * V.cashPct;
-      if(m >= V.delay) cashIn += simCA[m-V.delay] * (1-V.cashPct);
-    }
-    cumCash += cashIn + totalCosts - salInterne*(occ>0?1:0);
-    simCashflow.push(cumCash);
-  }
-
-  const simCaY1=simCA.slice(0,12).reduce((a,b)=>a+b,0);
-  const simCaY2=simCA.slice(12,24).reduce((a,b)=>a+b,0);
-  const simCaY3=simCA.slice(24,36).reduce((a,b)=>a+b,0);
-  const simResY1=simResult.slice(0,12).reduce((a,b)=>a+b,0);
-  const simResY2=simResult.slice(12,24).reduce((a,b)=>a+b,0);
-  const simResY3=simResult.slice(24,36).reduce((a,b)=>a+b,0);
-  const simResAdj=simResY3 - V.extra - V.rc;
-  const simPerAssoc=simResAdj/V.assoc;
+  const simCA=sim.ca, simResult=sim.result, simCashflow=sim.cashflow;
+  const simCaY1=sim.caY1, simCaY2=sim.caY2, simCaY3=sim.caY3;
+  const simResY1=sim.resY1, simResY2=sim.resY2, simResY3=sim.resY3;
+  const simResAdj=sim.resAdj, simPerAssoc=sim.perAssoc;
 
   SIM={ca:simCA,result:simResult,cashflow:simCashflow,caY1:simCaY1,caY2:simCaY2,caY3:simCaY3,resY1:simResY1,resY2:simResY2,resY3:simResY3};
 
@@ -1058,17 +1152,17 @@ function runSim(){
   el('simResDelta').innerHTML='vs base '+fmt(D?D.resY3:0)+' '+delta(simResY3,D?D.resY3:1);
   el('simResAdj').textContent=fmt(simResAdj);
   el('simPerAssoc').textContent=fmt(simPerAssoc);
-  el('simPerAssocSub').textContent='R\u00e9sultat ajust\u00e9 / '+V.assoc+' associ\u00e9'+(V.assoc>1?'s':'');
+  el('simPerAssocSub').textContent='R\u00e9sultat ajust\u00e9 / '+params.assoc+' associ\u00e9'+(params.assoc>1?'s':'');
 
   el('simCaY3').parentElement.parentElement.className='kpi '+(simCaY3>(D?D.caY3:0)*0.9?'green':'orange');
   el('simResY3').parentElement.parentElement.className='kpi '+(simResY3>(D?D.resY3:0)*0.9?'green':simResY3>0?'orange':'red');
 
   const bfrMin=Math.min(...simCashflow);
   el('simSummary').innerHTML=
-    '<strong>R\u00e9sum\u00e9 :</strong> Avec '+V.consult+' consultations/jour \u00e0 CHF '+V.fee+', '+V.assoc+' associ\u00e9(s), '+V.indep+' ind\u00e9pendant(s), '+V.interne+' interne(s), '+(V.factoring?'factoring activ\u00e9':'sans factoring')+', d\u00e9lai '+V.delay+' mois, '+Math.round(V.cashPct*100)+'% cash OI :<br><br>'+
+    '<strong>R\u00e9sum\u00e9 :</strong> Avec '+params.consult+' consultations/jour \u00e0 CHF '+params.fee+', '+params.assoc+' associ\u00e9(s), '+params.indep+' ind\u00e9pendant(s), '+params.interne+' interne(s), '+(params.factoring?'factoring activ\u00e9':'sans factoring')+', d\u00e9lai '+params.delay+' mois, '+params.cashPct+'% cash OI :<br><br>'+
     '&bull; <strong>CA Ann\u00e9e 3 :</strong> CHF '+fmtN(simCaY3)+'<br>'+
     '&bull; <strong>R\u00e9sultat brut Y3 :</strong> CHF '+fmtN(simResY3)+'<br>'+
-    '&bull; <strong>R\u00e9sultat ajust\u00e9 Y3</strong> (apr\u00e8s CHF '+fmtN(V.extra)+' charges + CHF '+fmtN(V.rc)+' RC) : <strong>CHF '+fmtN(simResAdj)+'</strong><br>'+
+    '&bull; <strong>R\u00e9sultat ajust\u00e9 Y3</strong> (apr\u00e8s CHF '+fmtN(params.extra)+' charges + CHF '+fmtN(params.rc)+' RC) : <strong>CHF '+fmtN(simResAdj)+'</strong><br>'+
     '&bull; <strong>Par associ\u00e9 :</strong> CHF '+fmtN(simPerAssoc)+' / an<br>'+
     '&bull; <strong>Tr\u00e9sorerie min :</strong> CHF '+fmtN(bfrMin)+' '+(bfrMin<-250000?'\u26a0\ufe0f <span style="color:var(--danger)">BFR insuffisant</span>':bfrMin<0?'\u26a0\ufe0f N\u00e9gatif mais couvert par FdR':'\u2705 Positif')+'<br>'+
     '&bull; <strong>Tr\u00e9sorerie finale :</strong> CHF '+fmtN(simCashflow[35]);
@@ -1108,6 +1202,7 @@ async function saveScenario() {
         businessPlanId: currentPlanId || undefined,
       }),
     });
+    refreshOverlayScenarios();
   } catch(err) {
     console.error('Save scenario error:', err);
   }
@@ -1195,6 +1290,313 @@ async function removeAllowedEmail(email) {
   }
 }
 
+// ===== SCENARIO OVERLAY =====
+async function refreshOverlayScenarios() {
+  try {
+    const result = await api('/scenarios');
+    const select = document.getElementById('overlayScenarioSelect');
+    const current = select.value;
+    select.innerHTML = '<option value="">Aucun (d\u00e9sactiv\u00e9)</option>';
+    (result.scenarios || []).forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s.id;
+      opt.textContent = s.name;
+      select.appendChild(opt);
+    });
+    if (current) select.value = current;
+    document.getElementById('overlayControl').style.display = (result.scenarios && result.scenarios.length > 0) ? 'flex' : 'none';
+  } catch(err) {
+    console.error('Load overlay scenarios error:', err);
+  }
+}
+
+async function applyScenarioOverlay() {
+  const scenarioId = document.getElementById('overlayScenarioSelect').value;
+  const dot = document.getElementById('overlayDot');
+  if (!scenarioId) {
+    OVERLAY = null;
+    overlayScenarioId = null;
+    dot.classList.remove('active');
+    updateCharts();
+    return;
+  }
+  try {
+    const result = await api('/scenarios/' + scenarioId);
+    const sim = computeSimulation(result.scenario.params);
+    OVERLAY = sim;
+    overlayScenarioId = scenarioId;
+    dot.classList.add('active');
+    updateCharts();
+  } catch(err) {
+    console.error('Apply overlay error:', err);
+  }
+}
+
+// ===== VERSION COMPARISON =====
+let compareCharts = {};
+
+async function openCompare() {
+  const modal = document.getElementById('compareModal');
+  modal.classList.add('open');
+  document.getElementById('compareContent').innerHTML = '';
+  // Destroy old compare charts
+  Object.values(compareCharts).forEach(c => { try{c.destroy()}catch(e){} });
+  compareCharts = {};
+  // Populate selects
+  try {
+    const result = await api('/plans/' + currentPlanId + '/versions');
+    const versions = result.versions || [];
+    const leftSel = document.getElementById('compareLeft');
+    const rightSel = document.getElementById('compareRight');
+    const currentOpt = '<option value="current">Donn\u00e9es actuelles</option>';
+    const versionOpts = versions.map(v => {
+      const d = new Date(v.createdAt).toLocaleDateString('fr-CH',{day:'numeric',month:'short'});
+      return '<option value="'+v.id+'">v'+v.versionNumber+' \u2014 '+escHTML(v.label||'Sans label')+' ('+d+')</option>';
+    }).join('');
+    leftSel.innerHTML = currentOpt + versionOpts;
+    rightSel.innerHTML = currentOpt + versionOpts;
+    if (versions.length > 0) rightSel.value = versions[0].id;
+  } catch(err) {
+    console.error('Open compare error:', err);
+  }
+}
+
+function closeCompare() {
+  document.getElementById('compareModal').classList.remove('open');
+  Object.values(compareCharts).forEach(c => { try{c.destroy()}catch(e){} });
+  compareCharts = {};
+}
+
+async function fetchVersionData(val) {
+  if (val === 'current') {
+    const d = JSON.parse(JSON.stringify(D));
+    const sum=(arr,s,e)=>arr.slice(s,e).reduce((a,b)=>a+b,0);
+    d.caY1=sum(d.ca,0,12);d.caY2=sum(d.ca,12,24);d.caY3=sum(d.ca,24,36);
+    d.resY1=sum(d.result,0,12);d.resY2=sum(d.result,12,24);d.resY3=sum(d.result,24,36);
+    return d;
+  }
+  const result = await api('/plans/' + currentPlanId + '/versions/' + val);
+  const v = result.version;
+  const d = { ...v.data, ...(v.constants || {}) };
+  const sum=(arr,s,e)=>arr.slice(s,e).reduce((a,b)=>a+b,0);
+  d.caY1=sum(d.ca,0,12);d.caY2=sum(d.ca,12,24);d.caY3=sum(d.ca,24,36);
+  d.resY1=sum(d.result,0,12);d.resY2=sum(d.result,12,24);d.resY3=sum(d.result,24,36);
+  return d;
+}
+
+async function runCompare() {
+  try {
+    const leftVal = document.getElementById('compareLeft').value;
+    const rightVal = document.getElementById('compareRight').value;
+    const left = await fetchVersionData(leftVal);
+    const right = await fetchVersionData(rightVal);
+
+    // Build comparison grid
+    const metrics = [
+      {label:'CA Ann\u00e9e 1',l:left.caY1,r:right.caY1},
+      {label:'CA Ann\u00e9e 2',l:left.caY2,r:right.caY2},
+      {label:'CA Ann\u00e9e 3',l:left.caY3,r:right.caY3},
+      {label:'R\u00e9sultat Ann\u00e9e 1',l:left.resY1,r:right.resY1},
+      {label:'R\u00e9sultat Ann\u00e9e 2',l:left.resY2,r:right.resY2},
+      {label:'R\u00e9sultat Ann\u00e9e 3',l:left.resY3,r:right.resY3},
+      {label:'CAPEX',l:left.capex||0,r:right.capex||0},
+      {label:'Honoraires (CHF)',l:left.fee||0,r:right.fee||0},
+      {label:'Consult./jour',l:left.consultDay||0,r:right.consultDay||0},
+      {label:'ETP max',l:Math.max(...(left.fteTotal||[0])),r:Math.max(...(right.fteTotal||[0]))},
+    ];
+
+    function deltaHTML(l,r) {
+      if (!l && !r) return '<span class="delta-badge zero">=</span>';
+      const d = l ? ((r/l-1)*100) : (r ? 100 : 0);
+      if (Math.abs(d) < 0.5) return '<span class="delta-badge zero">=</span>';
+      return '<span class="delta-badge '+(d>0?'pos':'neg')+'">'+(d>0?'+':'')+d.toFixed(0)+'%</span>';
+    }
+
+    let html = '<div class="compare-grid">';
+    html += '<div class="cg-head">M\u00e9trique</div><div class="cg-head">Gauche</div><div class="cg-head">Droite</div><div class="cg-head">Delta</div>';
+    metrics.forEach(m => {
+      html += '<div class="cg-cell label">'+m.label+'</div>';
+      html += '<div class="cg-cell num">'+fmtCHF(m.l)+'</div>';
+      html += '<div class="cg-cell num">'+fmtCHF(m.r)+'</div>';
+      html += '<div class="cg-cell num">'+deltaHTML(m.l,m.r)+'</div>';
+    });
+    html += '</div>';
+    document.getElementById('compareContent').innerHTML = html;
+
+    // Charts
+    Object.values(compareCharts).forEach(c => { try{c.destroy()}catch(e){} });
+
+    compareCharts.overview = new Chart(document.getElementById('cCompareOverview'),{type:'bar',data:{labels:['Ann\u00e9e 1','Ann\u00e9e 2','Ann\u00e9e 3'],datasets:[
+      {label:'CA gauche',data:[left.caY1,left.caY2,left.caY3],backgroundColor:'rgba(26,74,122,.8)',borderRadius:6,barPercentage:.5},
+      {label:'CA droite',data:[right.caY1,right.caY2,right.caY3],backgroundColor:'rgba(26,74,122,.3)',borderRadius:6,barPercentage:.5,borderWidth:2,borderColor:'rgba(26,74,122,.6)',borderDash:[4,4]},
+      {label:'R\u00e9s. gauche',data:[left.resY1,left.resY2,left.resY3],backgroundColor:'rgba(0,184,148,.8)',borderRadius:6,barPercentage:.5},
+      {label:'R\u00e9s. droite',data:[right.resY1,right.resY2,right.resY3],backgroundColor:'rgba(0,184,148,.3)',borderRadius:6,barPercentage:.5,borderWidth:2,borderColor:'rgba(0,184,148,.6)',borderDash:[4,4]}
+    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:10,font:{size:11}}}},scales:{y:{grid:gridOpts,ticks:{callback:v=>fmt(v)}},x:{grid:{display:false}}}}});
+
+    compareCharts.cashflow = new Chart(document.getElementById('cCompareCashflow'),{type:'line',data:{labels:labelsQ,datasets:[
+      {label:'Cashflow gauche',data:left.cashflow,borderColor:'#1a4a7a',tension:.3,pointRadius:0,borderWidth:2.5,fill:false},
+      {label:'Cashflow droite',data:right.cashflow,borderColor:'#d63031',tension:.3,pointRadius:0,borderWidth:2.5,borderDash:[6,3],fill:false},
+      {label:'Seuil 0',data:Array(36).fill(0),borderColor:'rgba(99,110,114,.2)',borderWidth:1,pointRadius:0,borderDash:[2,2]}
+    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:10,font:{size:11}}}},scales:{y:{grid:gridOpts,ticks:{callback:v=>fmt(v)}},x:{grid:{display:false}}}},plugins:[yearPlugin]});
+
+  } catch(err) {
+    console.error('Run compare error:', err);
+    document.getElementById('compareContent').innerHTML = '<div style="color:var(--danger);padding:1rem">Erreur lors de la comparaison : '+escHTML(err.message || 'Erreur inconnue')+'</div>';
+  }
+}
+
+function printCompare() {
+  const app = document.getElementById('app-content');
+  const modal = document.getElementById('compareModal');
+  const sidebar = document.getElementById('sidebar');
+  // Hide everything except compare modal
+  app.style.display = 'none';
+  sidebar.style.display = 'none';
+  modal.style.position = 'static';
+  document.body.appendChild(modal);
+  window.print();
+  // Restore
+  document.getElementById('app-content').insertBefore(modal, document.querySelector('#app-content > :last-child'));
+  app.style.display = '';
+  sidebar.style.display = '';
+  modal.style.position = '';
+}
+
+// ===== PLAN SWITCHER =====
+async function loadPlanList() {
+  try {
+    const result = await api('/plans');
+    allPlans = result.plans || [];
+    renderPlanDropdown();
+    updatePlanNameDisplay();
+  } catch(err) {
+    console.error('Load plan list error:', err);
+  }
+}
+
+function renderPlanDropdown() {
+  const container = document.getElementById('planListItems');
+  if (!container) return;
+  container.innerHTML = allPlans.map(p => {
+    const isActive = p.id === currentPlanId;
+    const date = new Date(p.updatedAt || p.createdAt).toLocaleDateString('fr-CH', {day:'numeric',month:'short',year:'numeric'});
+    return '<div class="pd-item'+(isActive?' active':'')+'" onclick="switchPlan(\''+p.id+'\')">'+
+      '<div class="pd-info">'+
+        '<div class="pd-plan-name">'+escHTML(p.name)+'</div>'+
+        '<div class="pd-date">Modifi\u00e9 le '+date+'</div>'+
+      '</div>'+
+      '<div class="pd-actions">'+
+        '<button class="pd-btn" onclick="event.stopPropagation();renamePlan(\''+p.id+'\',\''+escHTML(p.name)+'\')" title="Renommer">\u270F</button>'+
+        (allPlans.length > 1 ? '<button class="pd-btn del" onclick="event.stopPropagation();deletePlan(\''+p.id+'\')" title="Supprimer">\u2717</button>' : '')+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+function escHTML(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function updatePlanNameDisplay() {
+  const el = document.getElementById('planNameDisplay');
+  if (!el) return;
+  const plan = allPlans.find(p => p.id === currentPlanId);
+  el.textContent = plan ? plan.name : 'Plan';
+}
+
+function togglePlanDropdown() {
+  const dd = document.getElementById('planDropdown');
+  dd.classList.toggle('show');
+  if (dd.classList.contains('show')) {
+    loadPlanList();
+    const close = function(e) {
+      if (!document.getElementById('planSwitcher').contains(e.target)) {
+        dd.classList.remove('show');
+        document.removeEventListener('click', close);
+      }
+    };
+    setTimeout(() => document.addEventListener('click', close), 0);
+  }
+}
+
+async function switchPlan(planId) {
+  if (planId === currentPlanId) {
+    document.getElementById('planDropdown').classList.remove('show');
+    return;
+  }
+  try {
+    const fullPlan = await api('/plans/' + planId);
+    currentPlanId = planId;
+    D = { ...fullPlan.plan.data, consultDay: fullPlan.plan.consultDay, fee: fullPlan.plan.fee, daysYear: fullPlan.plan.daysYear, revSpec: fullPlan.plan.revSpec, capex: fullPlan.plan.capex };
+    computeDerived();
+    updateUI();
+    runSim();
+    updatePlanNameDisplay();
+    renderPlanDropdown();
+    // Reset import summary and overlay
+    document.getElementById('importSummary').classList.remove('show');
+    document.getElementById('planDropdown').classList.remove('show');
+    OVERLAY = null;
+    overlayScenarioId = null;
+    const ovSelect = document.getElementById('overlayScenarioSelect');
+    if (ovSelect) ovSelect.value = '';
+    document.getElementById('overlayDot').classList.remove('active');
+    refreshOverlayScenarios();
+    // Update status bar
+    const plan = allPlans.find(p => p.id === planId);
+    document.getElementById('statusLabel').textContent = 'Plan : ' + (plan ? plan.name : 'Charg\u00e9');
+  } catch(err) {
+    console.error('Switch plan error:', err);
+  }
+}
+
+async function createNewPlan() {
+  const name = prompt('Nom du nouveau plan :');
+  if (!name || !name.trim()) return;
+  try {
+    const result = await api('/plans', {
+      method: 'POST',
+      body: JSON.stringify({ name: name.trim() }),
+    });
+    await loadPlanList();
+    await switchPlan(result.plan.id);
+  } catch(err) {
+    console.error('Create plan error:', err);
+  }
+}
+
+async function renamePlan(planId, currentName) {
+  const name = prompt('Nouveau nom :', currentName);
+  if (!name || !name.trim() || name.trim() === currentName) return;
+  try {
+    await api('/plans/' + planId, {
+      method: 'PUT',
+      body: JSON.stringify({ name: name.trim() }),
+    });
+    await loadPlanList();
+  } catch(err) {
+    console.error('Rename plan error:', err);
+  }
+}
+
+async function deletePlan(planId) {
+  if (allPlans.length <= 1) return;
+  if (!confirm('Supprimer ce plan ? Cette action est irr\u00e9versible.')) return;
+  try {
+    await api('/plans/' + planId, { method: 'DELETE' });
+    if (planId === currentPlanId) {
+      await loadPlanList();
+      if (allPlans.length > 0) {
+        await switchPlan(allPlans[0].id);
+      }
+    } else {
+      await loadPlanList();
+    }
+  } catch(err) {
+    console.error('Delete plan error:', err);
+  }
+}
+
 // ===== EXPORT PDF =====
 function exportPDF(){window.print()}
 
@@ -1260,6 +1662,8 @@ async function grantAccess(user) {
   computeDerived();
   updateUI();
   runSim();
+  loadPlanList();
+  refreshOverlayScenarios();
 }
 
 function getDefaultData() {
@@ -1289,6 +1693,9 @@ async function logout() {
   try { await api('/auth/logout', { method: 'POST' }); } catch(e) {}
   currentUser = null;
   currentPlanId = null;
+  allPlans = [];
+  OVERLAY = null;
+  overlayScenarioId = null;
   const badge = document.getElementById('user-badge');
   if (badge) badge.remove();
   document.getElementById('app-content').style.display = 'none';
@@ -1349,6 +1756,28 @@ window.addEventListener('load', async function() {
   </div>
   <div class="vp-list" id="versionList">
     <div class="vp-empty">Chargement...</div>
+  </div>
+</div>
+
+<!-- COMPARE MODAL -->
+<div class="compare-modal" id="compareModal">
+  <div class="compare-header">
+    <h2>&#128200; Comparaison de versions</h2>
+    <div style="display:flex;gap:.5rem">
+      <button class="btn primary" onclick="printCompare()">&#128424; Exporter PDF</button>
+      <button class="close-btn" onclick="closeCompare()">&times; Fermer</button>
+    </div>
+  </div>
+  <div class="compare-selectors">
+    <select id="compareLeft"></select>
+    <span class="vs-label">vs.</span>
+    <select id="compareRight"></select>
+    <button class="btn primary" onclick="runCompare()">Comparer</button>
+  </div>
+  <div id="compareContent"></div>
+  <div class="compare-charts">
+    <div class="card"><h3>CA &amp; R&eacute;sultat par ann&eacute;e</h3><div class="chart-box"><canvas id="cCompareOverview"></canvas></div></div>
+    <div class="card"><h3>Tr&eacute;sorerie 36 mois</h3><div class="chart-box"><canvas id="cCompareCashflow"></canvas></div></div>
   </div>
 </div>
 
