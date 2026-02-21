@@ -21,6 +21,7 @@ export const SIMULATOR_DEFAULTS: SimulatorParams = {
   factoring: true,
   extra: 200000,
   rc: 60000,
+  retro: 40,
 };
 
 // ===== Default Business Plan Data (36 months) =====

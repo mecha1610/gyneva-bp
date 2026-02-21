@@ -18,6 +18,7 @@ const paramsSchema = z.object({
   factoring: z.boolean(),
   extra: z.number().int().min(0).max(400000),
   rc: z.number().int().min(0).max(120000),
+  retro: z.number().int().min(20).max(60).optional().default(40),
 });
 
 const createScenarioSchema = z.object({

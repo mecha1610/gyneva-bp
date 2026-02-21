@@ -535,6 +535,10 @@ table.dt tr:hover td{background:#f8fafb}
           <label>M&eacute;decins internes <span id="sInterneVal">2</span></label>
           <input type="range" id="sInterne" min="0" max="4" step="1" value="2" oninput="runSim()">
         </div>
+        <div class="sim-row">
+          <label>R&eacute;trocession GynEva <span id="sRetroVal">40%</span></label>
+          <input type="range" id="sRetro" min="20" max="60" step="5" value="40" oninput="runSim()">
+        </div>
       </div>
 
       <div class="sim-group">
@@ -663,7 +667,7 @@ table.dt tr:hover td{background:#f8fafb}
   </div>
   <div class="card">
     <h2><span class="ic">&#128178;</span> Mod&egrave;le de partage du chiffre d'affaires</h2>
-    <div class="exp"><strong>Associ&eacute;s :</strong> 60% de leurs honoraires pour eux, 40% pour GynEva.<br><strong>Ind&eacute;pendants :</strong> 60% pour eux, 40% pour GynEva.<br><strong>Internes :</strong> Salari&eacute;s &mdash; GynEva garde le CA et paye le salaire.<br><strong>Sage-femme :</strong> Contribution nette via les prestations maternit&eacute;.</div>
+    <div class="exp"><strong>Associ&eacute;s :</strong> <span id="revRetroDoc">60</span>% de leurs honoraires pour eux, <span id="revRetroGyneva">40</span>% pour GynEva.<br><strong>Ind&eacute;pendants :</strong> <span id="revRetroDoc2">60</span>% pour eux, <span id="revRetroGyneva2">40</span>% pour GynEva.<br><strong>Internes :</strong> Salari&eacute;s &mdash; GynEva garde le CA et paye le salaire.<br><strong>Sage-femme :</strong> Contribution nette via les prestations maternit&eacute;.</div>
   </div>
 </div>
 
@@ -1094,7 +1098,8 @@ function updateUI(){
   el('pPerY1').textContent='~'+fmt(D.resY1/2)+' / associ\u00e9'; el('pPerY2').textContent='~'+fmt(D.resY2/2)+' / associ\u00e9'; el('pPerY3').textContent='~'+fmt(D.resY3/2)+' / associ\u00e9';
   el('pAdjY1').textContent='Apr\u00e8s charges manquantes: ~'+fmt(Math.max(0,D.resY1/2-adj/2)); el('pAdjY2').textContent='Apr\u00e8s charges manquantes: ~'+fmt(D.resY2/2-adj/2); el('pAdjY3').textContent='Apr\u00e8s charges manquantes: ~'+fmt(D.resY3/2-adj/2);
   el('stConsult').textContent=D.consultDay; el('stFee').textContent='CHF '+D.fee;
-  el('pillsAssumptions').innerHTML='<div class="pill"><b>'+D.consultDay+'</b> consult./jour</div><div class="pill"><b>CHF '+D.fee+'</b> /consultation</div><div class="pill"><b>'+D.daysYear+'</b> jours/an</div><div class="pill"><b>60/40</b> partage associ\u00e9s</div>';
+  const rr=getRetroRate();
+  el('pillsAssumptions').innerHTML='<div class="pill"><b>'+D.consultDay+'</b> consult./jour</div><div class="pill"><b>CHF '+D.fee+'</b> /consultation</div><div class="pill"><b>'+D.daysYear+'</b> jours/an</div><div class="pill"><b>'+(100-rr)+'/'+rr+'</b> partage associ\u00e9s</div>';
   let pb=36,cumR=0;for(let m=0;m<36;m++){cumR+=D.result[m];if(cumR>0&&D.result[m]>0){pb=m+1;break;}}
   el('kPayback').textContent=pb+' mois';
   updateCharts();
@@ -1104,11 +1109,13 @@ function updateUI(){
 let revActiveProfiles = new Set(['assoc','indep','interne','sage']);
 
 const REV_PROFILES = {
-  assoc: {key:'caAssoc',fte:'fteAssoc',color:'#0f2b46',label:'Associ\u00e9s',share:'40% pour GynEva',css:'assoc'},
-  indep: {key:'caIndep',fte:'fteIndep',color:'#1a4a7a',label:'Ind\u00e9pendants',share:'40% pour GynEva',css:'indep'},
-  interne:{key:'caInterne',fte:'fteInterne',color:'#5dade2',label:'Internes',share:'100% pour GynEva',css:'interne'},
-  sage:  {key:'caSage',fte:null,color:'#aed6f1',label:'Sage-femme',share:'Contribution nette',css:'sage'},
+  assoc: {key:'caAssoc',fte:'fteAssoc',color:'#0f2b46',label:'Associ\u00e9s',shareType:'retro',css:'assoc'},
+  indep: {key:'caIndep',fte:'fteIndep',color:'#1a4a7a',label:'Ind\u00e9pendants',shareType:'retro',css:'indep'},
+  interne:{key:'caInterne',fte:'fteInterne',color:'#5dade2',label:'Internes',shareType:'fixed',share:'100% pour GynEva',css:'interne'},
+  sage:  {key:'caSage',fte:null,color:'#aed6f1',label:'Sage-femme',shareType:'fixed',share:'Contribution nette',css:'sage'},
 };
+function getRetroRate(){const s=document.getElementById('sRetro');return s?+s.value:40;}
+function getRetroShare(pr){if(pr.shareType==='retro')return getRetroRate()+'% pour GynEva';return pr.share;}
 
 function toggleRevProfile(prof, btn){
   if(prof==='all'){
@@ -1186,7 +1193,7 @@ function updateRevDetail(){
     html+='<div class="prof-kpi"><span class="pk-label">CA Ann\u00e9e 1</span><span class="pk-value">'+fmt(y1)+' ('+pctY1+'%)</span></div>';
     html+='<div class="prof-kpi"><span class="pk-label">CA Ann\u00e9e 2</span><span class="pk-value">'+fmt(y2)+' ('+pctY2+'%)</span></div>';
     html+='<div class="prof-kpi"><span class="pk-label">CA Ann\u00e9e 3</span><span class="pk-value">'+fmt(y3)+' ('+pctY3+'%)</span></div>';
-    html+='<div class="prof-kpi"><span class="pk-label">Part GynEva</span><span class="pk-value">'+pr.share+'</span></div>';
+    html+='<div class="prof-kpi"><span class="pk-label">Part GynEva</span><span class="pk-value">'+getRetroShare(pr)+'</span></div>';
     html+='</div>';
     if(ramp) html+='<div class="prof-ramp">\u2191 '+ramp+'</div>';
     html+='</div>';
@@ -1208,6 +1215,12 @@ function updateRevDetail(){
     elId('kCaY2').textContent=fmt(fY2);
     elId('kCaY3b').textContent=fmt(fY3);
   }
+  // Update retrocession rate in model description
+  const r=getRetroRate();
+  const rDoc=document.getElementById('revRetroDoc'); if(rDoc) rDoc.textContent=100-r;
+  const rGyn=document.getElementById('revRetroGyneva'); if(rGyn) rGyn.textContent=r;
+  const rDoc2=document.getElementById('revRetroDoc2'); if(rDoc2) rDoc2.textContent=100-r;
+  const rGyn2=document.getElementById('revRetroGyneva2'); if(rGyn2) rGyn2.textContent=r;
 }
 
 // ===== CHARTS =====
@@ -1237,7 +1250,7 @@ function updateCharts(){
 }
 
 // ===== SIMULATOR ENGINE =====
-const BASE = {consult:16, fee:225, days:215, assoc:2, indep:3, interne:2, start:4, occup:60, cashPct:15, delay:1, factoring:true, extra:200000, rc:60000};
+const BASE = {consult:16, fee:225, days:215, assoc:2, indep:3, interne:2, start:4, occup:60, cashPct:15, delay:1, factoring:true, extra:200000, rc:60000, retro:40};
 
 // Pure simulation function (no DOM side effects)
 function computeSimulation(params){
@@ -1246,7 +1259,7 @@ function computeSimulation(params){
     assoc:params.assoc, indep:params.indep, interne:params.interne,
     start:params.start, occup:params.occup/100, cashPct:params.cashPct/100,
     delay:params.delay, factoring:params.factoring,
-    extra:params.extra, rc:params.rc
+    extra:params.extra, rc:params.rc, retro:(params.retro||40)/100
   };
   const annualCA_per_spec = V.consult * V.fee * V.days;
   const monthlyCA_per_spec = annualCA_per_spec/12;
@@ -1261,8 +1274,8 @@ function computeSimulation(params){
       else if(year===2) occ = Math.min(1, V.occup + (1-V.occup)*0.6);
       else occ = 1;
     }
-    const caAssoc = monthlyCA_per_spec * V.assoc * occ * 0.4;
-    const caIndep = monthlyCA_per_spec * V.indep * occ * 0.4;
+    const caAssoc = monthlyCA_per_spec * V.assoc * occ * V.retro;
+    const caIndep = monthlyCA_per_spec * V.indep * occ * V.retro;
     const caInterne = monthlyCA_per_spec * V.interne * occ;
     const caSage = occ > 0 ? 13333 : 0;
     const totalCA = caAssoc + caIndep + caInterne + caSage;
@@ -1318,7 +1331,8 @@ function getSimParams() {
     assoc:+el('sAssoc').value, indep:+el('sIndep').value, interne:+el('sInterne').value,
     start:+el('sStart').value, occup:+el('sOccup').value, cashPct:+el('sCash').value,
     delay:+el('sDelay').value, factoring:el('sFactToggle').classList.contains('on'),
-    extra:+el('sExtra').value, rc:+el('sRC').value
+    extra:+el('sExtra').value, rc:+el('sRC').value,
+    retro:+el('sRetro').value
   };
 }
 
@@ -1329,6 +1343,7 @@ function setSimParams(p) {
   el('sStart').value=p.start; el('sOccup').value=p.occup;
   el('sCash').value=p.cashPct; el('sDelay').value=p.delay;
   el('sExtra').value=p.extra; el('sRC').value=p.rc;
+  el('sRetro').value=p.retro||40;
   const ft=el('sFactToggle');
   if(p.factoring && !ft.classList.contains('on')) ft.classList.add('on');
   if(!p.factoring && ft.classList.contains('on')) ft.classList.remove('on');
@@ -1351,6 +1366,7 @@ function runSim(){
   el('sAssocVal').textContent=params.assoc; el('sIndepVal').textContent=params.indep; el('sInterneVal').textContent=params.interne;
   el('sStartVal').textContent=params.start; el('sOccupVal').textContent=params.occup+'%';
   el('sCashVal').textContent=params.cashPct+'%';
+  el('sRetroVal').textContent=params.retro+'%';
   el('sExtraVal').textContent=fmt(params.extra); el('sRCVal').textContent=fmt(params.rc);
 
   const sim = computeSimulation(params);

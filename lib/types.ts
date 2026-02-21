@@ -64,6 +64,7 @@ export interface SimulatorParams {
   factoring: boolean;   // Enable factoring
   extra: number;        // Unbudgeted charges/year (0-400000)
   rc: number;           // Professional liability/year (0-120000)
+  retro: number;        // Retrocession rate % to GynEva (20-60)
 }
 
 // ===== Cashflow scenarios =====

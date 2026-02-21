@@ -93,8 +93,9 @@ export function runSimulation(params: SimulatorParams) {
     }
 
     // CA by source
-    const caAssoc = monthlyCA_per_spec * params.assoc * occ * 0.4;
-    const caIndep = monthlyCA_per_spec * params.indep * occ * 0.4;
+    const retroRate = params.retro / 100;
+    const caAssoc = monthlyCA_per_spec * params.assoc * occ * retroRate;
+    const caIndep = monthlyCA_per_spec * params.indep * occ * retroRate;
     const caInterne = monthlyCA_per_spec * params.interne * occ;
     const caSage = occ > 0 ? 13333 : 0;
     const totalCA = caAssoc + caIndep + caInterne + caSage;
