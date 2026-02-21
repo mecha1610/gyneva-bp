@@ -133,6 +133,17 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans
 .rev-prof-card .prof-kpi .pk-value{font-weight:700;color:var(--p)}
 .rev-prof-card .prof-ramp{margin-top:.6rem;font-size:.72rem;color:var(--txtL);font-style:italic}
 
+/* === REVENUE CONTROLS === */
+.rev-controls{display:flex;gap:1.2rem;flex-wrap:wrap;align-items:center;padding:1rem 1.2rem;background:#f8fafb;border-radius:var(--r);border:1px solid var(--brd);margin-bottom:1.2rem}
+.rev-ctrl{display:flex;align-items:center;gap:.5rem;font-size:.8rem;font-weight:600;color:var(--p)}
+.rev-ctrl label{white-space:nowrap}
+.rev-year-btns{display:flex;gap:0;border-radius:8px;overflow:hidden;border:1px solid var(--brd)}
+.rev-year-btn{padding:.4rem .8rem;border:none;background:var(--card);font-size:.78rem;font-weight:600;color:var(--txtL);cursor:pointer;transition:var(--trans);border-right:1px solid var(--brd)}
+.rev-year-btn:last-child{border-right:none}
+.rev-year-btn:hover{background:rgba(26,74,122,.04);color:var(--p)}
+.rev-year-btn.active{background:var(--pl);color:#fff}
+.rev-controls .rev-profile-bar{margin-bottom:0}
+
 /* === OPTIMIZE CONTROLS === */
 .opt-controls{display:flex;gap:1.2rem;flex-wrap:wrap;align-items:center;padding:1rem 1.2rem;background:#f8fafb;border-radius:var(--r);border:1px solid var(--brd);margin-bottom:1.2rem}
 .opt-ctrl{display:flex;align-items:center;gap:.5rem;font-size:.8rem;font-weight:600;color:var(--p)}
@@ -273,6 +284,7 @@ table.dt tr:hover td{background:#f8fafb}
 .cf-scenario .cf-tag.orange{background:rgba(225,112,85,.1);color:#e17055}
 .cf-scenario .cf-tag.green{background:rgba(0,184,148,.1);color:var(--acc)}
 @media(max-width:768px){.cf-controls{flex-direction:column;align-items:stretch}.cf-scenario-grid{grid-template-columns:1fr}}
+@media(max-width:768px){.rev-controls{flex-direction:column;align-items:stretch}}
 
 /* === PROFIT TIMELINE === */
 .profit-tl{display:flex;gap:0;margin:1rem 0;border-radius:var(--r);overflow:hidden;border:1px solid var(--brd)}
@@ -862,8 +874,20 @@ table.dt tr:hover td{background:#f8fafb}
 
 <!-- ====== REVENUE ====== -->
 <div class="section" id="revenue">
-  <div class="card">
-    <h2><span class="ic">&#128176;</span> Chiffre d'affaires mensuel par source</h2>
+  <div class="verdict green" id="revVerdict">
+    <div class="ic">&#128176;</div>
+    <div id="revVerdictText"><strong>Analyse du chiffre d'affaires en cours.</strong></div>
+  </div>
+  <div class="rev-controls">
+    <div class="rev-ctrl">
+      <label>P&eacute;riode</label>
+      <div class="rev-year-btns">
+        <button class="rev-year-btn active" onclick="setRevYear('all',this)">Tous</button>
+        <button class="rev-year-btn" onclick="setRevYear('1',this)">Y1</button>
+        <button class="rev-year-btn" onclick="setRevYear('2',this)">Y2</button>
+        <button class="rev-year-btn" onclick="setRevYear('3',this)">Y3</button>
+      </div>
+    </div>
     <div class="rev-profile-bar" id="revProfileBar">
       <button class="rev-prof active" data-prof="all" onclick="toggleRevProfile('all',this)">Tous</button>
       <button class="rev-prof active" data-prof="assoc" onclick="toggleRevProfile('assoc',this)"><span class="prof-dot" style="background:#0f2b46"></span> Associ&eacute;s</button>
@@ -871,15 +895,18 @@ table.dt tr:hover td{background:#f8fafb}
       <button class="rev-prof active" data-prof="interne" onclick="toggleRevProfile('interne',this)"><span class="prof-dot" style="background:#5dade2"></span> Internes</button>
       <button class="rev-prof active" data-prof="sage" onclick="toggleRevProfile('sage',this)"><span class="prof-dot" style="background:#aed6f1"></span> Sage-femme</button>
     </div>
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi blue"><div class="lb">Potentiel / sp&eacute;cialiste</div><div class="vl" id="revKpiSpec">&mdash;</div><div class="sb">CHF/an &agrave; 100%</div></div>
+    <div class="kpi"><div class="lb">CA p&eacute;riode</div><div class="vl" id="revKpiCa">&mdash;</div><div class="sb" id="revKpiCaSub">Total filtr&eacute;</div></div>
+    <div class="kpi"><div class="lb">Croissance</div><div class="vl" id="revKpiGrowth">&mdash;</div><div class="sb" id="revKpiGrowthSub">vs ann&eacute;e pr&eacute;c&eacute;dente</div></div>
+    <div class="kpi green"><div class="lb">Diversification</div><div class="vl" id="revKpiDiversif">&mdash;</div><div class="sb" id="revKpiDiversifSub">Sources actives</div></div>
+  </div>
+  <div class="card">
+    <h2><span class="ic">&#128176;</span> CA mensuel par source</h2>
     <div class="chart-box"><canvas id="cRevenue"></canvas></div>
   </div>
   <div class="rev-detail-grid" id="revDetailGrid"></div>
-  <div class="kpi-grid">
-    <div class="kpi blue"><div class="lb">Potentiel / sp&eacute;cialiste</div><div class="vl" id="kRevSpec">923k</div><div class="sb">CHF/an &agrave; 100%</div></div>
-    <div class="kpi"><div class="lb">CA Ann&eacute;e 1</div><div class="vl" id="kCaY1">1,9M</div><div class="sb">D&eacute;marrage progressif</div></div>
-    <div class="kpi"><div class="lb">CA Ann&eacute;e 2</div><div class="vl" id="kCaY2">3,6M</div><div class="sb" id="kCaY2g">Mont&eacute;e en puissance</div></div>
-    <div class="kpi green"><div class="lb">CA Ann&eacute;e 3</div><div class="vl" id="kCaY3b">4,7M</div><div class="sb">Vitesse de croisi&egrave;re</div></div>
-  </div>
   <div class="card">
     <h2><span class="ic">&#128178;</span> Mod&egrave;le de partage du chiffre d'affaires</h2>
     <div class="exp"><strong>Associ&eacute;s :</strong> <span id="revRetroDoc">60</span>% de leurs honoraires pour eux, <span id="revRetroGyneva">40</span>% pour GynEva.<br><strong>Ind&eacute;pendants :</strong> <span id="revRetroDoc2">60</span>% pour eux, <span id="revRetroGyneva2">40</span>% pour GynEva.<br><strong>Internes :</strong> Salari&eacute;s &mdash; GynEva garde le CA et paye le salaire.<br><strong>Sage-femme :</strong> Contribution nette via les prestations maternit&eacute;.</div>
@@ -1155,6 +1182,7 @@ let D = null;
 let SIM = null;
 let teamActiveYear='all';
 let cfActiveYear='all';
+let revActiveYear='all';
 let currentUser = null;
 let currentPlanId = null;
 let allPlans = [];
@@ -1409,8 +1437,6 @@ function computeScenarios(ca,admin,opex,lab,cashShare){
 function updateUI(){
   if(!D)return;
   const el=id=>document.getElementById(id);
-  el('kCaY3b').textContent=fmt(D.caY3);
-  el('kRevSpec').textContent=fmt(D.revSpec); el('kCaY1').textContent=fmt(D.caY1); el('kCaY2').textContent=fmt(D.caY2);
   if(el('rConsult'))el('rConsult').value=D.consultDay||16; if(el('rFee'))el('rFee').value=D.fee||225;
   const rr=getRetroRate();
   el('pillsAssumptions').innerHTML='<div class="pill"><b>'+D.consultDay+'</b> consult./jour</div><div class="pill"><b>CHF '+D.fee+'</b> /consultation</div><div class="pill"><b>'+D.daysYear+'</b> jours/an</div><div class="pill"><b>'+(100-rr)+'/'+rr+'</b> partage associ\u00e9s</div>';
@@ -1429,6 +1455,77 @@ const REV_PROFILES = {
 function getRetroRate(){const s=document.getElementById('sRetro');return s?+s.value:40;}
 function getRetroShare(pr){if(pr.shareType==='retro')return getRetroRate()+'% pour GynEva';return pr.share;}
 
+const revYearPlugin={id:'revYL',beforeDraw(chart){
+  if(revActiveYear==='all')return;
+  const ctx=chart.ctx,x=chart.scales.x,y=chart.scales.y;
+  const yi=parseInt(revActiveYear);
+  const s=(yi-1)*12,e=yi*12-1;
+  if(s>x.max||e<x.min)return;
+  const xS=x.getPixelForValue(Math.max(s,x.min)),xE=x.getPixelForValue(Math.min(e,x.max));
+  ctx.save();ctx.fillStyle='rgba(26,74,122,.04)';
+  ctx.fillRect(xS,y.top,xE-xS,y.bottom-y.top);
+  ctx.fillStyle='rgba(26,74,122,.5)';ctx.font='bold 11px Inter,sans-serif';
+  ctx.fillText('Ann\u00e9e '+revActiveYear,xS+4,y.top+14);
+  ctx.restore();
+}};
+function setRevYear(year,btn){
+  revActiveYear=year;
+  document.querySelectorAll('.rev-year-btn').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  updateRevenue();
+}
+function updateRevenue(){
+  if(!D)return;
+  updateRevenueChart();
+  updateRevDetail();
+  updateRevVerdict();
+}
+function updateRevVerdict(){
+  if(!D)return;
+  const el=id=>document.getElementById(id);
+  const vd=el('revVerdict'),vt=el('revVerdictText');
+  if(!vd||!vt)return;
+  const sum12=(arr,s)=>arr.slice(s,s+12).reduce((a,b)=>a+b,0);
+  const year=revActiveYear;
+  // Compute metrics for scoring
+  const caY1=sum12(D.ca,0),caY2=sum12(D.ca,12),caY3=sum12(D.ca,24);
+  const caTotal=caY1+caY2+caY3;
+  // 1. Growth score (0-3): Y1->Y3 growth rate
+  let growthPct=caY1>0?((caY3-caY1)/caY1*100):0;
+  let growthScore=growthPct>=80?3:growthPct>=40?2:growthPct>=10?1:0;
+  // 2. Diversification score (0-3): how many sources contribute >5%
+  const profKeys=['caAssoc','caIndep','caInterne','caSage'];
+  let activeSources=0;
+  const s=year==='all'?0:(parseInt(year)-1)*12, e=year==='all'?36:parseInt(year)*12;
+  const caPeriod=D.ca.slice(s,e).reduce((a,b)=>a+b,0)||1;
+  profKeys.forEach(k=>{const pCA=D[k].slice(s,e).reduce((a,b)=>a+b,0);if(pCA/caPeriod>0.05)activeSources++;});
+  let divScore=activeSources>=4?3:activeSources>=3?2:activeSources>=2?1:0;
+  // 3. Ramp-up health (0-3): progression within period
+  const periodCA=D.ca.slice(s,e);
+  const firstHalf=periodCA.slice(0,Math.floor(periodCA.length/2)).reduce((a,b)=>a+b,0);
+  const secondHalf=periodCA.slice(Math.floor(periodCA.length/2)).reduce((a,b)=>a+b,0);
+  let rampScore=secondHalf>firstHalf*1.3?3:secondHalf>firstHalf*1.1?2:secondHalf>=firstHalf?1:0;
+  if(year==='3'||year==='all')rampScore=Math.max(rampScore,periodCA[periodCA.length-1]>0?2:0);
+  // 4. CA absolute (0-3)
+  let absScore=caY3>=4000000?3:caY3>=2500000?2:caY3>=1000000?1:0;
+  const score=growthScore+divScore+rampScore+absScore;
+  // Verdict
+  let cls,msg;
+  if(year==='all'){
+    if(score>=10){cls='green';msg='<strong>Chiffre d\'affaires excellent.</strong> Croissance solide (+'+Math.round(growthPct)+'%), '+activeSources+' sources diversifi\u00e9es, mont\u00e9e en puissance progressive.';}
+    else if(score>=6){cls='orange';msg='<strong>Croissance mod\u00e9r\u00e9e.</strong> '+activeSources+' sources actives, croissance de '+Math.round(growthPct)+'%. Potentiel d\'am\u00e9lioration sur la diversification.';}
+    else{cls='red';msg='<strong>Revenus insuffisants.</strong> Croissance limit\u00e9e ('+Math.round(growthPct)+'%), seulement '+activeSources+' source(s) significative(s).';}
+  } else {
+    const yLabel=year==='1'?'D\u00e9marrage (Y1)':year==='2'?'Croissance (Y2)':'Croisi\u00e8re (Y3)';
+    const yCa=fmt(caPeriod);
+    if(score>=10){cls='green';msg='<strong>'+yLabel+' \u2014 CA '+yCa+'.</strong> '+activeSources+' sources actives, dynamique positive.';}
+    else if(score>=6){cls='orange';msg='<strong>'+yLabel+' \u2014 CA '+yCa+'.</strong> Mont\u00e9e en charge progressive, '+activeSources+' source(s).';}
+    else{cls='red';msg='<strong>'+yLabel+' \u2014 CA '+yCa+'.</strong> Revenus limit\u00e9s, diversification faible.';}
+  }
+  vd.className='verdict '+cls;
+  vt.innerHTML=msg;
+}
+
 function toggleRevProfile(prof, btn){
   if(prof==='all'){
     revActiveProfiles=new Set(['assoc','indep','interne','sage']);
@@ -1443,8 +1540,7 @@ function toggleRevProfile(prof, btn){
     const allBtn=document.querySelector('.rev-prof[data-prof="all"]');
     if(allBtn){if(revActiveProfiles.size===4) allBtn.classList.add('active'); else allBtn.classList.remove('active');}
   }
-  updateRevenueChart();
-  updateRevDetail();
+  updateRevenue();
 }
 
 function updateRevenueChart(){
@@ -1452,10 +1548,14 @@ function updateRevenueChart(){
   if(charts.revenue){try{charts.revenue.destroy()}catch(e){}}
   const revDs=[];
   const profOrder=['assoc','indep','interne','sage'];
+  const ry=revActiveYear;
   profOrder.forEach(p=>{
     if(revActiveProfiles.has(p)){
       const pr=REV_PROFILES[p];
-      revDs.push({label:pr.label,data:D[pr.key],backgroundColor:pr.color,borderRadius:1});
+      let bgArr;
+      if(ry==='all'){bgArr=pr.color;}
+      else{const yi=parseInt(ry);bgArr=D[pr.key].map((_,i)=>{const inYear=Math.floor(i/12)+1===yi;return inYear?pr.color:pr.color+'40';});}
+      revDs.push({label:pr.label,data:D[pr.key],backgroundColor:bgArr,borderRadius:1});
     }
   });
   if(OVERLAY){revDs.push({type:'line',label:'CA sc\u00e9nario',data:OVERLAY.ca,borderColor:'#d63031',borderWidth:2.5,borderDash:[6,3],pointRadius:0,tension:.3,fill:false,stack:false});}
@@ -1467,7 +1567,7 @@ function updateRevenueChart(){
       plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:12}}},
       scales:{x:{stacked:!single,grid:{display:false}},y:{stacked:!single,grid:gridOpts,ticks:{callback:v=>fmt(v)}}}
     },
-    plugins:[yearPlugin]
+    plugins:[yearPlugin,revYearPlugin]
   });
 }
 
@@ -1475,16 +1575,19 @@ function updateRevDetail(){
   if(!D)return;
   const el=document.getElementById('revDetailGrid');
   if(!el)return;
-  const sum12=(arr,s)=>arr.slice(s,s+12).reduce((a,b)=>a+b,0);
+  const elId=id=>document.getElementById(id);
+  const sumR=(arr,s,e)=>arr.slice(s,e).reduce((a,b)=>a+b,0);
+  const sum12=(arr,s)=>sumR(arr,s,s+12);
   const profOrder=['assoc','indep','interne','sage'];
+  const ry=revActiveYear;
+  // Period bounds
+  const ps=ry==='all'?0:(parseInt(ry)-1)*12, pe=ry==='all'?36:parseInt(ry)*12;
   let html='';
   profOrder.forEach(p=>{
     if(!revActiveProfiles.has(p))return;
     const pr=REV_PROFILES[p];
     const arr=D[pr.key];
-    const y1=sum12(arr,0),y2=sum12(arr,12),y3=sum12(arr,24);
-    const totY1=D.caY1||1,totY2=D.caY2||1,totY3=D.caY3||1;
-    const pctY1=Math.round(y1/totY1*100),pctY2=Math.round(y2/totY2*100),pctY3=Math.round(y3/totY3*100);
+    // Ramp-up info
     let ramp='';
     if(pr.fte&&D[pr.fte]){
       const fteArr=D[pr.fte];
@@ -1502,32 +1605,78 @@ function updateRevDetail(){
     html+='<div class="rev-prof-card '+pr.css+'">';
     html+='<h4>'+pr.label+'</h4>';
     html+='<div class="prof-kpis">';
-    html+='<div class="prof-kpi"><span class="pk-label">CA Ann\u00e9e 1</span><span class="pk-value">'+fmt(y1)+' ('+pctY1+'%)</span></div>';
-    html+='<div class="prof-kpi"><span class="pk-label">CA Ann\u00e9e 2</span><span class="pk-value">'+fmt(y2)+' ('+pctY2+'%)</span></div>';
-    html+='<div class="prof-kpi"><span class="pk-label">CA Ann\u00e9e 3</span><span class="pk-value">'+fmt(y3)+' ('+pctY3+'%)</span></div>';
+    if(ry==='all'){
+      const y1=sum12(arr,0),y2=sum12(arr,12),y3=sum12(arr,24);
+      const totY1=D.caY1||1,totY2=D.caY2||1,totY3=D.caY3||1;
+      html+='<div class="prof-kpi"><span class="pk-label">CA Ann\u00e9e 1</span><span class="pk-value">'+fmt(y1)+' ('+Math.round(y1/totY1*100)+'%)</span></div>';
+      html+='<div class="prof-kpi"><span class="pk-label">CA Ann\u00e9e 2</span><span class="pk-value">'+fmt(y2)+' ('+Math.round(y2/totY2*100)+'%)</span></div>';
+      html+='<div class="prof-kpi"><span class="pk-label">CA Ann\u00e9e 3</span><span class="pk-value">'+fmt(y3)+' ('+Math.round(y3/totY3*100)+'%)</span></div>';
+    } else {
+      const yi=parseInt(ry),base=(yi-1)*12;
+      const yearCA=sum12(arr,base);
+      const totYear=sum12(D.ca,base)||1;
+      html+='<div class="prof-kpi"><span class="pk-label">CA Ann\u00e9e '+yi+'</span><span class="pk-value">'+fmt(yearCA)+' ('+Math.round(yearCA/totYear*100)+'%)</span></div>';
+      for(let q=0;q<4;q++){
+        const qStart=base+q*3,qEnd=qStart+3;
+        const qCA=sumR(arr,qStart,qEnd);
+        html+='<div class="prof-kpi"><span class="pk-label">T'+(q+1)+'</span><span class="pk-value">'+fmt(qCA)+'</span></div>';
+      }
+      const avgMonth=yearCA/12;
+      html+='<div class="prof-kpi"><span class="pk-label">Moyenne/mois</span><span class="pk-value">'+fmt(avgMonth)+'</span></div>';
+    }
     html+='<div class="prof-kpi"><span class="pk-label">Part GynEva</span><span class="pk-value">'+getRetroShare(pr)+'</span></div>';
     html+='</div>';
     if(ramp) html+='<div class="prof-ramp">\u2191 '+ramp+'</div>';
     html+='</div>';
   });
   el.innerHTML=html;
-  // Update KPIs based on active filter
-  const elId=id=>document.getElementById(id);
-  if(revActiveProfiles.size===4){
-    elId('kCaY1').textContent=fmt(D.caY1);
-    elId('kCaY2').textContent=fmt(D.caY2);
-    elId('kCaY3b').textContent=fmt(D.caY3);
+  // Update KPIs — new IDs, year+profile aware
+  let filtCA=0, filtCAPrev=0, filtCATotal=0;
+  const profKeys=['caAssoc','caIndep','caInterne','caSage'];
+  revActiveProfiles.forEach(p=>{
+    const arr=D[REV_PROFILES[p].key];
+    filtCA+=sumR(arr,ps,pe);
+    filtCATotal+=sumR(arr,0,36);
+    if(ry!=='all'&&ry!=='1'){
+      const prevS=ps-12,prevE=pe-12;
+      filtCAPrev+=sumR(arr,prevS,prevE);
+    }
+  });
+  // KPI 1: Potentiel / specialiste
+  elId('revKpiSpec').textContent=fmt(D.revSpec);
+  // KPI 2: CA periode
+  elId('revKpiCa').textContent=fmt(filtCA);
+  const periodLabel=ry==='all'?'3 ans cumul\u00e9s':'Ann\u00e9e '+ry;
+  elId('revKpiCaSub').textContent=periodLabel+(revActiveProfiles.size<4?' (filtr\u00e9)':'');
+  // KPI 3: Croissance
+  if(ry==='all'){
+    const caY1f=revActiveProfiles.size===4?D.caY1:0;
+    const caY3f=revActiveProfiles.size===4?D.caY3:0;
+    let fY1=0,fY3=0;
+    if(revActiveProfiles.size<4){revActiveProfiles.forEach(p=>{const a=D[REV_PROFILES[p].key];fY1+=sum12(a,0);fY3+=sum12(a,24);});}
+    else{fY1=D.caY1;fY3=D.caY3;}
+    const gPct=fY1>0?((fY3-fY1)/fY1*100):0;
+    elId('revKpiGrowth').textContent=(gPct>=0?'+':'')+Math.round(gPct)+'%';
+    elId('revKpiGrowth').style.color=gPct>=40?'var(--acc)':gPct>=10?'#e17055':'var(--danger)';
+    elId('revKpiGrowthSub').textContent='Y1 \u2192 Y3';
+  } else if(ry==='1'){
+    elId('revKpiGrowth').textContent='\u2014';
+    elId('revKpiGrowth').style.color='var(--txtL)';
+    elId('revKpiGrowthSub').textContent='Premi\u00e8re ann\u00e9e';
   } else {
-    let fY1=0,fY2=0,fY3=0;
-    revActiveProfiles.forEach(p=>{
-      const arr=D[REV_PROFILES[p].key];
-      fY1+=sum12(arr,0); fY2+=sum12(arr,12); fY3+=sum12(arr,24);
-    });
-    elId('kCaY1').textContent=fmt(fY1);
-    elId('kCaY2').textContent=fmt(fY2);
-    elId('kCaY3b').textContent=fmt(fY3);
+    const gPct=filtCAPrev>0?((filtCA-filtCAPrev)/filtCAPrev*100):0;
+    elId('revKpiGrowth').textContent=(gPct>=0?'+':'')+Math.round(gPct)+'%';
+    elId('revKpiGrowth').style.color=gPct>=20?'var(--acc)':gPct>=0?'#e17055':'var(--danger)';
+    elId('revKpiGrowthSub').textContent='vs Y'+(parseInt(ry)-1);
   }
-  // Update retrocession rate in model description
+  // KPI 4: Diversification
+  let activeCount=0;
+  const caPeriodTotal=sumR(D.ca,ps,pe)||1;
+  profKeys.forEach(k=>{const pCA=sumR(D[k],ps,pe);if(pCA/caPeriodTotal>0.05)activeCount++;});
+  elId('revKpiDiversif').textContent=activeCount+'/4';
+  elId('revKpiDiversif').style.color=activeCount>=4?'var(--acc)':activeCount>=3?'#e17055':'var(--danger)';
+  elId('revKpiDiversifSub').textContent=activeCount>=4?'Toutes sources actives':activeCount+' source(s) >5%';
+  // Retrocession model update
   const r=getRetroRate();
   const rDoc=document.getElementById('revRetroDoc'); if(rDoc) rDoc.textContent=100-r;
   const rGyn=document.getElementById('revRetroGyneva'); if(rGyn) rGyn.textContent=r;
@@ -2274,10 +2423,8 @@ const yearPlugin={id:'yl',beforeDraw(c){const ctx=c.ctx,x=c.scales.x,y=c.scales.
 
 function updateCharts(){
   if(!D)return;
-  Object.entries(charts).forEach(([k,c])=>{if(k!=='sim1'&&k!=='sim2'&&k!=='optimize'&&k!=='riskStress'&&k!=='charges'&&k!=='profit'&&k!=='profitCumul'&&k!=='team'&&k!=='teamProd'&&k!=='cashflow'&&k!=='cashWaterfall'&&k!=='overview'){try{c.destroy()}catch(e){}}});
-  // Revenue chart — delegated to updateRevenueChart() for profile filter support
-  updateRevenueChart();
-  updateRevDetail();
+  Object.entries(charts).forEach(([k,c])=>{if(k!=='sim1'&&k!=='sim2'&&k!=='optimize'&&k!=='riskStress'&&k!=='charges'&&k!=='profit'&&k!=='profitCumul'&&k!=='team'&&k!=='teamProd'&&k!=='cashflow'&&k!=='cashWaterfall'&&k!=='overview'&&k!=='revenue'){try{c.destroy()}catch(e){}}});
+  updateRevenue();
   updateCashflow();
   updateTeam();
   updateOptimize();
