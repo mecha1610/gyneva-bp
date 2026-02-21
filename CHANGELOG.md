@@ -2,6 +2,18 @@
 
 All notable changes to the GYNEVA Business Plan application are documented here.
 
+## [0.5.0] - 2026-02-21
+
+### Added
+- **Revenue profile filters**: pill buttons (Tous, Associes, Independants, Internes, Sage-femme) to toggle revenue sources on the chart
+- **Single-profile view**: selecting one profile unstacks bars for clear ramp-up visualization
+- **Profile detail cards**: per-profile breakdown with CA Y1/Y2/Y3, percentage of total, ramp-up timeline ("Debut mois X → capacite max mois Y"), and GynEva revenue share
+- **Dynamic KPIs**: CA Year 1/2/3 KPI cards update to reflect only selected profiles
+
+### Changed
+- Revenue chart construction extracted to `updateRevenueChart()` for reuse by profile filter toggle
+- `updateCharts()` delegates revenue chart to `updateRevenueChart()` and `updateRevDetail()`
+
 ## [0.4.0] - 2026-02-21
 
 ### Added
