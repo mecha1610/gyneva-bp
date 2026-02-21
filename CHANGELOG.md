@@ -2,6 +2,23 @@
 
 All notable changes to the GYNEVA Business Plan application are documented here.
 
+## [0.8.0] - 2026-02-21
+
+### Added
+- **Interactive stress test**: 4 sliders (consultations/jour, honoraires, occupation Y1, delai montee) with real-time recalculation via `computeSimulation()`
+- **3-scenario comparison**: Pessimiste (-25%), Base, Optimiste (+25%) cards with CA Y3, Resultat Y3, BFR min, Treso M36
+- **Sensitivity analysis**: horizontal impact bars per variable showing relative effect on Resultat Y3, plus Chart.js bar chart
+- **Interactive risk matrix**: sortable columns (score/probabilite/impact), clickable badges cycling 1-5 levels, color-coded risk scores, total exposure indicator
+- **Composite risk gauge**: SVG circular gauge (0-100) combining stress test sensitivity and risk matrix exposure, with dynamic verdict (Faible/Modere/Eleve)
+- **Charges donut chart**: Chart.js doughnut by criticite (critique/important/moyen) with total row in table
+- **4 dynamic KPIs**: CA Y3, Resultat Y3, BFR min, Treso finale — color-coded with delta vs plan data
+
+### Changed
+- Replaced 3 static tables (risk matrix, charges, stress test) with fully interactive components
+- `updateRisks()` manages risk chart and charges chart lifecycle independently
+- `updateUI()` syncs risk sliders from plan data (`consultDay`, `fee`) instead of static `stConsult`/`stFee` text
+- Chart destroy loop excludes `riskStress` and `charges` keys
+
 ## [0.7.0] - 2026-02-21
 
 ### Added
