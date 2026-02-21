@@ -229,6 +229,21 @@ table.dt tr:hover td{background:#f8fafb}
 .profit-yr .am{font-size:1.3rem;font-weight:800;color:var(--p);margin:.3rem 0}
 .profit-yr .pa{font-size:.82rem;color:var(--acc);font-weight:600}
 .profit-yr .nt{font-size:.72rem;color:var(--txtL)}
+.profit-controls{display:flex;gap:1.2rem;flex-wrap:wrap;align-items:center;padding:1rem 1.2rem;background:#f8fafb;border-radius:var(--r);border:1px solid var(--brd);margin-bottom:1.2rem}
+.profit-ctrl{display:flex;align-items:center;gap:.5rem;font-size:.8rem;font-weight:600;color:var(--p)}
+.profit-ctrl label{white-space:nowrap}
+.profit-ctrl input[type="range"]{width:110px;accent-color:var(--pl)}
+.profit-ctrl .profit-val{font-weight:700;min-width:3rem;text-align:right}
+.profit-breakdown{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:1.2rem}
+.profit-type{background:var(--card);border-radius:var(--r);padding:1rem 1.2rem;border:1px solid var(--brd);box-shadow:var(--sh)}
+.profit-type h4{font-size:.8rem;font-weight:700;color:var(--p);margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem}
+.profit-type .pt-row{display:flex;justify-content:space-between;font-size:.78rem;padding:.25rem 0;border-bottom:1px solid #f0f3f5}
+.profit-type .pt-row:last-child{border-bottom:none}
+.profit-type .pt-label{color:var(--txtL)}
+.profit-type .pt-value{font-weight:700;color:var(--p)}
+.profit-type .pt-total{font-size:.9rem;font-weight:800;margin-top:.5rem;padding-top:.5rem;border-top:2px solid var(--brd);display:flex;justify-content:space-between}
+.profit-type .pt-total .pt-value{color:var(--acc)}
+@media(max-width:768px){.profit-controls{flex-direction:column;align-items:stretch}.profit-breakdown{grid-template-columns:1fr}}
 
 /* === DROPZONE === */
 .dropzone{border:2px dashed var(--pl);border-radius:var(--r);padding:2rem;text-align:center;margin-bottom:1.2rem;background:rgba(26,74,122,.02);transition:var(--trans);cursor:pointer;position:relative}
@@ -853,22 +868,49 @@ table.dt tr:hover td{background:#f8fafb}
 
 <!-- ====== PROFIT ====== -->
 <div class="section" id="profit">
-  <div class="verdict green">
+  <!-- Dynamic verdict -->
+  <div class="verdict green" id="profitVerdict">
     <div class="ic">&#128176;</div>
-    <div><strong>ROI attractif.</strong> Pour ~CHF 80k par associ&eacute;, le retour cumul&eacute; sur 3 ans atteint <strong>CHF 700-900k</strong> par personne apr&egrave;s charges manquantes.</div>
+    <div id="profitVerdictText"><strong>ROI attractif.</strong></div>
   </div>
+
+  <!-- Controls -->
+  <div class="profit-controls">
+    <div class="profit-ctrl"><label>Nombre d'associ&eacute;s</label><input type="range" id="pAssoc" min="1" max="4" step="1" value="2" oninput="updateProfit()"><span class="profit-val" id="pAssocVal">2</span></div>
+    <div class="profit-ctrl"><label>Charges manquantes / an</label><input type="range" id="pCharges" min="0" max="400000" step="10000" value="200000" oninput="updateProfit()"><span class="profit-val" id="pChargesVal">200k</span></div>
+  </div>
+
+  <!-- 4 KPIs -->
+  <div class="kpi-grid">
+    <div class="kpi green"><div class="lb">ROI cumul&eacute; 3 ans</div><div class="vl" id="pRoi">&mdash;</div><div class="sb" id="pRoiSub">Retour sur investissement</div></div>
+    <div class="kpi"><div class="lb">Payback</div><div class="vl" id="pPayback">&mdash;</div><div class="sb">Mois pour r&eacute;cup&eacute;rer l'investissement</div></div>
+    <div class="kpi"><div class="lb">R&eacute;sultat / associ&eacute; Y3</div><div class="vl" id="pPerAssocY3">&mdash;</div><div class="sb" id="pPerAssocY3Sub">Apr&egrave;s charges manquantes</div></div>
+    <div class="kpi"><div class="lb">Investissement / associ&eacute;</div><div class="vl" id="pInvestAssoc">&mdash;</div><div class="sb">Part du CAPEX</div></div>
+  </div>
+
+  <!-- Year timeline -->
   <div class="card">
     <h2><span class="ic">&#128181;</span> R&eacute;sultat net &mdash; Part par associ&eacute;</h2>
     <div class="profit-tl">
-      <div class="profit-yr"><div class="yl">Ann&eacute;e 1</div><div class="am" id="pResY1">CHF 347k</div><div class="pa" id="pPerY1">~173k / associ&eacute;</div><div class="nt" id="pAdjY1">Apr&egrave;s charges manquantes: ~73k</div></div>
-      <div class="profit-yr"><div class="yl">Ann&eacute;e 2</div><div class="am" id="pResY2">CHF 767k</div><div class="pa" id="pPerY2">~384k / associ&eacute;</div><div class="nt" id="pAdjY2">Apr&egrave;s charges manquantes: ~284k</div></div>
-      <div class="profit-yr"><div class="yl">Ann&eacute;e 3</div><div class="am" id="pResY3">CHF 1,15M</div><div class="pa" id="pPerY3">~576k / associ&eacute;</div><div class="nt" id="pAdjY3">Apr&egrave;s charges manquantes: ~476k</div></div>
+      <div class="profit-yr"><div class="yl">Ann&eacute;e 1</div><div class="am" id="pResY1">&mdash;</div><div class="pa" id="pPerY1"></div><div class="nt" id="pAdjY1"></div></div>
+      <div class="profit-yr"><div class="yl">Ann&eacute;e 2</div><div class="am" id="pResY2">&mdash;</div><div class="pa" id="pPerY2"></div><div class="nt" id="pAdjY2"></div></div>
+      <div class="profit-yr"><div class="yl">Ann&eacute;e 3</div><div class="am" id="pResY3">&mdash;</div><div class="pa" id="pPerY3"></div><div class="nt" id="pAdjY3"></div></div>
     </div>
-    <div class="exp"><strong>L'associ&eacute; m&eacute;decin</strong> touche en plus 60% de son propre CA (~CHF 554k/an &agrave; plein r&eacute;gime). <strong>L'associ&eacute; non-m&eacute;decin</strong> d&eacute;pend du r&eacute;sultat du cabinet.</div>
   </div>
+
+  <!-- Medecin vs Non-medecin breakdown -->
+  <div class="profit-breakdown" id="profitBreakdown"></div>
+
+  <!-- Bar chart -->
   <div class="card">
     <h2><span class="ic">&#128200;</span> R&eacute;sultat par associ&eacute; (graphique)</h2>
     <div class="chart-box sm"><canvas id="cProfit"></canvas></div>
+  </div>
+
+  <!-- Cumulative profit line chart -->
+  <div class="card">
+    <h2><span class="ic">&#128200;</span> Profit cumul&eacute; sur 36 mois</h2>
+    <div class="chart-box"><canvas id="cProfitCumul"></canvas></div>
   </div>
 </div>
 
@@ -1224,10 +1266,6 @@ function updateUI(){
   el('scCash1m').textContent=fmt(D.bfrCash1m); el('scFact').textContent=fmt(D.bfrFact);
   el('kFte6').textContent=D.fteTotal[5]||0; el('kFte12').textContent=D.fteTotal[11]||0;
   el('kFte24').textContent=D.fteTotal[23]||0; el('kFte36').textContent=D.fteTotal[35]||0;
-  const adj=200000;
-  el('pResY1').textContent=fmtCHF(D.resY1); el('pResY2').textContent=fmtCHF(D.resY2); el('pResY3').textContent=fmtCHF(D.resY3);
-  el('pPerY1').textContent='~'+fmt(D.resY1/2)+' / associ\u00e9'; el('pPerY2').textContent='~'+fmt(D.resY2/2)+' / associ\u00e9'; el('pPerY3').textContent='~'+fmt(D.resY3/2)+' / associ\u00e9';
-  el('pAdjY1').textContent='Apr\u00e8s charges manquantes: ~'+fmt(Math.max(0,D.resY1/2-adj/2)); el('pAdjY2').textContent='Apr\u00e8s charges manquantes: ~'+fmt(D.resY2/2-adj/2); el('pAdjY3').textContent='Apr\u00e8s charges manquantes: ~'+fmt(D.resY3/2-adj/2);
   if(el('rConsult'))el('rConsult').value=D.consultDay||16; if(el('rFee'))el('rFee').value=D.fee||225;
   const rr=getRetroRate();
   el('pillsAssumptions').innerHTML='<div class="pill"><b>'+D.consultDay+'</b> consult./jour</div><div class="pill"><b>CHF '+D.fee+'</b> /consultation</div><div class="pill"><b>'+D.daysYear+'</b> jours/an</div><div class="pill"><b>'+(100-rr)+'/'+rr+'</b> partage associ\u00e9s</div>';
@@ -1658,6 +1696,116 @@ function updateRisks(){
   }
 }
 
+// ===== PROFIT TAB =====
+function updateProfit(){
+  if(!D)return;
+  const el=id=>document.getElementById(id);
+
+  // 1. Read controls
+  const nbAssoc=+(el('pAssoc')?el('pAssoc').value:2);
+  const charges=+(el('pCharges')?el('pCharges').value:200000);
+  if(el('pAssocVal')) el('pAssocVal').textContent=nbAssoc;
+  if(el('pChargesVal')) el('pChargesVal').textContent=fmt(charges);
+
+  // 2. Calculate metrics
+  const investPerAssoc=D.capex/nbAssoc;
+  const chargesPerAssoc=charges/nbAssoc;
+  const perY1=D.resY1/nbAssoc, perY2=D.resY2/nbAssoc, perY3=D.resY3/nbAssoc;
+  const adjY1=Math.max(0,perY1-chargesPerAssoc);
+  const adjY2=perY2-chargesPerAssoc;
+  const adjY3=perY3-chargesPerAssoc;
+  const cumAdj=adjY1+adjY2+adjY3;
+  const roiCumul=investPerAssoc>0?cumAdj/investPerAssoc:0;
+
+  // Payback: cumulative monthly result per associate minus monthly charges
+  const monthlyCharges=charges/(12*nbAssoc);
+  let payback=36;
+  let cumProfit=0;
+  for(let m=0;m<36;m++){
+    cumProfit+=D.result[m]/nbAssoc-monthlyCharges;
+    if(cumProfit>0){payback=m+1;break;}
+  }
+
+  // 3. KPIs
+  el('pRoi').textContent=roiCumul.toFixed(1)+'x';
+  el('pRoi').parentElement.className='kpi '+(roiCumul>=3?'green':roiCumul>=1?'orange':'red');
+  el('pRoiSub').textContent='Invest. '+fmtCHF(investPerAssoc)+' \u2192 retour '+fmtCHF(cumAdj);
+  el('pPayback').textContent=payback+' mois';
+  el('pPayback').parentElement.className='kpi '+(payback<=12?'green':payback<=24?'orange':'red');
+  el('pPerAssocY3').textContent=fmtCHF(adjY3);
+  el('pPerAssocY3Sub').textContent='Apr\u00e8s '+fmt(chargesPerAssoc)+' charges/an';
+  el('pInvestAssoc').textContent=fmtCHF(investPerAssoc);
+
+  // 4. Year cards
+  el('pResY1').textContent=fmtCHF(D.resY1);
+  el('pResY2').textContent=fmtCHF(D.resY2);
+  el('pResY3').textContent=fmtCHF(D.resY3);
+  el('pPerY1').textContent='~'+fmt(perY1)+' / associ\u00e9';
+  el('pPerY2').textContent='~'+fmt(perY2)+' / associ\u00e9';
+  el('pPerY3').textContent='~'+fmt(perY3)+' / associ\u00e9';
+  el('pAdjY1').textContent='Apr\u00e8s charges: ~'+fmt(adjY1);
+  el('pAdjY2').textContent='Apr\u00e8s charges: ~'+fmt(adjY2);
+  el('pAdjY3').textContent='Apr\u00e8s charges: ~'+fmt(adjY3);
+
+  // 5. Verdict
+  const vd=el('profitVerdict'),vt=el('profitVerdictText');
+  if(roiCumul>=5){
+    vd.className='verdict green';
+    vt.innerHTML='<strong>ROI excellent ('+roiCumul.toFixed(1)+'x).</strong> Pour ~'+fmtCHF(investPerAssoc)+' par associ\u00e9, le retour cumul\u00e9 sur 3 ans atteint <strong>'+fmtCHF(cumAdj)+'</strong> apr\u00e8s charges manquantes.';
+  } else if(roiCumul>=2){
+    vd.className='verdict green';
+    vt.innerHTML='<strong>ROI attractif ('+roiCumul.toFixed(1)+'x).</strong> Retour cumul\u00e9 de <strong>'+fmtCHF(cumAdj)+'</strong> par associ\u00e9 sur 3 ans. Payback en <strong>'+payback+' mois</strong>.';
+  } else if(roiCumul>=1){
+    vd.className='verdict orange';
+    vt.innerHTML='<strong>ROI mod\u00e9r\u00e9 ('+roiCumul.toFixed(1)+'x).</strong> L\'investissement est r\u00e9cup\u00e9r\u00e9 mais les marges restent limit\u00e9es.';
+  } else {
+    vd.className='verdict red';
+    vt.innerHTML='<strong>ROI insuffisant ('+roiCumul.toFixed(1)+'x).</strong> Le retour sur 3 ans ne couvre pas l\'investissement. R\u00e9duisez les charges ou augmentez le CA.';
+  }
+
+  // 6. Breakdown medecin vs non-medecin
+  const retroRate=getRetroRate()/100;
+  const revSpecAnnual=D.revSpec||923432;
+  const retroAnnual=revSpecAnnual*retroRate;
+  let bkH='';
+  // Medecin card
+  bkH+='<div class="profit-type"><h4>&#129657; Associ\u00e9 m\u00e9decin</h4>';
+  bkH+='<div class="pt-row"><span class="pt-label">R\u00e9trocession propre CA ('+Math.round(retroRate*100)+'%)</span><span class="pt-value">'+fmtCHF(retroAnnual)+'/an</span></div>';
+  bkH+='<div class="pt-row"><span class="pt-label">Part r\u00e9sultat Y1</span><span class="pt-value">'+fmtCHF(adjY1)+'</span></div>';
+  bkH+='<div class="pt-row"><span class="pt-label">Part r\u00e9sultat Y2</span><span class="pt-value">'+fmtCHF(adjY2)+'</span></div>';
+  bkH+='<div class="pt-row"><span class="pt-label">Part r\u00e9sultat Y3</span><span class="pt-value">'+fmtCHF(adjY3)+'</span></div>';
+  const medTotal=cumAdj+retroAnnual*3;
+  bkH+='<div class="pt-total"><span class="pt-label">Total 3 ans (retro + r\u00e9sultat)</span><span class="pt-value">'+fmtCHF(medTotal)+'</span></div>';
+  bkH+='</div>';
+  // Non-medecin card
+  bkH+='<div class="profit-type"><h4>&#128188; Associ\u00e9 non-m\u00e9decin</h4>';
+  bkH+='<div class="pt-row"><span class="pt-label">R\u00e9trocession propre CA</span><span class="pt-value">\u2014</span></div>';
+  bkH+='<div class="pt-row"><span class="pt-label">Part r\u00e9sultat Y1</span><span class="pt-value">'+fmtCHF(adjY1)+'</span></div>';
+  bkH+='<div class="pt-row"><span class="pt-label">Part r\u00e9sultat Y2</span><span class="pt-value">'+fmtCHF(adjY2)+'</span></div>';
+  bkH+='<div class="pt-row"><span class="pt-label">Part r\u00e9sultat Y3</span><span class="pt-value">'+fmtCHF(adjY3)+'</span></div>';
+  bkH+='<div class="pt-total"><span class="pt-label">Total 3 ans (r\u00e9sultat seul)</span><span class="pt-value">'+fmtCHF(cumAdj)+'</span></div>';
+  bkH+='</div>';
+  el('profitBreakdown').innerHTML=bkH;
+
+  // 7. Bar chart (3 datasets)
+  if(charts.profit){try{charts.profit.destroy()}catch(e){}}
+  charts.profit=new Chart(el('cProfit'),{type:'bar',data:{labels:['Ann\u00e9e 1','Ann\u00e9e 2','Ann\u00e9e 3'],datasets:[
+    {label:'R\u00e9sultat brut / associ\u00e9',data:[perY1,perY2,perY3],backgroundColor:'rgba(26,74,122,.8)',borderRadius:8,barPercentage:.5},
+    {label:'Apr\u00e8s charges manquantes',data:[adjY1,adjY2,adjY3],backgroundColor:'rgba(0,184,148,.8)',borderRadius:8,barPercentage:.5},
+    {label:'Revenu m\u00e9decin total',data:[adjY1+retroAnnual,adjY2+retroAnnual,adjY3+retroAnnual],backgroundColor:'rgba(253,203,110,.8)',borderRadius:8,barPercentage:.5}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:16}}},scales:{y:{grid:gridOpts,ticks:{callback:v=>fmt(v)+' CHF'}},x:{grid:{display:false}}}}});
+
+  // 8. Cumulative profit line chart
+  if(charts.profitCumul){try{charts.profitCumul.destroy()}catch(e){}}
+  const cumData=[];let cum=0;
+  for(let m=0;m<36;m++){cum+=D.result[m]/nbAssoc-monthlyCharges;cumData.push(cum);}
+  const investLine=Array(36).fill(investPerAssoc);
+  charts.profitCumul=new Chart(el('cProfitCumul'),{type:'line',data:{labels:labelsQ,datasets:[
+    {label:'Profit cumul\u00e9 / associ\u00e9',data:cumData,borderColor:'#00b894',backgroundColor:'rgba(0,184,148,.08)',fill:true,tension:.3,pointRadius:0,borderWidth:2.5},
+    {label:'Investissement (CAPEX / associ\u00e9)',data:investLine,borderColor:'#d63031',borderWidth:1.5,borderDash:[6,4],pointRadius:0,fill:false}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:12}}},scales:{y:{grid:gridOpts,ticks:{callback:v=>fmt(v)+' CHF'}},x:{grid:{display:false}}}},plugins:[yearPlugin]});
+}
+
 // ===== CHARTS =====
 const labels=Array.from({length:36},(_,i)=>'M'+(i+1));
 const labelsQ=['','','M3','','','M6','','','M9','','','M12','','','M15','','','M18','','','M21','','','M24','','','M27','','','M30','','','M33','','','M36'];
@@ -1667,7 +1815,7 @@ const yearPlugin={id:'yl',beforeDraw(c){const ctx=c.ctx,x=c.scales.x,y=c.scales.
 
 function updateCharts(){
   if(!D)return;
-  Object.entries(charts).forEach(([k,c])=>{if(k!=='sim1'&&k!=='sim2'&&k!=='optimize'&&k!=='riskStress'&&k!=='charges'){try{c.destroy()}catch(e){}}});
+  Object.entries(charts).forEach(([k,c])=>{if(k!=='sim1'&&k!=='sim2'&&k!=='optimize'&&k!=='riskStress'&&k!=='charges'&&k!=='profit'&&k!=='profitCumul'){try{c.destroy()}catch(e){}}});
   // Overview chart — with optional overlay
   const ovDs=[{label:"Chiffre d'affaires",data:[D.caY1,D.caY2,D.caY3],backgroundColor:'rgba(26,74,122,.8)',borderRadius:8,barPercentage:.6},{label:'R\u00e9sultat net',data:[D.resY1,D.resY2,D.resY3],backgroundColor:'rgba(0,184,148,.8)',borderRadius:8,barPercentage:.6}];
   if(OVERLAY){ovDs.push({label:'CA sc\u00e9nario',data:[OVERLAY.caY1,OVERLAY.caY2,OVERLAY.caY3],backgroundColor:'rgba(26,74,122,.25)',borderRadius:8,barPercentage:.6,borderWidth:2,borderColor:'rgba(26,74,122,.6)',borderDash:[4,4]});ovDs.push({label:'R\u00e9sultat sc\u00e9nario',data:[OVERLAY.resY1,OVERLAY.resY2,OVERLAY.resY3],backgroundColor:'rgba(0,184,148,.25)',borderRadius:8,barPercentage:.6,borderWidth:2,borderColor:'rgba(0,184,148,.6)',borderDash:[4,4]});}
@@ -1680,9 +1828,9 @@ function updateCharts(){
   if(OVERLAY){cfDs.push({label:'Cashflow sc\u00e9nario',data:OVERLAY.cashflow,borderColor:'#e17055',borderWidth:2.5,borderDash:[6,3],pointRadius:0,tension:.3,fill:false});}
   charts.cashflow=new Chart(document.getElementById('cCashflow'),{type:'line',data:{labels:labelsQ,datasets:cfDs},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:12}}},scales:{y:{grid:gridOpts,ticks:{callback:v=>fmt(v)}},x:{grid:{display:false}}}},plugins:[yearPlugin]});
   charts.team=new Chart(document.getElementById('cTeam'),{type:'bar',data:{labels:labelsQ,datasets:[{label:'Associ\u00e9s',data:D.fteAssoc,backgroundColor:'#0f2b46',borderRadius:1},{label:'Ind\u00e9pendants',data:D.fteIndep,backgroundColor:'#1a4a7a',borderRadius:1},{label:'Internes',data:D.fteInterne,backgroundColor:'#5dade2',borderRadius:1},{label:'Personnel admin',data:D.fteAdmin,backgroundColor:'#aed6f1',borderRadius:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:12}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:gridOpts,title:{display:true,text:'ETP'}}}},plugins:[yearPlugin]});
-  charts.profit=new Chart(document.getElementById('cProfit'),{type:'bar',data:{labels:['Ann\u00e9e 1','Ann\u00e9e 2','Ann\u00e9e 3'],datasets:[{label:'R\u00e9sultat brut / associ\u00e9',data:[D.resY1/2,D.resY2/2,D.resY3/2],backgroundColor:'rgba(26,74,122,.8)',borderRadius:8,barPercentage:.5},{label:'Apr\u00e8s charges manquantes',data:[Math.max(0,D.resY1/2-100000),D.resY2/2-100000,D.resY3/2-100000],backgroundColor:'rgba(0,184,148,.8)',borderRadius:8,barPercentage:.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:16}}},scales:{y:{grid:gridOpts,ticks:{callback:v=>fmt(v)+' CHF'}},x:{grid:{display:false}}}}});
   updateOptimize();
   updateRisks();
+  updateProfit();
 }
 
 // ===== SIMULATOR ENGINE =====
