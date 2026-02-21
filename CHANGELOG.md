@@ -2,6 +2,21 @@
 
 All notable changes to the GYNEVA Business Plan application are documented here.
 
+## [0.12.0] - 2026-02-21
+
+### Added
+- **6 enriched KPIs**: investissement total, CA Y3 (+growth% vs Y1), resultat net Y3 (color-coded by margin), marge nette Y3 (%), payback period (color-coded by duration), BFR minimum (color-coded by severity)
+- **Year timeline cards**: 3 cards (Y1/Y2/Y3) showing CA, resultat net, marge nette, ETP with phase labels (Demarrage/Croissance/Croisiere) and gradient top borders
+- **Section summary grid**: 4 cards (Tresorerie, Equipe, Risques, Profit) with live values, color-coded tags, and risk score read from DOM
+- **Dynamic verdict**: composite multi-factor score (0-12) from margin, payback, BFR, ROI — green (>=10), orange (>=6), red (<6)
+- **Enriched chart**: grouped bar (CA + Resultat) with cumulative cashflow line overlay (M12/M24/M36 data points)
+
+### Changed
+- Overview chart managed by `updateOverview()` instead of inline construction in `updateCharts()`
+- `updateUI()` no longer updates kCapex/kCaY3/kResY3/kMargin/kCaGrowth/kPayback/vTresoY3 (delegated to `updateOverview()`)
+- Chart destroy loop excludes `overview` key (lifecycle managed by `updateOverview()`)
+- `updateOverview()` called last in `updateCharts()` chain (after `updateRisks()`/`updateProfit()`) to read composite risk score from DOM
+
 ## [0.11.0] - 2026-02-21
 
 ### Added
