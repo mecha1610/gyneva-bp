@@ -1,11 +1,12 @@
 # GYNEVA Business Plan
 
-Interactive financial planning application for a gynecology clinic in Geneva. Provides 36-month revenue projections, cashflow scenario analysis, team ramp-up modeling, and a real-time business simulator.
+Interactive financial planning application for a gynecology clinic in Geneva. Provides 36-month revenue projections, cashflow scenario analysis, team ramp-up modeling, a real-time business simulator, Excel import with change tracking, and full version history with restore.
 
 **Production**: https://gyneva-bp-https.vercel.app
 
 ## Table of Contents
 
+- [Features](#features)
 - [Architecture](#architecture)
 - [Tech Stack](#tech-stack)
 - [Getting Started](#getting-started)
@@ -13,9 +14,53 @@ Interactive financial planning application for a gynecology clinic in Geneva. Pr
 - [Environment Variables](#environment-variables)
 - [Database](#database)
 - [API Reference](#api-reference)
-- [Authentication](#authentication)
+- [Authentication & Security](#authentication--security)
 - [Business Logic](#business-logic)
+- [Excel Import](#excel-import)
+- [Version History](#version-history)
 - [Deployment](#deployment)
+
+---
+
+## Features
+
+### Dashboard & Visualization
+- **8-section SPA** with sidebar navigation: Overview, Simulator, Revenue, Cashflow, Team, Risks, Profit, Optimizations
+- **Real-time KPI cards**: CAPEX, CA Y3, Net result Y3, ROI payback
+- **Interactive Chart.js visualizations** for revenue evolution, cashflow scenarios, team growth, profitability
+- **Verdict engine**: automatic viability assessment with color-coded indicators
+
+### Excel Import with Change Tracking
+- **Drag-and-drop or file picker** upload of `.xlsx` business plan models
+- **Server-side parsing** of the "Backend" sheet with mapped rows/columns
+- **Math.round() on all cell values** to eliminate floating-point rounding drift between Excel and the app
+- **Import diff summary**: after each import, a grid shows every changed metric (CA Y1-3, Result Y1-3, CAPEX, fee, consult/day, ETP max) with old value, new value, and percentage variation
+- **"No changes detected"** message when re-uploading the same file
+- **Warnings display**: parser warnings (zero-rows, missing critical rows, sheet fallback) shown inline
+
+### Parser Robustness
+- **Sheet fallback**: if "Backend" is absent but the workbook has a single sheet, it is used automatically (with a warning)
+- **Available sheets listed in error message** when "Backend" is missing from a multi-sheet workbook
+- **Critical row validation**: checks that CA (row 46), Result (row 86), and Cashflow (row 87) exist within the worksheet range
+- **Zero-row detection**: warns when CA, Result, Cashflow, or sub-revenue lines are entirely zero
+
+### Version History & Restore
+- **"Versions" button in topbar** opens a slide-in panel on the right
+- **Version list** with version number, label, and formatted date
+- **One-click restore**: fetches full version data, pushes it to the plan (which auto-snapshots the current state first), reloads the UI, and shows a diff of what changed
+- **Labeled snapshots**: every Excel import creates a version labeled "Import Excel: filename.xlsx"; restores create "Restauration v3"
+
+### Simulator
+- **13-parameter interactive simulator** with real-time slider feedback
+- **Parameters**: consultations/day, fees, working days, team composition (associates, independents, salaried), start month, occupancy rate, cash patients %, LAMal delay, factoring toggle, extra charges, professional liability
+- **Save/load named scenarios** for comparing alternative business models
+- **Delta indicators** showing impact vs. baseline on key metrics
+
+### Authentication & Access Control
+- **Google OAuth 2.0** sign-in with server-side JWT verification
+- **Email whitelist**: only pre-approved addresses can access the app
+- **Role-based access**: ADMIN, EDITOR, VIEWER
+- **Admin panel** for managing the whitelist
 
 ---
 
@@ -25,21 +70,21 @@ Interactive financial planning application for a gynecology clinic in Geneva. Pr
 Browser (SPA)                    Vercel Serverless Functions
 +-----------------------+        +---------------------------+
 | public/index.html     |  HTTP  | api/auth/*    (sessions)  |
-| - Google Sign-In      |------->| api/plans/*   (CRUD)      |
+| - Google Sign-In      |------->| api/plans/*   (CRUD+vers) |
 | - Chart.js dashboards |<-------| api/scenarios/*(simulator) |
 | - Real-time simulator |        | api/import/*  (Excel)     |
 | - Excel drag & drop   |        | api/admin/*   (whitelist) |
-+-----------------------+        +---------------------------+
-                                          |
-                                    Prisma ORM
-                                          |
-                                 +------------------+
-                                 | PostgreSQL (Neon) |
-                                 | 6 tables          |
-                                 +------------------+
+| - Import diff summary |        +---------------------------+
+| - Version history     |                 |
++-----------------------+           Prisma ORM
+                                         |
+                                +------------------+
+                                | PostgreSQL (Neon) |
+                                | 6 tables          |
+                                +------------------+
 ```
 
-The frontend is a single HTML file served as static content. All data operations go through the REST API. The simulator engine (`lib/compute.ts`) runs client-side for instant slider feedback, while persistence happens via API calls.
+The frontend is a single HTML file served as static content. All data operations go through the REST API. The simulator engine runs client-side for instant slider feedback; persistence and Excel parsing happen server-side via API calls.
 
 ## Tech Stack
 
@@ -52,7 +97,7 @@ The frontend is a single HTML file served as static content. All data operations
 | Validation | Zod |
 | Auth | Google OAuth 2.0, server-side JWT verification |
 | Sessions | HttpOnly cookies + DB-backed tokens |
-| Excel | `xlsx` library (server-side parsing) |
+| Excel | `xlsx` library (server-side parsing with Math.round) |
 
 ## Getting Started
 
@@ -89,61 +134,63 @@ npm run dev
 
 The app will be available at `http://localhost:3000`.
 
-### Useful Commands
+### Commands
 
-```bash
-npm run dev          # Local dev server (Vercel Functions + static)
-npm run typecheck    # TypeScript type checking
-npm run test         # Run tests (vitest)
-npm run db:push      # Sync Prisma schema to DB
-npm run db:seed      # Seed initial data
-npm run db:studio    # Open Prisma Studio (DB GUI)
-npm run db:migrate   # Create migration files
-```
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Local dev server (Vercel Functions + static) |
+| `npm run typecheck` | TypeScript type checking (`tsc --noEmit`) |
+| `npm run test` | Run tests (vitest) |
+| `npm run db:push` | Sync Prisma schema to DB |
+| `npm run db:seed` | Seed initial data |
+| `npm run db:studio` | Open Prisma Studio (DB GUI) |
+| `npm run db:migrate` | Create migration files |
 
 ## Project Structure
 
 ```
 gyneva-bp/
-├── api/                        # Vercel serverless functions
-│   ├── _lib/                   # Shared utilities (not deployed as endpoints)
-│   │   ├── auth.ts             # Google OAuth verification, session CRUD
-│   │   ├── db.ts               # Prisma client singleton (Neon adapter)
-│   │   ├── errors.ts           # Standardized error responses
-│   │   └── middleware.ts       # CORS, rate limiting, auth guards
+├── api/                           # Vercel serverless functions
+│   ├── _lib/                      # Shared utilities (not deployed as endpoints)
+│   │   ├── auth.ts                # Google OAuth verification, session CRUD
+│   │   ├── db.ts                  # Prisma client singleton (Neon adapter)
+│   │   ├── errors.ts              # Standardized error responses
+│   │   └── middleware.ts          # CORS, rate limiting, auth guards
 │   ├── auth/
-│   │   ├── google.ts           # POST   Login with Google credential
-│   │   ├── me.ts               # GET    Current user from session
-│   │   └── logout.ts           # POST   Destroy session
+│   │   ├── google.ts              # POST   Login with Google credential
+│   │   ├── me.ts                  # GET    Current user from session
+│   │   └── logout.ts             # POST   Destroy session
 │   ├── plans/
-│   │   ├── index.ts            # GET    List plans / POST Create plan
-│   │   ├── [id].ts             # GET    Read / PUT Update / DELETE Soft-delete
-│   │   └── [id]/versions.ts    # GET    Version history
+│   │   ├── index.ts               # GET    List plans / POST Create plan
+│   │   ├── [id].ts                # GET    Read / PUT Update (auto-snapshot) / DELETE
+│   │   └── [id]/
+│   │       ├── versions.ts        # GET    List version history
+│   │       └── versions/
+│   │           └── [versionId].ts # GET    Full version data (for restore)
 │   ├── scenarios/
-│   │   ├── index.ts            # GET    List / POST Create scenario
-│   │   └── [id].ts             # GET    Read / PUT Update / DELETE Remove
+│   │   ├── index.ts               # GET    List / POST Create scenario
+│   │   └── [id].ts                # GET    Read / PUT Update / DELETE Remove
 │   ├── import/
-│   │   └── excel.ts            # POST   Parse uploaded Excel file
+│   │   └── excel.ts               # POST   Parse Excel (Math.round, fallback, warnings)
 │   ├── admin/
-│   │   └── users.ts            # GET    List / POST Add / DELETE Remove emails
-│   └── health.ts               # GET    Health check
+│   │   └── users.ts               # GET    List / POST Add / DELETE Remove emails
+│   └── health.ts                  # GET    Health check
 │
-├── lib/                        # Shared code (front + back)
-│   ├── types.ts                # TypeScript interfaces
-│   ├── constants.ts            # Default data, Excel mappings, simulator defaults
-│   └── compute.ts              # Financial engine (scenarios, derived metrics, simulator)
+├── lib/                           # Shared code (front + back)
+│   ├── types.ts                   # TypeScript interfaces
+│   ├── constants.ts               # Default data, Excel mappings, simulator defaults
+│   └── compute.ts                 # Financial engine (scenarios, derived metrics)
 │
 ├── prisma/
-│   ├── schema.prisma           # Database schema (6 models)
-│   └── seed.ts                 # Seed script
+│   ├── schema.prisma              # Database schema (6 models)
+│   └── seed.ts                    # Seed script
 │
 ├── public/
-│   └── index.html              # Single-page application (all sections embedded)
+│   └── index.html                 # Single-page application (all sections embedded)
 │
-├── tests/                      # Test directory (vitest)
 ├── package.json
 ├── tsconfig.json
-└── vercel.json                 # Build + deployment config
+└── vercel.json                    # Build + deployment config
 ```
 
 ## Environment Variables
@@ -151,9 +198,9 @@ gyneva-bp/
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `POSTGRES_PRISMA_URL` | Yes | Pooled Postgres connection string |
-| `POSTGRES_URL_NON_POOLING` | Yes | Direct connection (used by Prisma migrations) |
+| `POSTGRES_URL_NON_POOLING` | Yes | Direct connection (for Prisma migrations) |
 | `GOOGLE_CLIENT_ID` | Yes | Google OAuth 2.0 Client ID |
-| `SESSION_SECRET` | Yes | Random string for future session signing |
+| `SESSION_SECRET` | Yes | Random string for session signing |
 | `ALLOWED_ORIGIN` | Yes | Production URL for CORS (`https://gyneva-bp-https.vercel.app`) |
 | `NODE_ENV` | Auto | Set by Vercel; controls Secure/SameSite cookie flags |
 
@@ -161,7 +208,7 @@ Copy `.env.example` to `.env.local` and fill in your values.
 
 ## Database
 
-### Schema Overview
+### Schema
 
 ```
 ┌──────────────┐     ┌──────────────┐     ┌───────────────────┐
@@ -184,19 +231,16 @@ Copy `.env.example` to `.env.local` and fill in your values.
 
 ### Models
 
-**User** — Authenticated users (`ADMIN` | `EDITOR` | `VIEWER`)
+| Model | Description |
+|-------|-------------|
+| **User** | Authenticated users with role (`ADMIN`, `EDITOR`, `VIEWER`) |
+| **Session** | Server-side sessions with 24h TTL, cascade-deleted with user |
+| **AllowedEmail** | Email whitelist checked during login |
+| **BusinessPlan** | 36-month financial model (17 arrays as JSONB + 5 scalar constants), soft-deletable |
+| **BusinessPlanVersion** | Auto-snapshot before each plan update; stores full data + constants at that point |
+| **SimulatorScenario** | Saved simulator parameter sets (13 parameters), optionally shared or linked to a plan |
 
-**Session** — Server-side sessions with 24h TTL, linked to User (cascade delete)
-
-**AllowedEmail** — Email whitelist; checked during login before user creation
-
-**BusinessPlan** — 36-month financial model stored as JSONB + queryable scalar constants. Supports soft-delete (`isActive`)
-
-**BusinessPlanVersion** — Auto-created snapshots before each plan update. Stores full data + constants at that point in time
-
-**SimulatorScenario** — Saved simulator parameter sets (13 parameters). Can be shared between users and optionally linked to a plan
-
-### Seeded Data
+### Seed Data
 
 The seed script (`npm run db:seed`) creates:
 - 2 allowed emails
@@ -205,118 +249,70 @@ The seed script (`npm run db:seed`) creates:
 
 ## API Reference
 
-All endpoints are prefixed with `/api`. Responses use JSON. Errors follow the format:
+All endpoints are prefixed with `/api`. Responses use JSON. Errors follow:
 
 ```json
 { "error": "Human-readable message", "code": "ERROR_CODE", "details": {} }
 ```
 
-### Authentication
+### Auth
 
 | Method | Endpoint | Auth | Description |
 |--------|----------|------|-------------|
-| `POST` | `/api/auth/google` | No | Exchange Google JWT for session |
-| `GET` | `/api/auth/me` | Yes | Get current user |
-| `POST` | `/api/auth/logout` | Yes | Destroy session |
+| `POST` | `/auth/google` | No | Exchange Google JWT for session cookie |
+| `GET` | `/auth/me` | Yes | Get current user from session |
+| `POST` | `/auth/logout` | Yes | Destroy session |
 
-**POST /api/auth/google**
-
-```json
-// Request
-{ "credential": "<Google JWT>" }
-
-// Response 200
-{ "user": { "id": "...", "email": "...", "name": "...", "picture": "...", "role": "EDITOR" } }
-
-// Response 403
-{ "error": "Access denied: user@example.com is not authorized", "code": "EMAIL_NOT_ALLOWED" }
-```
-
-### Business Plans
+### Plans
 
 | Method | Endpoint | Auth | Description |
 |--------|----------|------|-------------|
-| `GET` | `/api/plans` | Yes | List user's active plans |
-| `POST` | `/api/plans` | Yes | Create plan (defaults or custom data) |
-| `GET` | `/api/plans/:id` | Yes | Get plan with full 36-month data |
-| `PUT` | `/api/plans/:id` | Yes | Update plan (auto-snapshots before overwrite) |
-| `DELETE` | `/api/plans/:id` | Yes | Soft-delete plan |
-| `GET` | `/api/plans/:id/versions` | Yes | List version history |
+| `GET` | `/plans` | Yes | List user's active plans |
+| `POST` | `/plans` | Yes | Create plan (uses defaults if no data provided) |
+| `GET` | `/plans/:id` | Yes | Get plan with full 36-month data |
+| `PUT` | `/plans/:id` | Yes | Update plan (auto-snapshots before overwrite) |
+| `DELETE` | `/plans/:id` | Yes | Soft-delete plan |
+| `GET` | `/plans/:id/versions` | Yes | List version history (id, number, label, date) |
+| `GET` | `/plans/:id/versions/:versionId` | Yes | Get full version data + constants (for restore) |
 
-**POST /api/plans**
+`PUT /plans/:id` accepts an optional `versionLabel` field. When `data` is included in the body, the current plan state is automatically saved as a `BusinessPlanVersion` before applying the update.
 
-```json
-// Request (minimal — uses defaults)
-{ "name": "My Plan" }
-
-// Request (with custom data)
-{
-  "name": "Custom Plan",
-  "data": {
-    "ca": [0, 0, 0, ...],           // 36 elements
-    "caAssoc": [0, 0, 0, ...],      // 36 elements
-    // ... all 17 arrays with 36 elements each
-  },
-  "consultDay": 16,
-  "fee": 225,
-  "daysYear": 215,
-  "revSpec": 923432,
-  "capex": 523000
-}
-```
-
-**PUT /api/plans/:id** — When `data` is included, the current state is saved as a `BusinessPlanVersion` before the update is applied.
-
-### Simulator Scenarios
+### Scenarios
 
 | Method | Endpoint | Auth | Description |
 |--------|----------|------|-------------|
-| `GET` | `/api/scenarios` | Yes | List own + shared scenarios |
-| `POST` | `/api/scenarios` | Yes | Save a simulator scenario |
-| `GET` | `/api/scenarios/:id` | Yes | Get scenario parameters |
-| `PUT` | `/api/scenarios/:id` | Yes | Update scenario |
-| `DELETE` | `/api/scenarios/:id` | Yes | Delete scenario |
-
-**POST /api/scenarios**
-
-```json
-{
-  "name": "Optimistic",
-  "params": {
-    "consult": 20,    // 8–24
-    "fee": 250,       // 120–350 CHF
-    "days": 220,      // 180–250
-    "assoc": 2,       // 1–4
-    "indep": 4,       // 0–6
-    "interne": 2,     // 0–4
-    "start": 3,       // 1–12
-    "occup": 70,      // 30–100 %
-    "cashPct": 20,    // 0–30 %
-    "delay": 1,       // 0, 1, or 3
-    "factoring": true,
-    "extra": 150000,  // 0–400000 CHF
-    "rc": 60000       // 0–120000 CHF
-  },
-  "businessPlanId": "clu...",
-  "isShared": false
-}
-```
+| `GET` | `/scenarios` | Yes | List own + shared scenarios |
+| `POST` | `/scenarios` | Yes | Save a simulator scenario |
+| `GET` | `/scenarios/:id` | Yes | Get scenario parameters |
+| `PUT` | `/scenarios/:id` | Yes | Update scenario |
+| `DELETE` | `/scenarios/:id` | Yes | Delete scenario |
 
 ### Excel Import
 
 | Method | Endpoint | Auth | Description |
 |--------|----------|------|-------------|
-| `POST` | `/api/import/excel` | Yes | Parse `.xlsx` and return structured data |
+| `POST` | `/import/excel` | Yes | Parse `.xlsx` and return structured data + warnings |
 
-Expects a base64-encoded Excel file with a sheet named **"Backend"**. The parser extracts data from specific rows mapped in `lib/constants.ts` (`EXCEL_ROW_MAP`, `EXCEL_SCALAR_MAP`).
-
+**Request**:
 ```json
-// Request
 { "file": "<base64 xlsx>", "filename": "model.xlsx" }
-
-// Response 200
-{ "data": { "ca": [...], "result": [...], ... }, "filename": "model.xlsx", "message": "Excel parsed successfully" }
 ```
+
+**Response 200**:
+```json
+{
+  "data": { "ca": [...], "result": [...], ... },
+  "warnings": ["\"CA internes\" contient uniquement des zéros — ..."],
+  "filename": "model.xlsx",
+  "message": "Excel parsed successfully"
+}
+```
+
+**Parser behavior**:
+- Looks for sheet named "Backend"; falls back to the first (and only) sheet if "Backend" is absent
+- All numeric cell values are rounded to integers via `Math.round()` to prevent floating-point drift
+- Validates that all 17 arrays have exactly 36 elements
+- Returns `warnings[]` for: sheet fallback, critical rows out of range, entirely-zero data rows
 
 Size limit: 10 MB.
 
@@ -324,15 +320,15 @@ Size limit: 10 MB.
 
 | Method | Endpoint | Auth | Description |
 |--------|----------|------|-------------|
-| `GET` | `/api/admin/users` | ADMIN | List allowed emails + registered users |
-| `POST` | `/api/admin/users` | ADMIN | Add email to whitelist |
-| `DELETE` | `/api/admin/users?email=...` | ADMIN | Remove email from whitelist |
+| `GET` | `/admin/users` | ADMIN | List allowed emails + registered users |
+| `POST` | `/admin/users` | ADMIN | Add email to whitelist |
+| `DELETE` | `/admin/users?email=...` | ADMIN | Remove email from whitelist |
 
 ### Health
 
 | Method | Endpoint | Auth | Description |
 |--------|----------|------|-------------|
-| `GET` | `/api/health` | No | Returns `{ ok: true, ts: <timestamp> }` |
+| `GET` | `/health` | No | Returns `{ ok: true, ts: <timestamp> }` |
 
 ### HTTP Status Codes
 
@@ -343,13 +339,13 @@ Size limit: 10 MB.
 | 204 | Preflight OK |
 | 400 | Validation error (`BAD_REQUEST`) |
 | 401 | No session (`UNAUTHORIZED`) |
-| 403 | Forbidden / Email not allowed (`FORBIDDEN`, `EMAIL_NOT_ALLOWED`) |
-| 404 | Resource not found (`NOT_FOUND`) |
-| 405 | Wrong HTTP method (`METHOD_NOT_ALLOWED`) |
+| 403 | Forbidden / Email not allowed |
+| 404 | Resource not found |
+| 405 | Wrong HTTP method |
 | 429 | Rate limit exceeded (60 req/min per IP) |
-| 500 | Server error (`INTERNAL_ERROR`) |
+| 500 | Server error |
 
-## Authentication
+## Authentication & Security
 
 ### Flow
 
@@ -365,18 +361,18 @@ Size limit: 10 MB.
 9. Subsequent requests include cookie automatically
 ```
 
-### Security
+### Security Measures
 
-- **Server-side JWT verification** via `google-auth-library` (no client-side decode)
+- **Server-side JWT verification** via `google-auth-library`
 - **HttpOnly cookies**: session token not accessible to JavaScript
-- **Secure flag**: enabled in production (HTTPS only)
-- **SameSite=Strict**: in production (prevents CSRF)
+- **Secure + SameSite=Strict**: in production (HTTPS only, prevents CSRF)
 - **Email whitelist**: only pre-approved emails can log in
 - **Role-based access**: `ADMIN`, `EDITOR`, `VIEWER`
 - **Parameterized queries**: all DB access through Prisma (no raw SQL)
 - **Input validation**: Zod schemas on all API inputs
 - **Rate limiting**: 60 requests/minute per IP (in-memory)
 - **CORS**: restricted to configured origin
+- **No-store cache headers**: on all API responses
 
 ## Business Logic
 
@@ -384,16 +380,28 @@ Size limit: 10 MB.
 
 The application models a 36-month financial projection for a medical clinic with four revenue sources:
 
-| Source | Description | Revenue Share |
+| Source | Description | Revenue Model |
 |--------|-------------|--------------|
-| Associes | Partner doctors | 40% of spec revenue |
-| Independants | Independent doctors | 40% of spec revenue |
-| Internes | Salaried doctors | 100% of spec revenue |
-| Sages-femmes | Midwives | Fixed CHF 13,333/month |
+| Associes | Partner specialists | 40% of specialist revenue potential |
+| Independants | Independent doctors | 40% of specialist revenue potential |
+| Internes | Salaried doctors | 100% of specialist revenue potential |
+| Sages-femmes | Midwives | Fixed CHF 13,333/month at capacity |
+
+### 36-Month Data Structure
+
+Each plan contains 17 monthly arrays of 36 integers plus 5 scalar constants:
+
+| Category | Arrays |
+|----------|--------|
+| Revenue | `ca`, `caAssoc`, `caIndep`, `caInterne`, `caSage` |
+| Financial | `result`, `cashflow`, `treso1m`, `treso3m` |
+| Costs | `admin`, `opex`, `lab` |
+| Staffing | `fteAssoc`, `fteIndep`, `fteInterne`, `fteAdmin`, `fteTotal` |
+| Constants | `consultDay`, `fee`, `daysYear`, `revSpec`, `capex` |
 
 ### Cashflow Scenarios
 
-Three treasury scenarios are computed based on how LAMal (Swiss mandatory health insurance) payments are received:
+Three treasury scenarios based on LAMal (Swiss health insurance) payment delays:
 
 | Scenario | Description | Working Capital Impact |
 |----------|-------------|----------------------|
@@ -403,24 +411,83 @@ Three treasury scenarios are computed based on how LAMal (Swiss mandatory health
 
 In all scenarios, cash patients (OI/ONU, ~15% of revenue) pay immediately.
 
-### Simulator
-
-The simulator (`lib/compute.ts:runSimulation`) accepts 13 parameters and produces a full 36-month projection with ramp-up modeling:
-
-- **Year 1**: Gradual occupation from month `start`, reaching target `occup%` over 8 months
-- **Year 2**: Occupation increases to `occup + 60% * (1 - occup)`
-- **Year 3**: Full capacity (100%)
-
-Costs scale linearly with team size relative to a 7-doctor baseline.
-
 ### Key Constants
 
+| Parameter | Value |
+|-----------|-------|
+| Consultations/day | 16 |
+| Fee/consultation | CHF 225 |
+| Working days/year | 215 |
+| Revenue/specialist/year | CHF 923,432 |
+| Cash patients share | 15% |
+| Factoring cost | 1.5% |
+| CAPEX | CHF 523,000 |
+
+## Excel Import
+
+### Workflow
+
+1. User drags `.xlsx` onto dropzone or uses file picker
+2. File is read as ArrayBuffer, base64-encoded, and POSTed to `/api/import/excel`
+3. Server parses the "Backend" sheet (or single-sheet fallback) using mapped rows from `EXCEL_ROW_MAP`
+4. All cell values are `Math.round()`-ed to prevent floating-point rounding discrepancies
+5. Server validates 36-element arrays and returns data + warnings
+6. Frontend deep-copies current data, applies the import, and displays a diff summary
+7. If a plan is active, the imported data is PUT to the plan (auto-creating a version snapshot)
+
+### Row Mappings
+
+| Metric | Excel Row | Metric | Excel Row |
+|--------|-----------|--------|-----------|
+| CA total | 46 | FTE Associes | 31 |
+| CA Associes | 42 | FTE Independants | 32 |
+| CA Independants | 43 | FTE Internes | 33 |
+| CA Internes | 44 | FTE Admin (base) | 35 |
+| CA Sages-femmes | 45 | FTE Admin (extra) | 36 |
+| Resultat | 86 | FTE Total | 38 |
+| Cashflow | 87 | Consult/day | Row 5, Col B |
+| Treso 1 mois | 90 | Fee | Row 9, Col B |
+| Treso 3 mois | 93 | Days/year | Row 8, Col B |
+| Admin costs | 61 | Rev/specialist | Row 15, Col B |
+| OPEX | 76 | CAPEX | Row 118, Col E |
+| Lab | 82 | | |
+
+Month columns: B-M (Y1), O-Z (Y2), AB-AM (Y3) = 36 months.
+
+### Diff Summary
+
+After each import the app compares 10 key metrics against the previous state:
+
+- CA Year 1, 2, 3
+- Result Year 1, 2, 3
+- CAPEX, Honoraires/consultation, Consultations/jour, ETP max
+
+Each changed metric shows: old value (strikethrough), arrow, new value, and percentage change (green for increase, red for decrease). If nothing changed, the summary shows "Aucun changement detecte."
+
+Parser warnings (sheet fallback, zero rows, out-of-range rows) are displayed below the diff grid with warning icons.
+
+## Version History
+
+### How It Works
+
+1. Every `PUT /plans/:id` that includes `data` automatically creates a `BusinessPlanVersion` snapshot of the current state before applying the update
+2. Each version stores: full 36-month data arrays, scalar constants, version number, label, and timestamp
+3. The "Versions" button in the topbar opens a slide-in panel listing all versions (newest first)
+4. Clicking "Restaurer cette version" on any entry:
+   - Fetches full version data via `GET /plans/:id/versions/:versionId`
+   - PUTs it to the plan (which auto-snapshots the current state before overwriting)
+   - Updates the UI and shows a diff of what changed
+5. Version labels are set automatically: "Import Excel: filename.xlsx", "Restauration v3", etc.
+
+### Version Chain
+
 ```
-Consultations/day:  16          Working days/year:  215
-Fee/consultation:   CHF 225     Revenue/specialist: CHF 923,432/year
-Cash patients:      15%         Factoring cost:     1.5%
-CAPEX:              CHF 523,000
+v1  "Import Excel: model_v1.xlsx"     2025-06-01
+v2  "Import Excel: model_v2.xlsx"     2025-06-15   <-- user clicks "Restaurer"
+v3  "Restauration v1"                 2025-06-20   (snapshot of v2 state before restore)
 ```
+
+Restoring a version never destroys data; it always creates a new snapshot first.
 
 ## Deployment
 
