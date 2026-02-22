@@ -668,6 +668,8 @@ table.dt tr:hover td{background:#f8fafb}
   .exec-kpis{grid-template-columns:1fr 1fr}
   .status-pill{display:none}
   .topbar .btn span{display:none}
+  .user-info>span:nth-child(2){display:none}
+  .user-info{gap:.3rem}
   .chart-box{height:200px}.chart-box.sm{height:160px}
   .login-card{padding:1.5rem 1.2rem 1rem}
   .ov-summary-grid{grid-template-columns:1fr}
@@ -728,10 +730,10 @@ table.dt tr:hover td{background:#f8fafb}
 .admin-pending{margin-top:1.5rem}
 .admin-pending h3{font-size:.85rem;color:var(--p);margin-bottom:.5rem}
 #g_id_onload,#google-btn{display:flex;justify-content:center}
-.logout-btn{background:none;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.7);padding:.35rem .8rem;border-radius:8px;font-size:.75rem;cursor:pointer;transition:all .25s ease;margin-left:.5rem}
-.logout-btn:hover{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.6)}
-.user-info{display:flex;align-items:center;gap:.5rem;font-size:.8rem;color:rgba(255,255,255,.8)}
-.user-info img{width:26px;height:26px;border-radius:50%;border:2px solid rgba(255,255,255,.3)}
+.logout-btn{background:none;border:1px solid var(--brd);color:var(--txtL);padding:.35rem .8rem;border-radius:8px;font-size:.75rem;cursor:pointer;transition:all .25s ease;margin-left:.5rem}
+.logout-btn:hover{background:rgba(214,48,49,.06);color:var(--danger);border-color:var(--danger)}
+.user-info{display:flex;align-items:center;gap:.5rem;font-size:.8rem;color:var(--p)}
+.user-info img{width:26px;height:26px;border-radius:50%;border:2px solid var(--brd)}
 </style>
 </head>
 <body>
