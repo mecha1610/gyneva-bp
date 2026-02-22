@@ -145,6 +145,27 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans
 .rev-year-btn.active{background:var(--pl);color:#fff}
 .rev-controls .rev-profile-bar{margin-bottom:0}
 
+/* === EXEC DASHBOARD === */
+.exec-dash{background:linear-gradient(135deg,#0f2b46 0%,#1a4a7a 100%);color:#fff;padding:.8rem 1.2rem;display:flex;align-items:center;gap:1.2rem;position:relative;border-bottom:3px solid var(--acc)}
+.exec-dash.collapsed .exec-body{display:none}
+.exec-body{display:flex;align-items:center;gap:1.2rem;flex:1;min-width:0}
+.exec-toggle{position:absolute;right:12px;top:8px;background:none;border:none;color:rgba(255,255,255,.6);cursor:pointer;font-size:.9rem;padding:4px 8px;border-radius:6px;transition:var(--trans)}
+.exec-toggle:hover{color:#fff;background:rgba(255,255,255,.1)}
+.exec-gauge-wrap{flex-shrink:0;text-align:center;width:80px}
+.exec-gauge-wrap svg{width:70px;height:70px}
+.exec-gauge-label{font-size:.65rem;color:rgba(255,255,255,.7);margin-top:2px}
+.exec-kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:.3rem .5rem;flex:1;min-width:0}
+.exec-kpi{padding:.25rem .4rem;border-radius:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1)}
+.exec-kpi .ek-label{font-size:.55rem;color:rgba(255,255,255,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.exec-kpi .ek-value{font-size:.82rem;font-weight:800;white-space:nowrap}
+.exec-spark{flex-shrink:0;width:180px;height:50px}
+.exec-spark canvas{width:100%!important;height:100%!important}
+.nav-badge{display:inline-block;width:8px;height:8px;border-radius:50%;margin-left:6px;vertical-align:middle}
+.nav-badge.green{background:var(--acc)}
+.nav-badge.orange{background:var(--warn)}
+.nav-badge.red{background:var(--danger)}
+.nav-badge.none{display:none}
+
 /* === OPTIMIZE CONTROLS === */
 .opt-controls{display:flex;gap:1.2rem;flex-wrap:wrap;align-items:center;padding:1rem 1.2rem;background:#f8fafb;border-radius:var(--r);border:1px solid var(--brd);margin-bottom:1.2rem}
 .opt-ctrl{display:flex;align-items:center;gap:.5rem;font-size:.8rem;font-weight:600;color:var(--p)}
@@ -558,11 +579,14 @@ table.dt tr:hover td{background:#f8fafb}
   .sidebar{width:64px}.sidebar .nav-label,.sidebar .logo h1,.sidebar .logo-sub,.sidebar .sidebar-footer span{display:none}
   .main-area{margin-left:64px}.content{padding:1rem}.kpi-grid{grid-template-columns:1fr 1fr}
   .toggle-btn{display:none}
+  .exec-dash{flex-direction:column;align-items:stretch}
+  .exec-kpis{grid-template-columns:repeat(3,1fr)}
+  .exec-spark{width:100%;height:40px}
 }
 
 /* === PRINT/PDF === */
 @media print{
-  .sidebar,.topbar,.dropzone,.toggle-btn{display:none!important}
+  .sidebar,.topbar,.dropzone,.toggle-btn,.exec-dash{display:none!important}
   .main-area{margin-left:0!important}
   .section{display:block!important;page-break-inside:avoid}
   .card{box-shadow:none;border:1px solid #ddd}
@@ -616,14 +640,14 @@ table.dt tr:hover td{background:#f8fafb}
     </div>
   </div>
   <nav>
-    <button class="active" onclick="nav('overview',this)"><span class="nav-icon">&#128200;</span><span class="nav-label">Vue d'ensemble</span></button>
+    <button class="active" onclick="nav('overview',this)"><span class="nav-icon">&#128200;</span><span class="nav-label">Vue d'ensemble</span><span class="nav-badge none" id="badge-overview"></span></button>
     <button onclick="nav('simulator',this)"><span class="nav-icon">&#9881;&#65039;</span><span class="nav-label">Simulateur</span></button>
-    <button onclick="nav('revenue',this)"><span class="nav-icon">&#128176;</span><span class="nav-label">Revenus</span></button>
-    <button onclick="nav('cashflow',this)"><span class="nav-icon">&#128202;</span><span class="nav-label">Tr&eacute;sorerie</span></button>
-    <button onclick="nav('team',this)"><span class="nav-icon">&#128101;</span><span class="nav-label">&Eacute;quipe</span></button>
-    <button onclick="nav('risks',this)"><span class="nav-icon">&#9888;&#65039;</span><span class="nav-label">Risques</span></button>
-    <button onclick="nav('profit',this)"><span class="nav-icon">&#128181;</span><span class="nav-label">Profit associ&eacute;s</span></button>
-    <button onclick="nav('optimize',this)"><span class="nav-icon">&#128161;</span><span class="nav-label">Optimisations</span></button>
+    <button onclick="nav('revenue',this)"><span class="nav-icon">&#128176;</span><span class="nav-label">Revenus</span><span class="nav-badge none" id="badge-revenue"></span></button>
+    <button onclick="nav('cashflow',this)"><span class="nav-icon">&#128202;</span><span class="nav-label">Tr&eacute;sorerie</span><span class="nav-badge none" id="badge-cashflow"></span></button>
+    <button onclick="nav('team',this)"><span class="nav-icon">&#128101;</span><span class="nav-label">&Eacute;quipe</span><span class="nav-badge none" id="badge-team"></span></button>
+    <button onclick="nav('risks',this)"><span class="nav-icon">&#9888;&#65039;</span><span class="nav-label">Risques</span><span class="nav-badge none" id="badge-risks"></span></button>
+    <button onclick="nav('profit',this)"><span class="nav-icon">&#128181;</span><span class="nav-label">Profit associ&eacute;s</span><span class="nav-badge none" id="badge-profit"></span></button>
+    <button onclick="nav('optimize',this)"><span class="nav-icon">&#128161;</span><span class="nav-label">Optimisations</span><span class="nav-badge none" id="badge-optimize"></span></button>
     <button id="navAdmin" style="display:none" onclick="nav('admin',this)"><span class="nav-icon">&#128274;</span><span class="nav-label">Admin</span></button>
   </nav>
   <div class="sidebar-footer"><span>Analyse confidentielle &middot; 2025</span></div>
@@ -647,6 +671,24 @@ table.dt tr:hover td{background:#f8fafb}
   <button class="btn" onclick="openVersionPanel()">&#128338; Versions</button>
   <button class="btn" onclick="openCompare()">&#128200; Comparer</button>
   <button class="btn primary" onclick="exportPDF()">&#128424; Export PDF</button>
+</div>
+
+<div class="exec-dash" id="execDashboard">
+  <button class="exec-toggle" onclick="toggleExecDash()" id="execToggle">&#9660;</button>
+  <div class="exec-body" id="execBody">
+    <div class="exec-gauge-wrap">
+      <svg viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="8"/>
+        <circle id="execArc" cx="50" cy="50" r="42" fill="none" stroke="#00b894" stroke-width="8" stroke-linecap="round" stroke-dasharray="0 264" transform="rotate(-90 50 50)"/>
+        <text id="execScoreText" x="50" y="50" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="22" font-weight="800">&mdash;</text>
+      </svg>
+      <div class="exec-gauge-label" id="execScoreLabel">Score global</div>
+    </div>
+    <div class="exec-kpis" id="execKpis"></div>
+    <div class="exec-spark" id="execSpark">
+      <canvas id="cExecSpark"></canvas>
+    </div>
+  </div>
 </div>
 
 <div class="content">
@@ -2424,7 +2466,7 @@ const yearPlugin={id:'yl',beforeDraw(c){const ctx=c.ctx,x=c.scales.x,y=c.scales.
 
 function updateCharts(){
   if(!D)return;
-  Object.entries(charts).forEach(([k,c])=>{if(k!=='sim1'&&k!=='sim2'&&k!=='optimize'&&k!=='riskStress'&&k!=='charges'&&k!=='profit'&&k!=='profitCumul'&&k!=='team'&&k!=='teamProd'&&k!=='cashflow'&&k!=='cashWaterfall'&&k!=='overview'&&k!=='revenue'){try{c.destroy()}catch(e){}}});
+  Object.entries(charts).forEach(([k,c])=>{if(k!=='sim1'&&k!=='sim2'&&k!=='optimize'&&k!=='riskStress'&&k!=='charges'&&k!=='profit'&&k!=='profitCumul'&&k!=='team'&&k!=='teamProd'&&k!=='cashflow'&&k!=='cashWaterfall'&&k!=='overview'&&k!=='revenue'&&k!=='execSpark'){try{c.destroy()}catch(e){}}});
   updateRevenue();
   updateCashflow();
   updateTeam();
@@ -2432,6 +2474,7 @@ function updateCharts(){
   updateRisks();
   updateProfit();
   updateOverview();
+  updateExecDashboard();
 }
 
 // ===== SIMULATOR ENGINE =====
@@ -3301,6 +3344,11 @@ function _buildPDF(){
   doc.addPage();footer(2);
   let y=20;
   y=title(y,'Vue d\'ensemble');
+  // Global score badge
+  const gScore=document.getElementById('execScoreText')?.textContent||'?';
+  doc.setFillColor(240,243,248);doc.roundedRect(M+45,y-7,35,8,2,2,'F');
+  doc.setFontSize(8);doc.setFont('helvetica','bold');doc.setTextColor(...C.acc);doc.text('Score : '+gScore+'/100',M+47,y-2);doc.setFont('helvetica','normal');
+  y+=4;
   y=verdict(y,rdV('ovVerdict'));
   y=kpis(y,[{label:'Investissement total',value:rdK('ovCapex')},{label:'CA Ann\u00e9e 3',value:rdK('ovCaY3')},{label:'R\u00e9sultat net Y3',value:rdK('ovResY3')},{label:'Marge nette Y3',value:rdK('ovMarginPct')}]);
   y=kpis(y,[{label:'Payback',value:rdK('ovPayback')},{label:'BFR minimum',value:rdK('ovBfr')},{label:'',value:''},{label:'',value:''}]);
@@ -3364,6 +3412,83 @@ function _buildPDF(){
   doc.save('GynEva_'+safeName+'_'+new Date().toISOString().slice(0,10)+'.pdf');
 }
 
+// ===== EXEC DASHBOARD =====
+function toggleExecDash(){
+  const d=document.getElementById('execDashboard');
+  d.classList.toggle('collapsed');
+  document.getElementById('execToggle').innerHTML=d.classList.contains('collapsed')?'&#9650;':'&#9660;';
+  localStorage.setItem('execCollapsed',d.classList.contains('collapsed')?'1':'0');
+}
+function updateExecDashboard(){
+  if(!D)return;
+  const el=id=>document.getElementById(id);
+  // 1. Score global — read verdict colors from DOM
+  const verdictMap={ovVerdict:1,revVerdict:1,cfVerdict:1,teamVerdict:1,profitVerdict:1,optVerdict:1};
+  let totalPts=0,maxPts=0;
+  Object.keys(verdictMap).forEach(id=>{
+    const v=el(id);if(!v)return;
+    maxPts+=3;
+    const cl=v.className;
+    totalPts+=cl.includes('green')?3:cl.includes('orange')?2:1;
+  });
+  // Risk gauge: map low=3,medium=2,high=1
+  const rg=el('riskGauge');
+  if(rg){maxPts+=3;totalPts+=rg.className.includes('low')?3:rg.className.includes('medium')?2:1;}
+  const score=maxPts>0?Math.round(totalPts/maxPts*100):0;
+  // 2. SVG arc
+  const arc=el('execArc');
+  if(arc){
+    const dash=Math.round(score/100*264);
+    arc.setAttribute('stroke-dasharray',dash+' 264');
+    arc.setAttribute('stroke',score>=70?'#00b894':score>=40?'#fdcb6e':'#d63031');
+  }
+  el('execScoreText').textContent=score;
+  el('execScoreLabel').textContent=score>=70?'Viable':score>=40?'Sous conditions':'Risque \u00e9lev\u00e9';
+  // 3. 10 KPIs
+  const kpiData=[
+    {l:'Investissement',v:el('ovCapex')?.textContent||'\u2014'},
+    {l:'CA Y3',v:el('ovCaY3')?.textContent||'\u2014'},
+    {l:'R\u00e9sultat Y3',v:el('ovResY3')?.textContent||'\u2014'},
+    {l:'Marge nette',v:el('ovMarginPct')?.textContent||'\u2014'},
+    {l:'Payback',v:el('ovPayback')?.textContent||'\u2014'},
+    {l:'BFR min',v:el('ovBfr')?.textContent||'\u2014'},
+    {l:'Tr\u00e9so M36',v:el('cfTresoFin')?.textContent||'\u2014'},
+    {l:'ETP Y3',v:el('tEtp')?.textContent||'\u2014'},
+    {l:'ROI 3 ans',v:el('pRoi')?.textContent||'\u2014'},
+    {l:'Risque',v:(el('riskScore')?.textContent||'?')+'/100'},
+  ];
+  const kpiBox=el('execKpis');
+  if(kpiBox){
+    kpiBox.innerHTML=kpiData.map(k=>'<div class="exec-kpi"><div class="ek-label">'+k.l+'</div><div class="ek-value">'+k.v+'</div></div>').join('');
+  }
+  // 4. Sparkline
+  if(charts.execSpark){try{charts.execSpark.destroy()}catch(e){}}
+  const canvas=el('cExecSpark');
+  if(canvas&&D.cashflow){
+    charts.execSpark=new Chart(canvas,{
+      type:'line',
+      data:{labels:D.cashflow.map((_,i)=>i+1),datasets:[{data:D.cashflow,borderColor:'rgba(255,255,255,.8)',borderWidth:1.5,pointRadius:0,tension:.3,fill:{target:'origin',above:'rgba(255,255,255,.08)',below:'rgba(214,48,49,.15)'}}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{display:false},y:{display:false}},animation:false}
+    });
+  }
+  // 5. Sidebar badges
+  const badgeMap={overview:'ovVerdict',revenue:'revVerdict',cashflow:'cfVerdict',team:'teamVerdict',profit:'profitVerdict',optimize:'optVerdict'};
+  Object.entries(badgeMap).forEach(([sec,vid])=>{
+    const badge=el('badge-'+sec);
+    const v=el(vid);
+    if(!badge||!v)return;
+    const cl=v.className;
+    const color=cl.includes('green')?'green':cl.includes('orange')?'orange':'red';
+    badge.className='nav-badge '+color;
+  });
+  // Risk badge
+  const rBadge=el('badge-risks');
+  if(rBadge&&rg){
+    const rc=rg.className;
+    rBadge.className='nav-badge '+(rc.includes('low')?'green':rc.includes('medium')?'orange':'red');
+  }
+}
+
 // ===== AUTH LOGIC (server-side sessions) =====
 async function checkSession() {
   try {
@@ -3380,6 +3505,9 @@ async function grantAccess(user) {
   currentUser = user;
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app-content').style.display = 'block';
+
+  // Restore exec dashboard collapsed state
+  if(localStorage.getItem('execCollapsed')==='1'){const ed=document.getElementById('execDashboard');if(ed){ed.classList.add('collapsed');document.getElementById('execToggle').innerHTML='&#9650;';}}
 
   // Show admin nav if admin
   if (user.role === 'ADMIN') {
