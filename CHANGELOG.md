@@ -2,6 +2,23 @@
 
 All notable changes to the GYNEVA Business Plan application are documented here.
 
+## [0.17.0] - 2026-02-22
+
+### Added
+- **Scenario comparison modal**: full-screen modal to compare 2-3 simulator scenarios side by side
+- **3 scenario selectors**: choose from "Base", "Données actuelles", or any saved scenario — third selector optional
+- **12-metric comparison grid**: CA Y1/Y2/Y3, Résultat Y1/Y2/Y3, BFR min, Tréso M36, Marge Y3, Payback, ROI, ETP total — with color coding (green=better, red=worse vs scenario A), bold for best, delta badges (%)
+- **CA comparison chart**: grouped bar chart (1 color per scenario) over 36 months
+- **Trésorerie comparison chart**: multi-series line chart over 36 months with zero threshold
+- **Automatic verdict**: rank-sum scoring across 11 metrics, recommends best scenario with CA Y3, marge, payback, ROI summary
+- **Print support**: landscape layout via `window.print()` with dedicated print CSS
+- **PDF integration**: conditional page 9 (landscape A4) with metrics table and chart images when comparison data exists
+- **Trigger button**: "Comparer scénarios" in simulator section's action bar
+
+### Changed
+- `_buildPDF()` adds conditional landscape page for scenario comparison after Optimisations page
+- Each scenario recalculated in real-time via `computeSimulation()` (pure function, no side effects)
+
 ## [0.16.0] - 2026-02-22
 
 ### Added
