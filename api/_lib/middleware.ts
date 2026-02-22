@@ -56,6 +56,44 @@ export function checkRateLimit(req: VercelRequest, res: VercelResponse): boolean
   return false;
 }
 
+// ===== Login Rate Limiting (stricter, per IP) =====
+
+const loginRateMap = new Map<string, { count: number; resetAt: number }>();
+const LOGIN_RATE_LIMIT = 5; // max failed attempts per window
+const LOGIN_RATE_WINDOW_MS = 5 * 60 * 1000; // 5 minutes
+
+function getIp(req: VercelRequest): string {
+  return (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim()
+    || req.socket.remoteAddress
+    || 'unknown';
+}
+
+export function checkLoginRateLimit(req: VercelRequest, res: VercelResponse): boolean {
+  const ip = getIp(req);
+  const now = Date.now();
+
+  const entry = loginRateMap.get(ip);
+  if (!entry || now > entry.resetAt) {
+    loginRateMap.set(ip, { count: 1, resetAt: now + LOGIN_RATE_WINDOW_MS });
+    return false;
+  }
+
+  entry.count++;
+  if (entry.count > LOGIN_RATE_LIMIT) {
+    const retryAfter = Math.ceil((entry.resetAt - now) / 1000);
+    res.setHeader('Retry-After', String(retryAfter));
+    errorResponse(res, 429, 'LOGIN_RATE_LIMIT', `Too many login attempts. Retry after ${retryAfter}s`);
+    return true;
+  }
+
+  return false;
+}
+
+export function resetLoginRateLimit(req: VercelRequest): void {
+  const ip = getIp(req);
+  loginRateMap.delete(ip);
+}
+
 // ===== Auth Middleware =====
 
 export async function requireAuth(

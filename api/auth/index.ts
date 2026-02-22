@@ -5,13 +5,13 @@ import {
   verifyGoogleToken, isEmailAllowed, verifyPassword,
   createSession, setSessionCookie, deleteSession, clearSessionCookie,
 } from '../_lib/auth';
-import { setCors, checkRateLimit, requireAuth } from '../_lib/middleware';
+import { setCors, checkRateLimit, checkLoginRateLimit, resetLoginRateLimit, requireAuth } from '../_lib/middleware';
 import { badRequest, serverError, errorResponse } from '../_lib/errors';
 
 const googleSchema = z.object({ credential: z.string().min(1) });
 const loginSchema = z.object({
   email: z.string().email().transform(e => e.toLowerCase()),
-  password: z.string().min(1),
+  password: z.string().min(8),
 });
 
 function userJson(u: { id: string; email: string; name: string | null; picture: string | null; role: string }) {
@@ -60,6 +60,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // POST /auth?action=login
     if (action === 'login') {
+      if (checkLoginRateLimit(req, res)) return;
+
       const parsed = loginSchema.safeParse(req.body);
       if (!parsed.success) return badRequest(res, 'Invalid credentials', parsed.error.flatten());
 
@@ -74,6 +76,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return errorResponse(res, 401, 'INVALID_CREDENTIALS', 'Identifiants invalides');
       }
 
+      resetLoginRateLimit(req);
       await prisma.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } });
       const token = await createSession(user.id);
       setSessionCookie(res, token);
