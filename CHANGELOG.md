@@ -2,6 +2,34 @@
 
 All notable changes to the GYNEVA Business Plan application are documented here.
 
+## [0.19.0] - 2026-02-22
+
+### Added
+- **i18n engine**: `t(key, params)` function with dot-notation resolution, `{placeholder}` interpolation, and `tp(key, count)` for pluralization
+- **FR/EN translation dictionaries**: ~500 lines per language across ~20 namespaces (common, login, invite, sidebar, topbar, exec, overview, simulator, revenue, cashflow, team, risks, profit, optimize, admin, pdf, compare, scenario, version, import, pills, plan, chart)
+- **Language auto-detection**: detects browser language via `navigator.language`, persists choice in localStorage
+- **Language toggle**: FR/EN button in topbar, switches entire UI instantly including charts, verdicts, and dynamic content
+- **`data-i18n` attributes**: ~110+ static HTML elements tagged for automatic translation on language switch
+- **`data-i18n-attr` support**: translates input placeholders (login, invite forms)
+- **Hamburger menu**: 3-line animated button (transforms to X) visible on mobile (<=768px)
+- **Mobile sidebar drawer**: off-screen 260px sidebar slides in with overlay backdrop, auto-closes on navigation
+- **3 responsive breakpoints**: 1024px (compact desktop), 768px (tablet/mobile), 480px (phone) — consolidated from 12 scattered media queries
+- **Table scroll wrappers**: horizontal scrolling on risk matrix, charges table, and admin users table for small screens
+- **Unified print stylesheet**: merged compare/scenario print rules into single `@media print` block
+
+### Changed
+- All ~170+ dynamic JS strings replaced with `t()` calls (verdicts, KPI labels/sublabels, chart legends/axes, scenario titles, PDF export, admin panel, error messages)
+- `REV_PROFILES` refactored from `label` string to `labelKey` translation key with `revLabel(pr)` helper
+- `RISK_MATRIX` and `CHARGES_DATA` refactored to index-based with `riskName(r)`, `riskMit(r)`, `chargeName(c)` helpers
+- `fmtN()` locale-aware: uses `en-CH` or `fr-CH` based on active language
+- `setLang()` updates DOM, rebuilds all charts, reruns simulation, and persists to localStorage
+- Google OAuth locale set dynamically from `currentLang`
+- Date formatting in admin panel uses locale-aware `toLocaleDateString()`
+- `pageTitles` rebuilt dynamically via `updatePageTitles()` on language switch
+- `nav()` now calls `closeMobileNav()` to auto-close sidebar drawer on mobile
+- Sidebar on mobile uses CSS `transform:translateX(-100%)` drawer pattern instead of collapsed 64px strip
+- 12 scattered `@media(max-width:768px)` blocks consolidated into 3 unified breakpoint blocks + 1 unified print block
+
 ## [0.18.0] - 2026-02-22
 
 ### Added
