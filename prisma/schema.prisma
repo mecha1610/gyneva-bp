@@ -21,6 +21,7 @@ model User {
   name        String?
   picture     String?
   role        Role      @default(VIEWER)
+  passwordHash String?  @map("password_hash")
   googleSub   String?   @unique @map("google_sub")
   lastLoginAt DateTime? @map("last_login_at")
   createdAt   DateTime  @default(now()) @map("created_at")
@@ -99,6 +100,20 @@ model BusinessPlanVersion {
 
   @@index([businessPlanId])
   @@map("business_plan_versions")
+}
+
+model InviteToken {
+  id        String    @id @default(cuid())
+  token     String    @unique
+  email     String
+  role      Role      @default(VIEWER)
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  createdBy String    @map("created_by")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  @@index([token])
+  @@map("invite_tokens")
 }
 
 model SimulatorScenario {

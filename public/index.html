@@ -629,7 +629,7 @@ table.dt tr:hover td{background:#f8fafb}
 }
 /* === AUTH GATE === */
 #app-content{display:none}
-#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#0f2b46 0%,#1a4a7a 50%,#00b894 100%);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+#login-screen,#invite-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#0f2b46 0%,#1a4a7a 50%,#00b894 100%);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
 .login-card{background:#fff;border-radius:20px;padding:2.5rem 2.5rem 2rem;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.25)}
 .login-card .logo-auth{display:flex;align-items:center;justify-content:center;gap:.6rem;margin-bottom:.5rem}
 .login-card .logo-auth .dot{width:12px;height:12px;border-radius:50%;background:#00b894}
@@ -638,6 +638,29 @@ table.dt tr:hover td{background:#f8fafb}
 .login-card .divider{height:1px;background:#dfe6e9;margin:1.5rem 0}
 .login-card .access-info{font-size:.75rem;color:#b2bec3;margin-top:1rem}
 .login-card .error-msg{background:#fdeaea;color:#c0392b;padding:.6rem 1rem;border-radius:10px;font-size:.82rem;margin-top:1rem;display:none}
+.login-form{margin-top:1rem}
+.login-form input{width:100%;padding:.55rem .8rem;border:1px solid #dfe6e9;border-radius:10px;font-size:.85rem;margin-bottom:.6rem;box-sizing:border-box}
+.login-form button{width:100%;padding:.6rem;border:none;border-radius:10px;background:#1a4a7a;color:#fff;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .25s}
+.login-form button:hover{background:#0f2b46}
+.login-or{display:flex;align-items:center;gap:.8rem;margin:1.2rem 0;color:#b2bec3;font-size:.78rem}
+.login-or::before,.login-or::after{content:'';flex:1;height:1px;background:#dfe6e9}
+.invite-card{max-width:480px}
+.invite-card h2{font-size:1.2rem;color:#0f2b46;margin-bottom:.3rem}
+.role-tag{display:inline-block;padding:.15rem .5rem;border-radius:6px;font-size:.72rem;font-weight:600;background:rgba(0,184,148,.1);color:#00b894}
+.admin-users-table{width:100%;border-collapse:collapse;font-size:.82rem;margin-top:1rem}
+.admin-users-table th{text-align:left;padding:.5rem .6rem;border-bottom:2px solid var(--brd);font-size:.72rem;text-transform:uppercase;letter-spacing:.4px;color:var(--txtL)}
+.admin-users-table td{padding:.5rem .6rem;border-bottom:1px solid #f0f3f5;vertical-align:middle}
+.admin-users-table .role-select{padding:.2rem .4rem;border:1px solid var(--brd);border-radius:6px;font-size:.78rem}
+.auth-badge{display:inline-block;padding:.1rem .4rem;border-radius:4px;font-size:.68rem;font-weight:600}
+.auth-badge.google{background:rgba(66,133,244,.1);color:#4285f4}
+.auth-badge.password{background:rgba(0,184,148,.1);color:#00b894}
+.admin-invite-form{display:flex;gap:.5rem;margin-top:1rem;flex-wrap:wrap;align-items:center}
+.admin-invite-form input{flex:1;min-width:200px;padding:.4rem .6rem;border:1px solid var(--brd);border-radius:8px;font-size:.82rem}
+.admin-invite-form select{padding:.4rem .6rem;border:1px solid var(--brd);border-radius:8px;font-size:.82rem}
+.invite-link-box{margin-top:.8rem;padding:.6rem .8rem;background:#f8fafb;border:1px solid var(--brd);border-radius:8px;font-size:.78rem;word-break:break-all;display:none}
+.invite-link-box.show{display:block}
+.admin-pending{margin-top:1.5rem}
+.admin-pending h3{font-size:.85rem;color:var(--p);margin-bottom:.5rem}
 #g_id_onload,#google-btn{display:flex;justify-content:center}
 .logout-btn{background:none;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.7);padding:.35rem .8rem;border-radius:8px;font-size:.75rem;cursor:pointer;transition:all .25s ease;margin-left:.5rem}
 .logout-btn:hover{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.6)}
@@ -656,9 +679,35 @@ table.dt tr:hover td{background:#f8fafb}
     </div>
     <p class="subtitle">Business Plan Interactif &mdash; Acc&egrave;s restreint</p>
     <div id="google-btn"></div>
+    <div class="login-or">ou</div>
+    <form class="login-form" onsubmit="handlePasswordLogin(event)">
+      <input type="email" id="loginEmail" placeholder="Email" required>
+      <input type="password" id="loginPassword" placeholder="Mot de passe" required minlength="8">
+      <button type="submit">Se connecter</button>
+    </form>
     <div class="divider"></div>
     <p class="access-info">Seuls les comptes autoris&eacute;s peuvent acc&eacute;der &agrave; cette application.</p>
     <div class="error-msg" id="auth-error"></div>
+  </div>
+</div>
+
+<!-- ===== INVITE SCREEN ===== -->
+<div id="invite-screen" style="display:none">
+  <div class="login-card invite-card">
+    <div class="logo-auth">
+      <div class="dot"></div>
+      <h1>GYNEVA</h1>
+    </div>
+    <h2>Cr&eacute;er votre compte</h2>
+    <p class="subtitle">Vous avez &eacute;t&eacute; invit&eacute;(e) en tant que <span class="role-tag" id="inviteRoleTag"></span></p>
+    <p style="font-size:.82rem;color:#0f2b46;margin-bottom:1rem" id="inviteEmailDisplay"></p>
+    <form class="login-form" onsubmit="handleInviteAccept(event)">
+      <input type="text" id="inviteName" placeholder="Votre nom" required>
+      <input type="password" id="invitePassword" placeholder="Mot de passe (min. 8 caract&egrave;res)" required minlength="8">
+      <input type="password" id="invitePasswordConfirm" placeholder="Confirmer le mot de passe" required minlength="8">
+      <button type="submit">Cr&eacute;er mon compte</button>
+    </form>
+    <div class="error-msg" id="invite-error"></div>
   </div>
 </div>
 
@@ -1227,9 +1276,32 @@ table.dt tr:hover td{background:#f8fafb}
 
 <!-- ====== ADMIN ====== -->
 <div class="section" id="admin">
+  <!-- Users table -->
   <div class="card">
-    <h2><span class="ic">&#128274;</span> Gestion des utilisateurs autoris&eacute;s</h2>
-    <div class="exp">Ajoutez ou supprimez des adresses email autoris&eacute;es &agrave; acc&eacute;der &agrave; l'application.</div>
+    <h2><span class="ic">&#128101;</span> Utilisateurs</h2>
+    <div class="exp">G&eacute;rez les comptes utilisateurs, leurs r&ocirc;les et types d'authentification.</div>
+    <div id="adminUsersTable"></div>
+  </div>
+  <!-- Invite -->
+  <div class="card" style="margin-top:1.2rem">
+    <h2><span class="ic">&#128233;</span> Inviter un utilisateur</h2>
+    <div class="exp">G&eacute;n&eacute;rez un lien d'invitation. L'utilisateur pourra cr&eacute;er son compte avec un mot de passe.</div>
+    <div class="admin-invite-form">
+      <input type="email" id="inviteEmail" placeholder="email@example.com">
+      <select id="inviteRole"><option value="VIEWER">Viewer</option><option value="EDITOR">Editor</option><option value="ADMIN">Admin</option></select>
+      <button class="btn primary" onclick="createInvite()">G&eacute;n&eacute;rer le lien</button>
+    </div>
+    <div class="invite-link-box" id="inviteLinkBox">
+      <strong>Lien d'invitation :</strong><br>
+      <span id="inviteLinkText"></span>
+      <button class="btn-reset" style="margin-left:.5rem" onclick="copyInviteLink()">Copier</button>
+    </div>
+    <div class="admin-pending" id="adminPending"></div>
+  </div>
+  <!-- Whitelist emails (Google OAuth) -->
+  <div class="card" style="margin-top:1.2rem">
+    <h2><span class="ic">&#128274;</span> Whitelist emails (Google OAuth)</h2>
+    <div class="exp">Adresses email autoris&eacute;es &agrave; se connecter via Google OAuth.</div>
     <ul class="admin-emails" id="adminEmailList"></ul>
     <div class="admin-add">
       <input type="email" id="adminNewEmail" placeholder="nouvel.email@example.com">
@@ -2986,13 +3058,48 @@ async function deleteScenario(id) {
 // ===== ADMIN =====
 async function loadAdminData() {
   try {
-    const result = await api('/admin/users');
-    const list = document.getElementById('adminEmailList');
-    list.innerHTML = result.allowedEmails.map(e =>
-      '<li><span>'+e.email+'</span>' +
-      (e.email !== currentUser?.email ?
-        '<button class="btn-reset" onclick="removeAllowedEmail(\''+e.email+'\')">\u2717 Retirer</button>' :
-        '<span style="font-size:.7rem;color:var(--txtL)">(vous)</span>') +
+    const [usersResult,invitesResult]=await Promise.all([api('/admin/users'),api('/admin/invites')]);
+    // Users table
+    const users=usersResult.users||[];
+    const tbl=document.getElementById('adminUsersTable');
+    let html='<table class="admin-users-table"><thead><tr><th>Email</th><th>Nom</th><th>R\u00f4le</th><th>Type</th><th>Derni\u00e8re connexion</th><th>Actions</th></tr></thead><tbody>';
+    users.forEach(u=>{
+      const isSelf=u.id===currentUser?.id;
+      const authCls=u.authType==='google'?'google':'password';
+      const authLabel=u.authType==='google'?'Google':'Mot de passe';
+      const lastLogin=u.lastLoginAt?new Date(u.lastLoginAt).toLocaleDateString('fr-CH'):'Jamais';
+      html+='<tr>';
+      html+='<td>'+escHTML(u.email)+'</td>';
+      html+='<td>'+(u.name?escHTML(u.name):'\u2014')+'</td>';
+      html+='<td><select class="role-select" onchange="updateUserRole(\''+u.id+'\',this.value)"'+(isSelf?' disabled':'')+'>'+
+        ['ADMIN','EDITOR','VIEWER'].map(r=>'<option value="'+r+'"'+(u.role===r?' selected':'')+'>'+r+'</option>').join('')+
+        '</select></td>';
+      html+='<td><span class="auth-badge '+authCls+'">'+authLabel+'</span></td>';
+      html+='<td>'+lastLogin+'</td>';
+      html+='<td>'+(isSelf?'<span style="font-size:.7rem;color:var(--txtL)">(vous)</span>':'<button class="btn-reset" onclick="deleteUser(\''+u.id+'\')">\u2717 Supprimer</button>')+'</td>';
+      html+='</tr>';
+    });
+    html+='</tbody></table>';
+    tbl.innerHTML=html;
+    // Pending invites
+    const invites=invitesResult.invites||[];
+    const pending=document.getElementById('adminPending');
+    if(invites.length>0){
+      let ih='<h3>Invitations en attente ('+invites.length+')</h3><ul class="admin-emails">';
+      invites.forEach(inv=>{
+        const exp=new Date(inv.expiresAt).toLocaleDateString('fr-CH')+' '+new Date(inv.expiresAt).toLocaleTimeString('fr-CH',{hour:'2-digit',minute:'2-digit'});
+        ih+='<li><span>'+escHTML(inv.email)+' <span class="role-tag">'+inv.role+'</span> <span style="font-size:.7rem;color:var(--txtL)">expire '+exp+'</span></span></li>';
+      });
+      ih+='</ul>';
+      pending.innerHTML=ih;
+    }else{pending.innerHTML='';}
+    // Whitelist emails
+    const list=document.getElementById('adminEmailList');
+    list.innerHTML=(usersResult.allowedEmails||[]).map(e=>
+      '<li><span>'+e.email+'</span>'+
+      (e.email!==currentUser?.email?
+        '<button class="btn-reset" onclick="removeAllowedEmail(\''+e.email+'\')">\u2717 Retirer</button>':
+        '<span style="font-size:.7rem;color:var(--txtL)">(vous)</span>')+
       '</li>'
     ).join('');
   } catch(err) {
@@ -3023,6 +3130,44 @@ async function removeAllowedEmail(email) {
   } catch(err) {
     console.error('Remove email error:', err);
   }
+}
+
+async function createInvite() {
+  const emailInput=document.getElementById('inviteEmail');
+  const roleSelect=document.getElementById('inviteRole');
+  const email=emailInput.value.trim();
+  if(!email)return;
+  try{
+    const result=await api('/admin/invites',{method:'POST',body:JSON.stringify({email,role:roleSelect.value})});
+    emailInput.value='';
+    const linkBox=document.getElementById('inviteLinkBox');
+    document.getElementById('inviteLinkText').textContent=result.link;
+    linkBox.classList.add('show');
+    loadAdminData();
+  }catch(err){
+    console.error('Create invite error:',err);
+    alert(err.error||'Erreur lors de la cr\u00e9ation de l\'invitation');
+  }
+}
+
+function copyInviteLink(){
+  const text=document.getElementById('inviteLinkText').textContent;
+  navigator.clipboard.writeText(text).then(()=>{alert('Lien copi\u00e9 !');}).catch(()=>{});
+}
+
+async function updateUserRole(userId,newRole){
+  try{
+    await api('/admin/users/'+userId,{method:'PUT',body:JSON.stringify({role:newRole})});
+    loadAdminData();
+  }catch(err){console.error('Update role error:',err);}
+}
+
+async function deleteUser(userId){
+  if(!confirm('Supprimer cet utilisateur ? Cette action est irr\u00e9versible.'))return;
+  try{
+    await api('/admin/users/'+userId,{method:'DELETE'});
+    loadAdminData();
+  }catch(err){console.error('Delete user error:',err);}
 }
 
 // ===== SCENARIO OVERLAY =====
@@ -3773,8 +3918,8 @@ async function grantAccess(user) {
     const badge = document.createElement('div');
     badge.id = 'user-badge';
     badge.className = 'user-info';
-    badge.innerHTML = (user.picture ? '<img src="'+user.picture+'" alt="">' : '') +
-      '<span>'+user.name+'</span>' +
+    badge.innerHTML = (user.picture ? '<img src="'+user.picture+'" alt="">' : '<span style="width:26px;height:26px;border-radius:50%;background:var(--pl);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700">'+(user.name?user.name[0].toUpperCase():'?')+'</span>') +
+      '<span>'+(user.name||user.email)+'</span>' +
       '<button class="logout-btn" onclick="logout()">D\u00e9connexion</button>';
     topbar.parentNode.insertBefore(badge, topbar.nextSibling);
   }
@@ -3852,6 +3997,67 @@ async function logout() {
   }
 }
 
+// ===== PASSWORD LOGIN =====
+let pendingInviteToken=null;
+
+async function handlePasswordLogin(e){
+  e.preventDefault();
+  const email=document.getElementById('loginEmail').value.trim();
+  const password=document.getElementById('loginPassword').value;
+  const errEl=document.getElementById('auth-error');
+  errEl.style.display='none';
+  try{
+    const result=await api('/auth/login',{method:'POST',body:JSON.stringify({email,password})});
+    grantAccess(result.user);
+  }catch(err){
+    errEl.textContent=err.error||'Identifiants invalides';
+    errEl.style.display='block';
+  }
+}
+
+async function checkInviteToken(){
+  const params=new URLSearchParams(window.location.search);
+  const token=params.get('invite');
+  if(!token)return false;
+  try{
+    const result=await fetch('/api/auth/invite/'+token).then(r=>r.json());
+    if(result.email){
+      pendingInviteToken=token;
+      document.getElementById('login-screen').style.display='none';
+      document.getElementById('invite-screen').style.display='flex';
+      document.getElementById('inviteEmailDisplay').textContent=result.email;
+      document.getElementById('inviteRoleTag').textContent=result.role;
+      return true;
+    }
+  }catch(err){
+    console.error('Invite check error:',err);
+  }
+  return false;
+}
+
+async function handleInviteAccept(e){
+  e.preventDefault();
+  const name=document.getElementById('inviteName').value.trim();
+  const password=document.getElementById('invitePassword').value;
+  const confirm=document.getElementById('invitePasswordConfirm').value;
+  const errEl=document.getElementById('invite-error');
+  errEl.style.display='none';
+  if(password!==confirm){
+    errEl.textContent='Les mots de passe ne correspondent pas';
+    errEl.style.display='block';
+    return;
+  }
+  try{
+    const result=await api('/auth/invite/'+pendingInviteToken,{method:'POST',body:JSON.stringify({name,password})});
+    history.replaceState(null,'',window.location.pathname);
+    document.getElementById('invite-screen').style.display='none';
+    grantAccess(result.user);
+  }catch(err){
+    errEl.textContent=err.error||'Erreur lors de la cr\u00e9ation du compte';
+    errEl.style.display='block';
+  }
+}
+
 async function handleGoogleResponse(response) {
   try {
     const result = await api('/auth/google', {
@@ -3869,7 +4075,10 @@ async function handleGoogleResponse(response) {
 
 // Init auth on page load
 window.addEventListener('load', async function() {
-  // Try existing session first
+  // Check for invite token in URL first
+  if (await checkInviteToken()) return;
+
+  // Try existing session
   if (await checkSession()) return;
 
   // Wait for Google Identity Services to load

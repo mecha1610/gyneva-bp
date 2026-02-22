@@ -1,4 +1,5 @@
 import { OAuth2Client } from 'google-auth-library';
+import bcrypt from 'bcryptjs';
 import { randomBytes } from 'crypto';
 import { serialize, parse } from 'cookie';
 import type { IncomingMessage, ServerResponse } from 'http';
@@ -35,6 +36,16 @@ export async function verifyGoogleToken(credential: string): Promise<GooglePaylo
     name: payload.name,
     picture: payload.picture,
   };
+}
+
+// ===== Password Hashing =====
+
+export async function hashPassword(password: string): Promise<string> {
+  return bcrypt.hash(password, 12);
+}
+
+export async function verifyPassword(password: string, hash: string): Promise<boolean> {
+  return bcrypt.compare(password, hash);
 }
 
 // ===== Email Whitelist Check =====

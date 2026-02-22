@@ -28,6 +28,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             name: true,
             picture: true,
             role: true,
+            googleSub: true,
+            passwordHash: true,
             lastLoginAt: true,
             createdAt: true,
           },
@@ -35,7 +37,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }),
       ]);
 
-      return res.status(200).json({ allowedEmails, users });
+      const usersWithAuthType = users.map(u => ({
+        id: u.id,
+        email: u.email,
+        name: u.name,
+        picture: u.picture,
+        role: u.role,
+        authType: u.googleSub ? 'google' : u.passwordHash ? 'password' : 'invited',
+        lastLoginAt: u.lastLoginAt,
+        createdAt: u.createdAt,
+      }));
+
+      return res.status(200).json({ allowedEmails, users: usersWithAuthType });
     }
 
     // POST — add allowed email
