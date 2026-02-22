@@ -1,11 +1,19 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { z } from 'zod';
+import { randomBytes } from 'crypto';
 import { prisma } from '../_lib/db';
 import { setCors, checkRateLimit, allowMethods, requireAdmin } from '../_lib/middleware';
 import { badRequest, notFound, serverError } from '../_lib/errors';
 
+const INVITE_DURATION_MS = 48 * 60 * 60 * 1000; // 48 hours
+
 const addEmailSchema = z.object({
   email: z.string().email().transform(e => e.toLowerCase()),
+});
+
+const createInviteSchema = z.object({
+  email: z.string().email().transform(e => e.toLowerCase()),
+  role: z.enum(['ADMIN', 'EDITOR', 'VIEWER']).optional().default('VIEWER'),
 });
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -17,35 +25,59 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const admin = await requireAdmin(req, res);
     if (!admin) return;
 
+    const scope = typeof req.query.scope === 'string' ? req.query.scope : '';
+
+    // ===== INVITES scope =====
+    if (scope === 'invites') {
+      if (req.method === 'GET') {
+        const invites = await prisma.inviteToken.findMany({
+          where: { usedAt: null, expiresAt: { gt: new Date() } },
+          orderBy: { createdAt: 'desc' },
+        });
+        return res.status(200).json({ invites });
+      }
+
+      if (req.method === 'POST') {
+        const parsed = createInviteSchema.safeParse(req.body);
+        if (!parsed.success) return badRequest(res, 'Invalid invite data', parsed.error.flatten());
+
+        const { email, role } = parsed.data;
+        const existing = await prisma.user.findUnique({ where: { email } });
+        if (existing) return badRequest(res, 'Un utilisateur avec cet email existe déjà');
+
+        const token = randomBytes(32).toString('hex');
+        const expiresAt = new Date(Date.now() + INVITE_DURATION_MS);
+        const invite = await prisma.inviteToken.create({
+          data: { token, email, role, expiresAt, createdBy: admin.email },
+        });
+
+        const origin = req.headers.origin || req.headers.referer?.replace(/\/$/, '') || '';
+        const link = origin + '/?invite=' + token;
+        return res.status(201).json({ invite, link });
+      }
+
+      return badRequest(res, 'Invalid method for invites scope');
+    }
+
+    // ===== Default scope: users + allowedEmails =====
+
     // GET — list allowed emails + registered users
     if (req.method === 'GET') {
       const [allowedEmails, users] = await Promise.all([
         prisma.allowedEmail.findMany({ orderBy: { createdAt: 'asc' } }),
         prisma.user.findMany({
           select: {
-            id: true,
-            email: true,
-            name: true,
-            picture: true,
-            role: true,
-            googleSub: true,
-            passwordHash: true,
-            lastLoginAt: true,
-            createdAt: true,
+            id: true, email: true, name: true, picture: true, role: true,
+            googleSub: true, passwordHash: true, lastLoginAt: true, createdAt: true,
           },
           orderBy: { createdAt: 'asc' },
         }),
       ]);
 
       const usersWithAuthType = users.map(u => ({
-        id: u.id,
-        email: u.email,
-        name: u.name,
-        picture: u.picture,
-        role: u.role,
+        id: u.id, email: u.email, name: u.name, picture: u.picture, role: u.role,
         authType: u.googleSub ? 'google' : u.passwordHash ? 'password' : 'invited',
-        lastLoginAt: u.lastLoginAt,
-        createdAt: u.createdAt,
+        lastLoginAt: u.lastLoginAt, createdAt: u.createdAt,
       }));
 
       return res.status(200).json({ allowedEmails, users: usersWithAuthType });
@@ -54,45 +86,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // POST — add allowed email
     if (req.method === 'POST') {
       const parsed = addEmailSchema.safeParse(req.body);
-      if (!parsed.success) {
-        return badRequest(res, 'Invalid email', parsed.error.flatten());
-      }
+      if (!parsed.success) return badRequest(res, 'Invalid email', parsed.error.flatten());
 
-      const existing = await prisma.allowedEmail.findUnique({
-        where: { email: parsed.data.email },
-      });
-      if (existing) {
-        return badRequest(res, 'Email already authorized');
-      }
+      const existing = await prisma.allowedEmail.findUnique({ where: { email: parsed.data.email } });
+      if (existing) return badRequest(res, 'Email already authorized');
 
       const entry = await prisma.allowedEmail.create({
-        data: {
-          email: parsed.data.email,
-          addedBy: admin.email,
-        },
+        data: { email: parsed.data.email, addedBy: admin.email },
       });
-
       return res.status(201).json({ allowedEmail: entry });
     }
 
     // DELETE — remove allowed email
-    const email = typeof req.query.email === 'string'
-      ? req.query.email.toLowerCase()
-      : null;
-
-    if (!email) {
-      return badRequest(res, 'Missing email query parameter');
-    }
-
-    // Prevent removing own email
-    if (email === admin.email) {
-      return badRequest(res, 'Cannot remove your own email');
-    }
+    const email = typeof req.query.email === 'string' ? req.query.email.toLowerCase() : null;
+    if (!email) return badRequest(res, 'Missing email query parameter');
+    if (email === admin.email) return badRequest(res, 'Cannot remove your own email');
 
     const deleted = await prisma.allowedEmail.deleteMany({ where: { email } });
-    if (deleted.count === 0) {
-      return notFound(res, 'Email not found in allowed list');
-    }
+    if (deleted.count === 0) return notFound(res, 'Email not found in allowed list');
 
     return res.status(200).json({ ok: true, email });
   } catch (err) {
