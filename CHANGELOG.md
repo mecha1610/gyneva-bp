@@ -2,6 +2,13 @@
 
 All notable changes to the GYNEVA Business Plan application are documented here.
 
+## [0.19.2] - 2026-02-22
+
+### Added
+- **Unit tests for `computeSimulation()`**: 45 vitest tests covering output structure, determinism, default scenario sanity, start month / ramp-up, occupancy impact, fee & consultation scaling, team composition, retrocession rate, extra charges & RC, factoring vs payment delay, edge cases (min/max params, zero team), and pessimistic/optimistic scenario variants
+- **`lib/simulation.ts`**: extracted `computeSimulation()` into a testable ES module mirroring the inline version in `index.html`
+- **`vitest.config.ts`**: vitest configuration with global test API
+
 ## [0.19.1] - 2026-02-22
 
 ### Fixed
