@@ -2,6 +2,22 @@
 
 All notable changes to the GYNEVA Business Plan application are documented here.
 
+## [0.16.0] - 2026-02-22
+
+### Added
+- **Executive dashboard panel**: collapsible panel between topbar and content with dark gradient background, always visible above tabs
+- **Global score gauge**: SVG arc (0-100) aggregating 7 section verdicts (green=3, orange=2, red=1), color-coded by threshold (>=70 green, >=40 orange, <40 red)
+- **10 executive KPIs**: compact 5x2 grid — Investissement, CA Y3, Resultat Y3, Marge nette, Payback, BFR min, Treso M36, ETP Y3, ROI 3 ans, Score risque
+- **Cashflow sparkline**: Chart.js mini line chart (36 months), no axes, white gradient fill, integrated in exec panel
+- **Sidebar health badges**: colored dots (green/orange/rouge) next to each navigation button reflecting section verdict
+- **Collapse/expand**: toggle button with state persisted in localStorage
+- **PDF integration**: global score badge added to Overview page in PDF export
+
+### Changed
+- `updateCharts()` calls `updateExecDashboard()` as last step (after `updateOverview()`)
+- `grantAccess()` restores exec panel collapsed state from localStorage
+- Chart destroy loop excludes `execSpark` key (lifecycle managed by `updateExecDashboard()`)
+
 ## [0.15.0] - 2026-02-22
 
 ### Added
