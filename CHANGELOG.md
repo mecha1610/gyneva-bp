@@ -2,6 +2,21 @@
 
 All notable changes to the GYNEVA Business Plan application are documented here.
 
+## [0.15.0] - 2026-02-22
+
+### Added
+- **Professional PDF export**: 9-page branded report generated client-side via jsPDF 2.5.2 (replaces `window.print()`)
+- **Cover page**: dark blue background (#0f2b46), green accent stripes, logo placeholder, plan name, date, author, confidential notice
+- **7 section pages**: Overview, Revenue, Tresorerie, Equipe, Risques, Profit, Optimisations — each with section title, verdict banner (color-coded), 4 KPI cards, and Chart.js charts rendered as PNG via `toBase64Image()`
+- **Risk gauge rendering**: circular score indicator (0-100) with color-coded border and descriptive text
+- **Paginated footer**: plan name, date, page number on every content page
+- **Auto-download**: filename format `GynEva_[PlanName]_YYYY-MM-DD.pdf`
+
+### Changed
+- `exportPDF()` now shows all sections temporarily (400ms) to allow Chart.js to render hidden tab charts before capture
+- Active section restored after PDF generation completes
+- jsPDF 2.5.2 CDN added to script imports
+
 ## [0.14.0] - 2026-02-21
 
 ### Added
