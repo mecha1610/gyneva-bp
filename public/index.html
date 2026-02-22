@@ -467,7 +467,40 @@ table.dt tr:hover td{background:#f8fafb}
   .compare-selectors,.compare-header .close-btn,.compare-header button{display:none!important}
   .compare-charts{grid-template-columns:1fr 1fr}
   .compare-charts .chart-box{height:200px}
+  .sc-modal{position:static;padding:1rem;overflow:visible}
+  .sc-selectors,.sc-header .close-btn{display:none!important}
+  .sc-charts{grid-template-columns:1fr 1fr}
+  .sc-charts .chart-box{height:200px}
 }
+
+/* === SCENARIO COMPARE MODAL === */
+.sc-modal{display:none;position:fixed;inset:0;z-index:400;background:var(--bg);overflow-y:auto;padding:2rem}
+.sc-modal.open{display:block}
+.sc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+.sc-header h2{font-size:1.1rem;font-weight:700;color:var(--p);display:flex;align-items:center;gap:.5rem}
+.sc-selectors{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;margin-bottom:1.5rem;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--brd);border-radius:var(--r)}
+.sc-selectors select{padding:.4rem .7rem;border:1px solid var(--brd);border-radius:8px;font-size:.82rem;background:var(--card);min-width:180px}
+.sc-selectors .vs-label{font-size:.85rem;font-weight:700;color:var(--txtL)}
+.sc-selectors .opt-label{font-size:.72rem;color:var(--txtL);font-weight:500}
+.sc-grid{display:grid;gap:0;background:var(--card);border:1px solid var(--brd);border-radius:var(--r);overflow:hidden;margin-bottom:1.5rem}
+.sc-grid.cols-2{grid-template-columns:180px 1fr 1fr auto}
+.sc-grid.cols-3{grid-template-columns:180px 1fr 1fr 1fr auto}
+.sg-head{background:#f8fafb;padding:.6rem 1rem;font-size:.75rem;font-weight:600;color:var(--p);text-transform:uppercase;letter-spacing:.4px;border-bottom:2px solid var(--brd)}
+.sg-cell{padding:.55rem 1rem;font-size:.82rem;border-bottom:1px solid #f0f3f5;display:flex;align-items:center}
+.sg-cell.label{font-weight:500;color:var(--p)}
+.sg-cell.num{justify-content:flex-end;font-variant-numeric:tabular-nums}
+.sg-cell.best{font-weight:700}
+.sg-cell.better{color:var(--acc)}
+.sg-cell.worse{color:var(--danger)}
+.sg-cell .delta-badge{font-size:.7rem;font-weight:600;padding:.1rem .45rem;border-radius:8px;margin-left:.4rem}
+.sg-cell .delta-badge.pos{background:rgba(0,184,148,.1);color:#00b894}
+.sg-cell .delta-badge.neg{background:rgba(214,48,49,.1);color:var(--danger)}
+.sg-cell .delta-badge.zero{background:rgba(99,110,114,.08);color:var(--txtL)}
+.sc-charts{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1.5rem}
+.sc-charts .card{margin-bottom:0}
+.sc-charts .chart-box{height:280px}
+.sc-verdict{border-radius:var(--r);padding:1.2rem 1.4rem;margin-bottom:1.5rem;display:flex;align-items:flex-start;gap:.9rem;font-size:.88rem;line-height:1.6;background:rgba(0,184,148,.08);border:1px solid rgba(0,184,148,.2);color:#00755a}
+.sc-verdict .ic{font-size:1.6rem;flex-shrink:0}
 
 /* ===== SIMULATOR ===== */
 .sim-layout{display:grid;grid-template-columns:340px 1fr;gap:1.5rem}
@@ -550,6 +583,9 @@ table.dt tr:hover td{background:#f8fafb}
   .sim-top-kpis{grid-template-columns:1fr 1fr}
   .rev-profile-bar{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch}
   .rev-detail-grid{grid-template-columns:1fr}
+  .sc-selectors{flex-direction:column;align-items:stretch}
+  .sc-charts{grid-template-columns:1fr}
+  .sc-grid.cols-3{grid-template-columns:120px 1fr 1fr 1fr auto}
 }
 
 /* === RESET BUTTON === */
@@ -758,6 +794,7 @@ table.dt tr:hover td{background:#f8fafb}
   <div class="sim-actions">
     <button class="btn" onclick="saveScenario()">&#128190; Sauvegarder sc&eacute;nario</button>
     <button class="btn" onclick="toggleScenarioList()">&#128194; Charger sc&eacute;nario</button>
+    <button class="btn" onclick="openScenarioCompare()">&#128202; Comparer sc&eacute;narios</button>
   </div>
   <div class="scenario-list" id="scenarioList"></div>
   <div class="sim-top-kpis" id="simTopKpis">
@@ -3160,6 +3197,180 @@ function printCompare() {
   modal.style.position = '';
 }
 
+// ===== SCENARIO COMPARISON =====
+let scCompareCharts={};
+let lastScCompareData=null;
+
+async function openScenarioCompare(){
+  const modal=document.getElementById('scenarioCompareModal');
+  modal.classList.add('open');
+  document.getElementById('scGridContainer').innerHTML='';
+  document.getElementById('scVerdictContainer').innerHTML='';
+  Object.values(scCompareCharts).forEach(c=>{try{c.destroy()}catch(e){}});
+  scCompareCharts={};
+  lastScCompareData=null;
+  try{
+    const result=await api('/scenarios');
+    const scenarios=result.scenarios||[];
+    const selA=document.getElementById('scSelectA');
+    const selB=document.getElementById('scSelectB');
+    const selC=document.getElementById('scSelectC');
+    const baseOpt='<option value="__base__">Base (hypoth\u00e8ses initiales)</option>';
+    const currentOpt='<option value="__current__">Donn\u00e9es actuelles</option>';
+    const savedOpts=scenarios.map(s=>'<option value="'+s.id+'">'+escHTML(s.name)+'</option>').join('');
+    selA.innerHTML=currentOpt+baseOpt+savedOpts;
+    selB.innerHTML=baseOpt+currentOpt+savedOpts;
+    selC.innerHTML='<option value="">-- Aucun --</option>'+baseOpt+currentOpt+savedOpts;
+    selA.value='__current__';selB.value='__base__';selC.value='';
+  }catch(err){console.error('openScenarioCompare error:',err);}
+}
+
+function closeScenarioCompare(){
+  document.getElementById('scenarioCompareModal').classList.remove('open');
+  Object.values(scCompareCharts).forEach(c=>{try{c.destroy()}catch(e){}});
+  scCompareCharts={};
+}
+
+async function resolveScenarioParams(val){
+  if(val==='__base__')return{params:{...BASE},name:'Base'};
+  if(val==='__current__')return{params:getSimParams(),name:'Donn\u00e9es actuelles'};
+  const result=await api('/scenarios/'+val);
+  return{params:result.scenario.params,name:result.scenario.name};
+}
+
+function computeScenarioMetrics(params){
+  const sim=computeSimulation(params);
+  const margeY3=sim.caY3>0?Math.round(sim.resY3/sim.caY3*100):0;
+  let payback=36,cumR=0;
+  for(let m=0;m<36;m++){cumR+=sim.result[m];if(cumR>0){payback=m+1;break;}}
+  const cumRes3=sim.resY1+sim.resY2+sim.resY3;
+  const capex=D?D.capex:523000;
+  const roi=capex>0?cumRes3/capex:0;
+  const etpTotal=(params.assoc||0)+(params.indep||0)+(params.interne||0);
+  return{sim,caY1:sim.caY1,caY2:sim.caY2,caY3:sim.caY3,resY1:sim.resY1,resY2:sim.resY2,resY3:sim.resY3,bfrMin:sim.bfrMin,tresoM36:sim.tresoFinal,margeY3,payback,roi,etpTotal};
+}
+
+async function runScenarioCompare(){
+  try{
+    const valA=document.getElementById('scSelectA').value;
+    const valB=document.getElementById('scSelectB').value;
+    const valC=document.getElementById('scSelectC').value;
+    if(!valA||!valB)return;
+    const entries=[await resolveScenarioParams(valA),await resolveScenarioParams(valB)];
+    if(valC)entries.push(await resolveScenarioParams(valC));
+    const results=entries.map(e=>({name:e.name,metrics:computeScenarioMetrics(e.params)}));
+    lastScCompareData=results;
+    const n=results.length;
+    const metricDefs=[
+      {key:'caY1',label:'CA Ann\u00e9e 1',fmt:fmtCHF,hb:true},
+      {key:'caY2',label:'CA Ann\u00e9e 2',fmt:fmtCHF,hb:true},
+      {key:'caY3',label:'CA Ann\u00e9e 3',fmt:fmtCHF,hb:true},
+      {key:'resY1',label:'R\u00e9sultat Ann\u00e9e 1',fmt:fmtCHF,hb:true},
+      {key:'resY2',label:'R\u00e9sultat Ann\u00e9e 2',fmt:fmtCHF,hb:true},
+      {key:'resY3',label:'R\u00e9sultat Ann\u00e9e 3',fmt:fmtCHF,hb:true},
+      {key:'bfrMin',label:'BFR minimum',fmt:fmtCHF,hb:true},
+      {key:'tresoM36',label:'Tr\u00e9so M36',fmt:fmtCHF,hb:true},
+      {key:'margeY3',label:'Marge Y3',fmt:v=>v+'%',hb:true},
+      {key:'payback',label:'Payback',fmt:v=>v+' mois',hb:false},
+      {key:'roi',label:'ROI 3 ans',fmt:v=>v.toFixed(1)+'x',hb:true},
+      {key:'etpTotal',label:'ETP total',fmt:v=>v.toString(),hb:null}
+    ];
+    // Build grid
+    let html='<div class="sc-grid cols-'+n+'">';
+    html+='<div class="sg-head">M\u00e9trique</div>';
+    results.forEach(r=>{html+='<div class="sg-head">'+escHTML(r.name)+'</div>';});
+    html+='<div class="sg-head">Delta</div>';
+    metricDefs.forEach(md=>{
+      const vals=results.map(r=>r.metrics[md.key]);
+      let bestIdx=0;
+      if(md.hb!==null)vals.forEach((v,i)=>{if(md.hb?v>vals[bestIdx]:v<vals[bestIdx])bestIdx=i;});
+      html+='<div class="sg-cell label">'+md.label+'</div>';
+      vals.forEach((v,i)=>{
+        let cls='sg-cell num';
+        if(md.hb!==null&&i===bestIdx&&vals.filter(x=>x===v).length===1)cls+=' best';
+        if(md.hb!==null&&i>0){
+          const ref=vals[0];
+          if(md.hb)cls+=v>ref?' better':v<ref?' worse':'';
+          else cls+=v<ref?' better':v>ref?' worse':'';
+        }
+        html+='<div class="'+cls+'">'+md.fmt(v)+'</div>';
+      });
+      // Delta B vs A
+      const refVal=vals[0],deltaVal=vals[1];
+      if(refVal&&Math.abs(refVal)>0.01){
+        const d=((deltaVal/refVal-1)*100);
+        if(Math.abs(d)<0.5)html+='<div class="sg-cell num"><span class="delta-badge zero">=</span></div>';
+        else{
+          const pos=((md.hb&&d>0)||(!md.hb&&d<0));
+          html+='<div class="sg-cell num"><span class="delta-badge '+(pos?'pos':'neg')+'">'+(d>0?'+':'')+d.toFixed(0)+'%</span></div>';
+        }
+      }else html+='<div class="sg-cell num"><span class="delta-badge zero">=</span></div>';
+    });
+    html+='</div>';
+    document.getElementById('scGridContainer').innerHTML=html;
+    // Charts
+    Object.values(scCompareCharts).forEach(c=>{try{c.destroy()}catch(e){}});
+    scCompareCharts={};
+    const colors=['#1a4a7a','#d63031','#00b894'];
+    const bgColors=['rgba(26,74,122,.7)','rgba(214,48,49,.7)','rgba(0,184,148,.7)'];
+    scCompareCharts.ca=new Chart(document.getElementById('cScCA'),{
+      type:'bar',
+      data:{labels:labelsQ,datasets:results.map((r,i)=>({label:r.name,data:r.metrics.sim.ca,backgroundColor:bgColors[i],borderRadius:4,barPercentage:0.8,categoryPercentage:0.7}))},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:12}}},scales:{y:{grid:gridOpts,ticks:{callback:v=>fmt(v)}},x:{grid:{display:false}}}}
+    });
+    scCompareCharts.treso=new Chart(document.getElementById('cScTreso'),{
+      type:'line',
+      data:{labels:labelsQ,datasets:[
+        ...results.map((r,i)=>({label:r.name,data:r.metrics.sim.cashflow,borderColor:colors[i],tension:.3,pointRadius:0,borderWidth:2.5,fill:false})),
+        {label:'Seuil 0',data:Array(36).fill(0),borderColor:'rgba(99,110,114,.2)',borderWidth:1,pointRadius:0,borderDash:[2,2]}
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:12}}},scales:{y:{grid:gridOpts,ticks:{callback:v=>fmt(v)}},x:{grid:{display:false}}}}
+    });
+    // Verdict
+    buildScenarioVerdict(results,metricDefs);
+  }catch(err){
+    console.error('runScenarioCompare error:',err);
+    document.getElementById('scGridContainer').innerHTML='<div style="color:var(--danger);padding:1rem">Erreur : '+escHTML(err.message||'Erreur inconnue')+'</div>';
+  }
+}
+
+function buildScenarioVerdict(results,metricDefs){
+  const n=results.length;
+  const scores=results.map(()=>0);
+  const scorable=metricDefs.filter(md=>md.hb!==null);
+  scorable.forEach(md=>{
+    const vals=results.map(r=>r.metrics[md.key]);
+    const sorted=vals.map((v,i)=>({v,i})).sort((a,b)=>md.hb?b.v-a.v:a.v-b.v);
+    sorted.forEach((entry,rank)=>{scores[entry.i]+=rank+1;});
+  });
+  let bestIdx=0;
+  scores.forEach((s,i)=>{if(s<scores[bestIdx])bestIdx=i;});
+  const best=results[bestIdx];
+  const m=best.metrics;
+  const maxPts=scorable.length*n;
+  const html='<div class="sc-verdict"><div class="ic">&#127942;</div><div>'+
+    '<strong>Recommandation : '+escHTML(best.name)+'</strong><br>'+
+    'Ce sc\u00e9nario obtient le meilleur score agr\u00e9g\u00e9 ('+scores[bestIdx]+'/'+maxPts+' pts). '+
+    'CA Y3 : '+fmtCHF(m.caY3)+', marge : '+m.margeY3+'%, payback : '+m.payback+' mois, ROI : '+m.roi.toFixed(1)+'x.'+
+    '</div></div>';
+  document.getElementById('scVerdictContainer').innerHTML=html;
+}
+
+function printScenarioCompare(){
+  const app=document.getElementById('app-content');
+  const modal=document.getElementById('scenarioCompareModal');
+  const sidebar=document.getElementById('sidebar');
+  app.style.display='none';
+  sidebar.style.display='none';
+  modal.style.position='static';
+  document.body.appendChild(modal);
+  window.print();
+  document.getElementById('app-content').insertBefore(modal,document.querySelector('#app-content > :last-child'));
+  app.style.display='';
+  sidebar.style.display='';
+  modal.style.position='';
+}
+
 // ===== PLAN SWITCHER =====
 async function loadPlanList() {
   try {
@@ -3407,6 +3618,48 @@ function _buildPDF(){
   y=verdict(y,rdV('optVerdict'));
   y=kpis(y,[{label:'BFR pire cas',value:rdK('optBfrWorst')},{label:'BFR actuel',value:rdK('optBfrCurrent')},{label:'BFR \u00e9conomis\u00e9',value:rdK('optBfrSaved')},{label:'Co\u00fbt factoring',value:rdK('optFactCost')}]);
   y=chart(y,'optimize',70);
+  // --- page 9 (conditional): scenario comparison ---
+  if(lastScCompareData&&lastScCompareData.length>=2){
+    doc.addPage('landscape');
+    const LW=297,LH=210,LCW=LW-2*M;
+    // landscape footer
+    doc.setDrawColor(...C.pl);doc.setLineWidth(0.3);doc.line(M,LH-12,LW-M,LH-12);
+    doc.setFontSize(7);doc.setTextColor(...C.txtL);doc.text(planName,M,LH-8);doc.text(dateStr,LW/2,LH-8,{align:'center'});doc.text('Page 9',LW-M,LH-8,{align:'right'});
+    y=20;
+    doc.setFontSize(14);doc.setFont('helvetica','bold');doc.setTextColor(...C.p);doc.text('Comparaison de sc\u00e9narios',M,y);
+    doc.setDrawColor(...C.acc);doc.setLineWidth(0.8);doc.line(M,y+2,M+40,y+2);doc.setFont('helvetica','normal');y+=10;
+    const scR=lastScCompareData;
+    const scN=scR.length;
+    const colW=(LCW-55)/scN;
+    const mLabels=['CA Y1','CA Y2','CA Y3','R\u00e9s. Y1','R\u00e9s. Y2','R\u00e9s. Y3','BFR min','Tr\u00e9so M36','Marge Y3','Payback','ROI','ETP'];
+    const mKeys=['caY1','caY2','caY3','resY1','resY2','resY3','bfrMin','tresoM36','margeY3','payback','roi','etpTotal'];
+    // header
+    doc.setFontSize(7);doc.setFont('helvetica','bold');doc.setTextColor(...C.p);
+    doc.text('M\u00e9trique',M,y);
+    scR.forEach((r,i)=>{doc.text(r.name.substring(0,25),M+55+i*colW,y);});
+    y+=2;doc.setDrawColor(...C.brd);doc.setLineWidth(0.3);doc.line(M,y,LW-M,y);y+=4;
+    doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(60,60,60);
+    mKeys.forEach((key,idx)=>{
+      doc.text(mLabels[idx],M,y);
+      scR.forEach((r,i)=>{
+        const v=r.metrics[key];
+        let txt;
+        if(key==='margeY3')txt=v+'%';
+        else if(key==='payback')txt=v+' mois';
+        else if(key==='roi')txt=v.toFixed(1)+'x';
+        else if(key==='etpTotal')txt=v.toString();
+        else txt=fmt(v);
+        doc.text(txt,M+55+i*colW,y);
+      });
+      y+=5;
+    });
+    y+=4;
+    // charts
+    const caImg=scCompareCharts.ca?scCompareCharts.ca.toBase64Image():null;
+    const tresoImg=scCompareCharts.treso?scCompareCharts.treso.toBase64Image():null;
+    if(caImg)doc.addImage(caImg,'PNG',M,y,LCW/2-3,55);
+    if(tresoImg)doc.addImage(tresoImg,'PNG',M+LCW/2+3,y,LCW/2-3,55);
+  }
   // --- save ---
   const safeName=planName.replace(/[^a-zA-Z0-9\u00e0-\u00fc]/g,'_');
   doc.save('GynEva_'+safeName+'_'+new Date().toISOString().slice(0,10)+'.pdf');
@@ -3670,6 +3923,31 @@ window.addEventListener('load', async function() {
   <div class="compare-charts">
     <div class="card"><h3>CA &amp; R&eacute;sultat par ann&eacute;e</h3><div class="chart-box"><canvas id="cCompareOverview"></canvas></div></div>
     <div class="card"><h3>Tr&eacute;sorerie 36 mois</h3><div class="chart-box"><canvas id="cCompareCashflow"></canvas></div></div>
+  </div>
+</div>
+
+<!-- SCENARIO COMPARE MODAL -->
+<div class="sc-modal" id="scenarioCompareModal">
+  <div class="sc-header">
+    <h2>&#128202; Comparaison de sc&eacute;narios</h2>
+    <div style="display:flex;gap:.5rem">
+      <button class="btn primary" onclick="printScenarioCompare()">&#128424; Imprimer</button>
+      <button class="close-btn" onclick="closeScenarioCompare()">&times; Fermer</button>
+    </div>
+  </div>
+  <div class="sc-selectors">
+    <div><div class="opt-label">Sc&eacute;nario A (requis)</div><select id="scSelectA"></select></div>
+    <span class="vs-label">vs.</span>
+    <div><div class="opt-label">Sc&eacute;nario B (requis)</div><select id="scSelectB"></select></div>
+    <span class="vs-label">vs.</span>
+    <div><div class="opt-label">Sc&eacute;nario C (optionnel)</div><select id="scSelectC"></select></div>
+    <button class="btn primary" onclick="runScenarioCompare()">Comparer</button>
+  </div>
+  <div id="scVerdictContainer"></div>
+  <div id="scGridContainer"></div>
+  <div class="sc-charts">
+    <div class="card"><h3>CA compar&eacute; &mdash; 36 mois</h3><div class="chart-box"><canvas id="cScCA"></canvas></div></div>
+    <div class="card"><h3>Tr&eacute;sorerie compar&eacute;e &mdash; 36 mois</h3><div class="chart-box"><canvas id="cScTreso"></canvas></div></div>
   </div>
 </div>
 
