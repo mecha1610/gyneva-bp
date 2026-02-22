@@ -2,6 +2,19 @@
 
 All notable changes to the GYNEVA Business Plan application are documented here.
 
+## [0.19.1] - 2026-02-22
+
+### Fixed
+- **Invisible user badge**: user name, avatar border, and logout button in topbar used white-on-white colors — switched to theme-aware `var(--p)`, `var(--txtL)`, `var(--brd)`
+- **Logout button hover**: now highlights red (`var(--danger)`) on hover for clear affordance
+
+### Security
+- **Login rate limiting**: dedicated `checkLoginRateLimit()` — max 5 attempts per IP per 5-minute window on `POST /auth?action=login`, returns `429 LOGIN_RATE_LIMIT` with `Retry-After` header; counter resets on successful login
+- **Password validation**: backend `loginSchema` enforced `.min(8)` (was `.min(1)`), now consistent with invite acceptance and frontend `minlength="8"`
+
+### Changed
+- On phone (<=480px), username text hidden to save topbar space — avatar + logout button remain visible
+
 ## [0.19.0] - 2026-02-22
 
 ### Added
