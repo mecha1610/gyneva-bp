@@ -6,6 +6,7 @@
 <title>GYNEVA — Business Plan Interactif</title>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
 <style>
 :root{--p:#0f2b46;--pl:#1a4a7a;--acc:#00b894;--acc2:#00cec9;--warn:#fdcb6e;--danger:#d63031;--bg:#f0f3f8;--card:#fff;--txt:#2d3436;--txtL:#636e72;--brd:#dfe6e9;--sh:0 2px 16px rgba(0,0,0,.06);--r:14px;--trans:all .25s cubic-bezier(.4,0,.2,1)}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -3252,7 +3253,116 @@ async function deletePlan(planId) {
 }
 
 // ===== EXPORT PDF =====
-function exportPDF(){window.print()}
+function exportPDF(){
+  // Show all sections temporarily so Chart.js can render
+  const sects=document.querySelectorAll('.section');
+  const activeId=document.querySelector('.section.active')?.id||'overview';
+  sects.forEach(s=>s.classList.add('active'));
+  Object.values(charts).forEach(c=>{try{c.resize()}catch(e){}});
+  setTimeout(()=>{
+    try{_buildPDF();}catch(e){console.error('PDF error',e);alert('Erreur lors de la g\u00e9n\u00e9ration du PDF.');}
+    // Restore original section
+    sects.forEach(s=>s.classList.remove('active'));
+    const el=document.getElementById(activeId);if(el)el.classList.add('active');
+  },400);
+}
+function _buildPDF(){
+  const{jsPDF}=window.jspdf;
+  const doc=new jsPDF({unit:'mm',format:'a4'});
+  const W=210,H=297,M=15,CW=W-2*M;
+  const C={p:[15,43,70],pl:[26,74,122],acc:[0,184,148],warn:[253,203,110],dng:[214,48,49],txt:[45,52,54],txtL:[99,110,114]};
+  const planName=(document.getElementById('planNameDisplay')?.textContent||'Business Plan').trim();
+  const userName=currentUser?.name||'Utilisateur';
+  const dateStr=new Date().toLocaleDateString('fr-CH',{day:'2-digit',month:'long',year:'numeric'});
+  // --- helpers ---
+  function rdV(id){const el=document.getElementById(id),t=document.getElementById(id+'Text');if(!el||!t)return{text:'',color:'green'};const cl=el.className;return{text:t.textContent.trim(),color:cl.includes('red')?'red':cl.includes('orange')?'orange':'green'};}
+  function rdK(id){const el=document.getElementById(id);return el?el.textContent.trim():'\u2014';}
+  function gImg(k){if(charts[k]){try{return charts[k].toBase64Image()}catch(e){}}return null;}
+  const vBg={green:[230,248,243],orange:[254,245,231],red:[253,234,234]};
+  const vCl={green:C.acc,orange:C.warn,red:C.dng};
+  function footer(pg){doc.setDrawColor(...C.pl);doc.setLineWidth(0.3);doc.line(M,H-12,W-M,H-12);doc.setFontSize(7);doc.setTextColor(...C.txtL);doc.text(planName,M,H-8);doc.text(dateStr,W/2,H-8,{align:'center'});doc.text('Page '+pg+'',W-M,H-8,{align:'right'});}
+  function title(y,t){doc.setFontSize(14);doc.setFont('helvetica','bold');doc.setTextColor(...C.p);doc.text(t,M,y);doc.setDrawColor(...C.acc);doc.setLineWidth(0.8);doc.line(M,y+2,M+40,y+2);doc.setFont('helvetica','normal');return y+8;}
+  function verdict(y,v){const bg=vBg[v.color]||vBg.green,cl=vCl[v.color]||C.acc;doc.setFillColor(...bg);doc.roundedRect(M,y,CW,14,2,2,'F');doc.setFillColor(...cl);doc.rect(M,y,3,14,'F');doc.setFontSize(9);doc.setTextColor(...C.txt);const lines=doc.splitTextToSize(v.text,CW-10);doc.text(lines,M+6,y+5);return y+16;}
+  function kpis(y,arr){const cw=(CW-9)/4;arr.forEach((k,i)=>{if(!k.label)return;const x=M+i*(cw+3);doc.setFillColor(248,250,252);doc.roundedRect(x,y,cw,18,1.5,1.5,'F');doc.setDrawColor(...C.pl);doc.setLineWidth(0.15);doc.roundedRect(x,y,cw,18,1.5,1.5,'S');doc.setFillColor(...C.pl);doc.rect(x,y,cw,1,'F');doc.setFontSize(6);doc.setTextColor(...C.txtL);doc.text(k.label,x+2,y+5);doc.setFontSize(11);doc.setFont('helvetica','bold');doc.setTextColor(...C.p);doc.text(k.value||'\u2014',x+2,y+12);doc.setFont('helvetica','normal');});return y+22;}
+  function chart(y,key,h){h=h||70;const img=gImg(key);if(img){doc.addImage(img,'PNG',M,y,CW,h);}else{doc.setFontSize(8);doc.setTextColor(180,180,180);doc.text('[Graphique non disponible]',W/2,y+h/2,{align:'center'});}return y+h+4;}
+  // --- page 1: cover ---
+  doc.setFillColor(...C.p);doc.rect(0,0,W,H,'F');
+  doc.setFillColor(...C.acc);doc.rect(0,0,W,4,'F');doc.rect(0,H-4,W,4,'F');
+  doc.setFillColor(...C.acc);doc.circle(W/2,80,12,'F');
+  doc.setFontSize(16);doc.setFont('helvetica','bold');doc.setTextColor(255,255,255);doc.text('G',W/2,85,{align:'center'});
+  doc.setFontSize(28);doc.text('GYNEVA',W/2,110,{align:'center'});
+  doc.setFontSize(14);doc.setFont('helvetica','normal');doc.setTextColor(...C.acc);doc.text('Business Plan',W/2,120,{align:'center'});
+  doc.setFontSize(16);doc.setTextColor(255,255,255);doc.text(planName,W/2,145,{align:'center'});
+  doc.setDrawColor(...C.acc);doc.setLineWidth(0.5);doc.line(W/2-30,155,W/2+30,155);
+  doc.setFontSize(11);doc.setTextColor(200,210,220);doc.text(dateStr,W/2,170,{align:'center'});
+  doc.text('Pr\u00e9par\u00e9 par : '+userName,W/2,180,{align:'center'});
+  doc.setFontSize(7);doc.setTextColor(150,170,190);doc.text('Document confidentiel',W/2,H-10,{align:'center'});
+  // --- page 2: overview ---
+  doc.addPage();footer(2);
+  let y=20;
+  y=title(y,'Vue d\'ensemble');
+  y=verdict(y,rdV('ovVerdict'));
+  y=kpis(y,[{label:'Investissement total',value:rdK('ovCapex')},{label:'CA Ann\u00e9e 3',value:rdK('ovCaY3')},{label:'R\u00e9sultat net Y3',value:rdK('ovResY3')},{label:'Marge nette Y3',value:rdK('ovMarginPct')}]);
+  y=kpis(y,[{label:'Payback',value:rdK('ovPayback')},{label:'BFR minimum',value:rdK('ovBfr')},{label:'',value:''},{label:'',value:''}]);
+  y=chart(y,'overview',65);
+  // --- page 3: revenue ---
+  doc.addPage();footer(3);y=20;
+  y=title(y,'Chiffre d\'Affaires');
+  y=verdict(y,rdV('revVerdict'));
+  y=kpis(y,[{label:'Potentiel / sp\u00e9cialiste',value:rdK('revKpiSpec')},{label:'CA p\u00e9riode',value:rdK('revKpiCa')},{label:'Croissance',value:rdK('revKpiGrowth')},{label:'Diversification',value:rdK('revKpiDiversif')}]);
+  y=chart(y,'revenue',70);
+  // --- page 4: cashflow ---
+  doc.addPage();footer(4);y=20;
+  y=title(y,'Tr\u00e9sorerie');
+  y=verdict(y,rdV('cfVerdict'));
+  y=kpis(y,[{label:'Tr\u00e9so finale',value:rdK('cfTresoFin')},{label:'BFR minimum',value:rdK('cfBfrMin')},{label:'Mois critique',value:rdK('cfCritMonth')},{label:'Ratio E/S',value:rdK('cfRatio')}]);
+  y=chart(y,'cashflow',55);
+  y+=2;
+  y=chart(y,'cashWaterfall',55);
+  // --- page 5: team ---
+  doc.addPage();footer(5);y=20;
+  y=title(y,'\u00c9quipe');
+  y=verdict(y,rdV('teamVerdict'));
+  y=kpis(y,[{label:'ETP total',value:rdK('tEtp')},{label:'CA / ETP',value:rdK('tCaEtp')},{label:'Ratio admin',value:rdK('tRatio')},{label:'Croissance ETP',value:rdK('tGrowth')}]);
+  y=chart(y,'team',70);
+  // --- page 6: risks ---
+  doc.addPage();footer(6);y=20;
+  y=title(y,'Risques');
+  // Risk gauge
+  const rScore=parseInt(document.getElementById('riskScore')?.textContent)||0;
+  const rGauge=document.getElementById('riskGauge');
+  const rLevel=rGauge?.className.includes('high')?'red':rGauge?.className.includes('medium')?'orange':'green';
+  const rSub=document.getElementById('riskSub')?.textContent||'';
+  const rCol=vCl[rLevel]||C.acc;
+  doc.setFillColor(245,247,250);doc.circle(M+15,y+12,10,'F');
+  doc.setDrawColor(...rCol);doc.setLineWidth(2);doc.circle(M+15,y+12,10,'S');
+  doc.setFontSize(14);doc.setFont('helvetica','bold');doc.setTextColor(...rCol);doc.text(rScore.toString(),M+15,y+14,{align:'center'});
+  doc.setFontSize(9);doc.setTextColor(...C.txt);doc.text('Score risque : '+rScore+'/100',M+30,y+10);
+  doc.setFontSize(7);doc.setFont('helvetica','normal');doc.setTextColor(...C.txtL);
+  const rLines=doc.splitTextToSize(rSub,CW-35);doc.text(rLines,M+30,y+15);
+  y+=30;
+  y=kpis(y,[{label:'CA Y3 stress',value:rdK('rCaY3')},{label:'R\u00e9sultat Y3',value:rdK('rResY3')},{label:'BFR min',value:rdK('rBfrMin')},{label:'Tr\u00e9so finale',value:rdK('rTresoFinal')}]);
+  y=chart(y,'riskStress',50);
+  y+=2;
+  y=chart(y,'charges',50);
+  // --- page 7: profit ---
+  doc.addPage();footer(7);y=20;
+  y=title(y,'Profit Associ\u00e9s');
+  y=verdict(y,rdV('profitVerdict'));
+  y=kpis(y,[{label:'ROI cumul\u00e9 3 ans',value:rdK('pRoi')},{label:'Payback',value:rdK('pPayback')},{label:'R\u00e9sultat/associ\u00e9 Y3',value:rdK('pPerAssocY3')},{label:'Investissement/associ\u00e9',value:rdK('pInvestAssoc')}]);
+  y=chart(y,'profit',55);
+  y+=2;
+  y=chart(y,'profitCumul',55);
+  // --- page 8: optimize ---
+  doc.addPage();footer(8);y=20;
+  y=title(y,'Optimisations');
+  y=verdict(y,rdV('optVerdict'));
+  y=kpis(y,[{label:'BFR pire cas',value:rdK('optBfrWorst')},{label:'BFR actuel',value:rdK('optBfrCurrent')},{label:'BFR \u00e9conomis\u00e9',value:rdK('optBfrSaved')},{label:'Co\u00fbt factoring',value:rdK('optFactCost')}]);
+  y=chart(y,'optimize',70);
+  // --- save ---
+  const safeName=planName.replace(/[^a-zA-Z0-9\u00e0-\u00fc]/g,'_');
+  doc.save('GynEva_'+safeName+'_'+new Date().toISOString().slice(0,10)+'.pdf');
+}
 
 // ===== AUTH LOGIC (server-side sessions) =====
 async function checkSession() {
