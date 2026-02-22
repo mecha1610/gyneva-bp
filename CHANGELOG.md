@@ -2,6 +2,28 @@
 
 All notable changes to the GYNEVA Business Plan application are documented here.
 
+## [0.18.0] - 2026-02-22
+
+### Added
+- **Password authentication**: email/password login alongside Google OAuth, with bcryptjs hashing (12 salt rounds)
+- **Invitation system**: admin generates a 48h invite link, user visits it to set name + password and create their account
+- **Invite acceptance screen**: dedicated form at `/?invite=TOKEN` with email pre-filled, role badge, password confirmation
+- **Admin user table**: full CRUD — email, name, editable role (select), auth type badge (Google/Password), last login, delete action
+- **Admin invite management**: create invite (email + role), copyable link, pending invites list with expiration dates
+- **API `POST /auth/login`**: email/password authentication with session cookie
+- **API `GET/POST /auth/invite/[token]`**: validate and accept invitation tokens
+- **API `GET/POST /admin/invites`**: create and list pending invitations
+- **API `PUT/DELETE /admin/users/[id]`**: update user role/name, delete user with cascade
+- **`InviteToken` model**: Prisma model with token, email, role, expiration, usage tracking
+- **`passwordHash` field**: added to User model for password-based accounts
+
+### Changed
+- `GET /admin/users` now returns `authType` (google/password) derived from user fields (never exposes hash)
+- Login screen shows email/password form with "ou" separator below Google OAuth button
+- Admin panel restructured: 3 cards (Users table, Invite form, Whitelist emails) replacing single email list
+- User badge in topbar shows initial letter avatar when no Google picture available
+- Init sequence checks `?invite=` URL parameter before session check and Google OAuth
+
 ## [0.17.0] - 2026-02-22
 
 ### Added
