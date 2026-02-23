@@ -1,6 +1,7 @@
 {
   "buildCommand": "prisma generate && tsc --noEmit",
   "outputDirectory": "public",
+  "ignoreCommand": "git diff HEAD^ HEAD --name-only | grep -qvE '^(README\\.md|CHANGELOG\\.md|docs/)'",
   "headers": [
     {
       "source": "/api/(.*)",
