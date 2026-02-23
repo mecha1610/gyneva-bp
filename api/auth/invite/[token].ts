@@ -49,35 +49,42 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const { name, password } = parsed.data;
     const hash = await hashPassword(password);
 
-    // Check if user already exists (race condition guard)
-    const existing = await prisma.user.findUnique({ where: { email: invite.email } });
-    if (existing) {
-      return badRequest(res, 'Un compte existe déjà pour cet email');
+    let user: Awaited<ReturnType<typeof prisma.user.create>>;
+    try {
+      user = await prisma.$transaction(async (tx) => {
+        // Guard against duplicate accounts atomically
+        const existing = await tx.user.findUnique({ where: { email: invite.email } });
+        if (existing) throw Object.assign(new Error('DUPLICATE_EMAIL'), { code: 'DUPLICATE_EMAIL' });
+
+        const created = await tx.user.create({
+          data: {
+            email: invite.email,
+            name,
+            passwordHash: hash,
+            role: invite.role,
+            lastLoginAt: new Date(),
+          },
+        });
+
+        await tx.inviteToken.update({
+          where: { id: invite.id },
+          data: { usedAt: new Date() },
+        });
+
+        await tx.allowedEmail.upsert({
+          where: { email: invite.email },
+          update: {},
+          create: { email: invite.email, addedBy: invite.createdBy },
+        });
+
+        return created;
+      });
+    } catch (err: any) {
+      if (err?.code === 'DUPLICATE_EMAIL') {
+        return badRequest(res, 'Un compte existe déjà pour cet email');
+      }
+      throw err;
     }
-
-    // Create user
-    const user = await prisma.user.create({
-      data: {
-        email: invite.email,
-        name,
-        passwordHash: hash,
-        role: invite.role,
-        lastLoginAt: new Date(),
-      },
-    });
-
-    // Mark token as used
-    await prisma.inviteToken.update({
-      where: { id: invite.id },
-      data: { usedAt: new Date() },
-    });
-
-    // Add to AllowedEmail for consistency
-    await prisma.allowedEmail.upsert({
-      where: { email: invite.email },
-      update: {},
-      create: { email: invite.email, addedBy: invite.createdBy },
-    });
 
     // Create session
     const sessionToken = await createSession(user.id);

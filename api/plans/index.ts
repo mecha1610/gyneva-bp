@@ -21,8 +21,8 @@ const createPlanSchema = z.object({
   consultDay: z.number().int().min(1).max(50).optional(),
   fee: z.number().int().min(50).max(1000).optional(),
   daysYear: z.number().int().min(100).max(365).optional(),
-  revSpec: z.number().int().min(0).optional(),
-  capex: z.number().int().min(0).optional(),
+  revSpec: z.number().int().min(0).max(10000000).optional(),
+  capex: z.number().int().min(0).max(5000000).optional(),
 });
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
