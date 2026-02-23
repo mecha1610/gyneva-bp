@@ -1,6 +1,6 @@
 # GYNEVA Business Plan
 
-Interactive financial planning application for a gynecology clinic in Geneva. Provides 36-month revenue projections, cashflow scenario analysis, team ramp-up modeling, a real-time business simulator with configurable retrocession rate, Excel import with change tracking, full version history with restore, multi-plan management, scenario overlay comparison, PDF version comparison, revenue profile filters, and interactive optimization controls with dynamic recommendations.
+Interactive financial planning application for a gynecology clinic in Geneva. Provides 36-month revenue projections, cashflow scenario analysis, team ramp-up modeling, a real-time business simulator with configurable retrocession rate, Excel import with change tracking, full version history with restore, multi-plan management, scenario overlay comparison, PDF version comparison, revenue profile filters, interactive optimization controls with dynamic recommendations, dark/light theme, bilingual UI (FR/EN), and installable PWA with push notifications.
 
 **Production**: https://gyneva-bp-https.vercel.app
 
@@ -31,12 +31,24 @@ Interactive financial planning application for a gynecology clinic in Geneva. Pr
 - **Interactive Chart.js visualizations** for revenue evolution, cashflow scenarios, team growth, profitability
 - **Verdict engine**: automatic viability assessment with color-coded indicators
 - **Scenario overlay**: overlay a saved simulator scenario on dashboard charts (semi-transparent bars for overview, dashed lines for revenue and cashflow) to compare projections vs. actuals
+- **Executive dashboard**: collapsible panel above tabs with global score gauge, 10 KPIs, and cashflow sparkline
+
+### Internationalization
+- **Bilingual UI (FR/EN)**: complete translation of all UI strings, verdicts, KPI labels, chart axes, and dynamic content
+- **Auto-detection**: detects browser language via `navigator.language`, persists to localStorage
+- **FR/EN toggle** in topbar; switching language instantly rebuilds all charts and reruns simulation
+- **Mobile-responsive**: hamburger menu, slide-in sidebar drawer, 3 responsive breakpoints
+
+### Dark Theme
+- **Dark/light toggle** (`🌙/☀️`) in topbar, persisted to localStorage
+- **Flash-prevention**: inline `<head>` script applies saved theme before first paint
+- **Full coverage**: all sections, charts, tables, login card, modals
 
 ### Excel Import with Change Tracking
 - **Drag-and-drop or file picker** upload of `.xlsx` business plan models
 - **Server-side parsing** of the "Backend" sheet with mapped rows/columns
-- **Math.round() on all cell values** to eliminate floating-point rounding drift between Excel and the app
-- **Import diff summary**: after each import, a grid shows every changed metric (CA Y1-3, Result Y1-3, CAPEX, fee, consult/day, ETP max) with old value, new value, and percentage variation
+- **Math.round() on all cell values** to eliminate floating-point rounding drift
+- **Import diff summary**: after each import, a grid shows every changed metric with old value, new value, and percentage variation
 - **"No changes detected"** message when re-uploading the same file
 - **Warnings display**: parser warnings (zero-rows, missing critical rows, sheet fallback) shown inline
 
@@ -71,32 +83,32 @@ Interactive financial planning application for a gynecology clinic in Geneva. Pr
 - **Save/load named scenarios** for comparing alternative business models
 - **Delta indicators** showing impact vs. baseline on key metrics
 - **Year tabs (Y1 / Y2 / Y3 / Vue 3 ans)**: browse results per year instead of Y3-only
-- **Year overview timeline**: always-visible row with CA, Result, and delta for each year — clickable to switch
-- **Per-year KPIs**: 6 detailed indicators per year (CA, Result, Result ajuste, /Associe, Treso min, Treso fin)
-- **Contextual verdict**: Y1 "Demarrage" (ramp-up risks), Y2 "Croissance" (growth phase), Y3 "Croisiere" (steady-state profitability)
-- **Sensitivity tags**: colored badges showing which parameters impact the selected year (e.g., "Delai paiement: FORT" for Y1)
-- **Structured summary**: 3-column grid (Y1/Y2/Y3) with bullet-point highlights replacing the old single Y3 paragraph
-- **Chart year highlighting**: bar chart dims non-selected year bars; cashflow line chart draws a translucent highlight band over the selected year
+- **Scenario comparison modal**: full-screen side-by-side comparison of 2-3 saved scenarios with 12-metric grid, charts, and automatic rank-sum verdict
 
 ### Optimizations
-- **Interactive controls**: factoring toggle, cash OI/ONU slider (0-30%), LAMal delay selector (0/1/3 months) — directly in the tab, no need to switch to the simulator
+- **Interactive controls**: factoring toggle, cash OI/ONU slider (0-30%), LAMal delay selector (0/1/3 months) — directly in the tab
 - **4 dynamic KPIs**: worst-case BFR, current-config BFR (color-coded), BFR savings with percentage, factoring annual cost as % of net result
-- **Dynamic verdict**: green (optimal), orange (moderate risk), red (elevated risk) based on current control settings
-- **Smart recommendation**: compares factoring cost vs. BFR reduction to show ROI, or warns about BFR risk when factoring is disabled
-- **4-scenario comparison grid**: side-by-side cards (100% LAMal 3m, Cash + LAMal 3m, Cash + LAMal 1m, Cash + Factoring) with BFR min, critical month, risk tags, and active config highlight
-- **Enhanced chart**: current-config scenario line is thick and filled, other scenarios are thin and dashed
+- **4-scenario comparison grid**: side-by-side cards with BFR min, critical month, risk tags, and active config highlight
 
 ### Revenue Profile Filters
 - **Pill button filters**: toggle revenue sources (Tous, Associes, Independants, Internes, Sage-femme) on the Revenue chart
 - **Single-profile view**: selecting one profile unstacks bars for clear ramp-up visualization
 - **Profile detail cards**: per-profile CA Y1/Y2/Y3, percentage of total, ramp-up timeline, GynEva revenue share
-- **Dynamic KPIs**: CA Year 1/2/3 update to reflect only selected profiles
 
 ### Authentication & Access Control
 - **Google OAuth 2.0** sign-in with server-side JWT verification
+- **Email/password login** via bcrypt-hashed credentials (12 salt rounds)
+- **Invitation system**: admin generates a 48h invite link; user visits it to set name + password
 - **Email whitelist**: only pre-approved addresses can access the app
-- **Role-based access**: ADMIN, EDITOR, VIEWER
-- **Admin panel** for managing the whitelist
+- **Role-based access**: ADMIN, EDITOR, VIEWER (default VIEWER)
+- **Admin panel**: user management (edit role/name, delete), invite management, whitelist management
+
+### Progressive Web App (PWA)
+- **Installable**: `manifest.json` + iOS meta tags — add to home screen on Android and iPhone
+- **App icons**: 5 sizes (72, 192, 512, 512-maskable, apple-touch-icon 180px)
+- **Service worker**: network-first fetch with offline fallback for the app shell
+- **Push notifications**: Web Push API with VAPID; admin can broadcast to all subscribed users
+- **Push subscription UI**: `🔔` button in topbar appears after login; subscribes/unsubscribes on click
 
 ---
 
@@ -107,22 +119,25 @@ Browser (SPA)                    Vercel Serverless Functions
 +-----------------------+        +---------------------------+
 | public/index.html     |  HTTP  | api/auth/*    (sessions)  |
 | - Google Sign-In      |------->| api/plans/*   (CRUD+vers) |
-| - Chart.js dashboards |<-------| api/scenarios/*(simulator) |
-| - Real-time simulator |        | api/import/*  (Excel)     |
-| - Excel drag & drop   |        | api/admin/*   (whitelist) |
-| - Import diff summary |        +---------------------------+
-| - Version history     |                 |
-| - Version comparison  |           Prisma ORM
-| - Multi-plan switcher |                |
-| - Scenario overlay    |        +------------------+
-| - Year-tab simulator  |        | PostgreSQL (Neon) |
-| - Revenue prof.filter |        | 6 tables          |
+| - Password login      |<-------| api/scenarios/*(simulator)|
+| - Chart.js dashboards |        | api/import/*  (Excel)     |
+| - Real-time simulator |        | api/admin/*   (users+inv) |
+| - Dark/light theme    |        | api/push/*    (PWA push)  |
+| - FR/EN language      |        +---------------------------+
+| - PWA + push notif.   |                 |
+| - Excel drag & drop   |           Prisma ORM
+| - Version history     |                |
+| - Version comparison  |        +------------------+
+| - Multi-plan switcher |        | PostgreSQL (Neon) |
+| - Scenario overlay    |        | 8 tables          |
+| - Scenario comparison |        +------------------+
+| - Revenue prof.filter |
 | - Optimize controls   |
+| - Executive dashboard |
 +-----------------------+
-                                 +------------------+
 ```
 
-The frontend is a single HTML file served as static content. All data operations go through the REST API. The simulator engine runs client-side for instant slider feedback; persistence and Excel parsing happen server-side via API calls.
+The frontend is a single HTML file served as static content from `public/`. All data operations go through the REST API. The simulator engine runs client-side for instant slider feedback; persistence and Excel parsing happen server-side via API calls.
 
 ## Tech Stack
 
@@ -131,11 +146,15 @@ The frontend is a single HTML file served as static content. All data operations
 | Frontend | Vanilla JS, Chart.js 4.4, Google Identity Services |
 | API | Vercel Serverless Functions (TypeScript) |
 | Database | PostgreSQL via Neon serverless |
-| ORM | Prisma 5.x with `@prisma/adapter-neon` |
+| ORM | Prisma 7.x with `@prisma/adapter-neon` |
 | Validation | Zod |
-| Auth | Google OAuth 2.0, server-side JWT verification |
+| Auth | Google OAuth 2.0 + email/password (bcryptjs) |
 | Sessions | HttpOnly cookies + DB-backed tokens |
+| Push | Web Push API via `web-push` (VAPID) |
 | Excel | `xlsx` library (server-side parsing with Math.round) |
+| i18n | Custom `t()` engine with FR/EN dictionaries |
+| Theme | CSS custom properties + `[data-theme="dark"]` |
+| PWA | Web App Manifest + Service Worker |
 
 ## Getting Started
 
@@ -195,9 +214,9 @@ gyneva-bp/
 │   │   ├── errors.ts              # Standardized error responses
 │   │   └── middleware.ts          # CORS, rate limiting, auth guards
 │   ├── auth/
-│   │   ├── google.ts              # POST   Login with Google credential
-│   │   ├── me.ts                  # GET    Current user from session
-│   │   └── logout.ts             # POST   Destroy session
+│   │   ├── index.ts               # POST ?action=google|login|logout / GET ?action=me
+│   │   └── invite/
+│   │       └── [token].ts         # GET Validate / POST Accept invite token
 │   ├── plans/
 │   │   ├── index.ts               # GET    List plans / POST Create plan
 │   │   ├── [id].ts                # GET    Read / PUT Update (auto-snapshot) / DELETE
@@ -211,21 +230,43 @@ gyneva-bp/
 │   ├── import/
 │   │   └── excel.ts               # POST   Parse Excel (Math.round, fallback, warnings)
 │   ├── admin/
-│   │   └── users.ts               # GET    List / POST Add / DELETE Remove emails
-│   └── health.ts                  # GET    Health check
+│   │   ├── users.ts               # GET    List users+emails / POST Add / DELETE Remove
+│   │   ├── users/
+│   │   │   └── [id].ts            # PUT    Update role/name / DELETE Remove user
+│   │   └── invites.ts             # GET    List pending / POST Create invite
+│   └── push/
+│       └── index.ts               # POST Subscribe / POST ?action=send Broadcast (admin)
 │
 ├── lib/                           # Shared code (front + back)
 │   ├── types.ts                   # TypeScript interfaces
 │   ├── constants.ts               # Default data, Excel mappings, simulator defaults
-│   └── compute.ts                 # Financial engine (scenarios, derived metrics)
+│   ├── compute.ts                 # Financial engine (scenarios, derived metrics)
+│   └── simulation.ts              # Extracted computeSimulation() for unit testing
+│
+├── tests/
+│   └── simulation.test.ts         # 45 vitest tests for computeSimulation()
 │
 ├── prisma/
-│   ├── schema.prisma              # Database schema (6 models)
+│   ├── schema.prisma              # Database schema (8 models)
 │   └── seed.ts                    # Seed script
 │
-├── public/
-│   └── index.html                 # Single-page application (all sections embedded)
+├── prisma.config.ts               # Prisma v7 CLI config (connection URLs)
 │
+├── public/
+│   ├── index.html                 # Single-page application (all sections embedded)
+│   ├── manifest.json              # PWA Web App Manifest
+│   ├── sw.js                      # Service Worker (cache + push handler)
+│   └── icons/
+│       ├── icon-72.png            # Android icon 72×72
+│       ├── icon-192.png           # Android icon 192×192
+│       ├── icon-512.png           # Android splash icon 512×512
+│       ├── icon-512-maskable.png  # Android adaptive icon 512×512
+│       └── apple-touch-icon.png   # iOS home screen icon 180×180
+│
+├── docs/
+│   └── PRD-v1.md                  # Product Requirements Document
+│
+├── vitest.config.ts
 ├── package.json
 ├── tsconfig.json
 └── vercel.json                    # Build + deployment config
@@ -240,43 +281,58 @@ gyneva-bp/
 | `GOOGLE_CLIENT_ID` | Yes | Google OAuth 2.0 Client ID |
 | `SESSION_SECRET` | Yes | Random string for session signing |
 | `ALLOWED_ORIGIN` | Yes | Production URL for CORS (`https://gyneva-bp-https.vercel.app`) |
+| `VAPID_PUBLIC_KEY` | Yes | VAPID public key for Web Push (generate with `web-push generate-vapid-keys`) |
+| `VAPID_PRIVATE_KEY` | Yes | VAPID private key for Web Push |
+| `VAPID_EMAIL` | Yes | Contact email for VAPID (`mailto:you@example.com`) |
 | `NODE_ENV` | Auto | Set by Vercel; controls Secure/SameSite cookie flags |
 
 Copy `.env.example` to `.env.local` and fill in your values.
+
+To generate VAPID keys:
+```bash
+npx web-push generate-vapid-keys
+```
 
 ## Database
 
 ### Schema
 
 ```
-┌──────────────┐     ┌──────────────┐     ┌───────────────────┐
-│ AllowedEmail │     │    User      │────<│     Session        │
+┌──────────────┐     ┌──────────────┐────<┌───────────────────┐
+│ AllowedEmail │     │    User      │     │     Session        │
 │              │     │              │     │ (token, expiresAt) │
 │ email        │     │ email        │     └───────────────────┘
 │ addedBy      │     │ role (enum)  │
 └──────────────┘     │ googleSub    │────<┌───────────────────┐
-                     └──────────────┘     │  BusinessPlan     │
-                            │             │  (36-month JSONB)  │
-                            │        ────<│  + scalar constants│
-                            │             └───────────────────┘
-                            │                      │
-                            │                 ────<│
-                     ┌──────────────────┐   ┌─────────────────────┐
-                     │SimulatorScenario │   │BusinessPlanVersion  │
+                     │ passwordHash │     │  BusinessPlan     │
+┌──────────────┐     └──────────────┘     │  (36-month JSONB)  │
+│ InviteToken  │            │        ────<│  + scalar constants│
+│              │            │             └───────────────────┘
+│ token        │            │                      │
+│ email, role  │            │                 ────<│
+│ expiresAt    │     ┌──────┴───────────┐   ┌─────────────────────┐
+└──────────────┘     │SimulatorScenario │   │BusinessPlanVersion  │
                      │ (params JSONB)   │   │ (data + constants)  │
                      └──────────────────┘   └─────────────────────┘
+                            │
+                     ┌──────┴──────────────┐
+                     │  PushSubscription   │
+                     │  (endpoint, keys)   │
+                     └─────────────────────┘
 ```
 
 ### Models
 
 | Model | Description |
 |-------|-------------|
-| **User** | Authenticated users with role (`ADMIN`, `EDITOR`, `VIEWER`) |
+| **User** | Authenticated users with role (`ADMIN`, `EDITOR`, `VIEWER`); supports Google OAuth and password auth |
 | **Session** | Server-side sessions with 24h TTL, cascade-deleted with user |
 | **AllowedEmail** | Email whitelist checked during login |
 | **BusinessPlan** | 36-month financial model (17 arrays as JSONB + 5 scalar constants), soft-deletable |
 | **BusinessPlanVersion** | Auto-snapshot before each plan update; stores full data + constants at that point |
 | **SimulatorScenario** | Saved simulator parameter sets (14 parameters), optionally shared or linked to a plan |
+| **InviteToken** | Admin-generated invite links with email, role, 48h expiry, and usage tracking |
+| **PushSubscription** | Web Push subscription per user (endpoint, p256dh, auth keys) |
 
 ### Seed Data
 
@@ -297,9 +353,12 @@ All endpoints are prefixed with `/api`. Responses use JSON. Errors follow:
 
 | Method | Endpoint | Auth | Description |
 |--------|----------|------|-------------|
-| `POST` | `/auth/google` | No | Exchange Google JWT for session cookie |
-| `GET` | `/auth/me` | Yes | Get current user from session |
-| `POST` | `/auth/logout` | Yes | Destroy session |
+| `POST` | `/auth?action=google` | No | Exchange Google JWT for session cookie |
+| `POST` | `/auth?action=login` | No | Email/password login (max 5 attempts per 5 min) |
+| `GET` | `/auth?action=me` | Yes | Get current user from session |
+| `POST` | `/auth?action=logout` | Yes | Destroy session |
+| `GET` | `/auth/invite/[token]` | No | Validate invite token (returns email, role) |
+| `POST` | `/auth/invite/[token]` | No | Accept invite (set name + password, create account) |
 
 ### Plans
 
@@ -361,12 +420,21 @@ Size limit: 10 MB.
 | `GET` | `/admin/users` | ADMIN | List allowed emails + registered users |
 | `POST` | `/admin/users` | ADMIN | Add email to whitelist |
 | `DELETE` | `/admin/users?email=...` | ADMIN | Remove email from whitelist |
+| `PUT` | `/admin/users/:id` | ADMIN | Update user role or name |
+| `DELETE` | `/admin/users/:id` | ADMIN | Delete user (cascades sessions, plans, scenarios) |
+| `GET` | `/admin/invites` | ADMIN | List pending (unused, non-expired) invites |
+| `POST` | `/admin/invites` | ADMIN | Create invite link (email + role, 48h TTL) |
 
-### Health
+### Push Notifications
 
 | Method | Endpoint | Auth | Description |
 |--------|----------|------|-------------|
-| `GET` | `/health` | No | Returns `{ ok: true, ts: <timestamp> }` |
+| `POST` | `/push` | Yes | Subscribe current user to push notifications |
+| `POST` | `/push?action=send` | ADMIN | Broadcast push notification to all subscribers |
+
+**Subscribe body**: `{ endpoint, keys: { p256dh, auth } }` (standard Web Push subscription object)
+
+**Send body**: `{ title, body, url? }`
 
 ### HTTP Status Codes
 
@@ -380,17 +448,17 @@ Size limit: 10 MB.
 | 403 | Forbidden / Email not allowed |
 | 404 | Resource not found |
 | 405 | Wrong HTTP method |
-| 429 | Rate limit exceeded (60 req/min per IP) |
+| 429 | Rate limit exceeded (60 req/min per IP; 5 login attempts per 5 min) |
 | 500 | Server error |
 
 ## Authentication & Security
 
-### Flow
+### Google OAuth Flow
 
 ```
 1. User clicks Google Sign-In button
 2. Google Identity Services returns a JWT credential
-3. Frontend POSTs credential to /api/auth/google
+3. Frontend POSTs credential to /api/auth?action=google
 4. Server verifies JWT with google-auth-library
 5. Server checks email against AllowedEmail table
 6. Server upserts User record
@@ -399,18 +467,33 @@ Size limit: 10 MB.
 9. Subsequent requests include cookie automatically
 ```
 
+### Password / Invite Flow
+
+```
+1. Admin creates invite via POST /api/admin/invites (email + role)
+2. Admin copies the generated link (/?invite=TOKEN)
+3. User opens the link — server validates token, returns email + role
+4. User enters name + password (min 12 chars) and submits
+5. Server hashes password with bcrypt (12 rounds), creates User + Session
+6. Token marked as used; allowedEmail upserted — all in a single transaction
+```
+
 ### Security Measures
 
 - **Server-side JWT verification** via `google-auth-library`
 - **HttpOnly cookies**: session token not accessible to JavaScript
 - **Secure + SameSite=Strict**: in production (HTTPS only, prevents CSRF)
 - **Email whitelist**: only pre-approved emails can log in
+- **Login rate limiting**: max 5 attempts per IP per 5-minute window on password login
+- **Password hashing**: bcryptjs with 12 salt rounds (NIST SP 800-63B compliant, min 12 chars)
 - **Role-based access**: `ADMIN`, `EDITOR`, `VIEWER`
 - **Parameterized queries**: all DB access through Prisma (no raw SQL)
 - **Input validation**: Zod schemas on all API inputs
 - **Rate limiting**: 60 requests/minute per IP (in-memory)
-- **CORS**: restricted to configured origin
+- **CORS**: restricted to configured `ALLOWED_ORIGIN`; `Allow-Credentials` only sent to allowed origins
 - **No-store cache headers**: on all API responses
+- **Security headers**: `X-Content-Type-Options`, `X-Frame-Options: DENY`, `Referrer-Policy` on all API responses
+- **VAPID authentication**: push notifications authenticated with VAPID key pair
 
 ## Business Logic
 
@@ -532,8 +615,8 @@ Restoring a version never destroys data; it always creates a new snapshot first.
 ### Vercel (Production)
 
 The app is deployed on Vercel with:
-- **Static files** from `public/` (SPA)
-- **Serverless functions** from `api/` (auto-detected by Vercel)
+- **Static files** from `public/` (SPA + PWA assets)
+- **Serverless functions** from `api/` (auto-detected by Vercel, max 12 on Hobby plan)
 - **PostgreSQL** via Neon (Frankfurt region)
 
 ```bash
@@ -554,6 +637,9 @@ POSTGRES_URL_NON_POOLING     # Direct connection for migrations
 GOOGLE_CLIENT_ID             # Google OAuth Client ID
 SESSION_SECRET               # Random secret string
 ALLOWED_ORIGIN               # https://gyneva-bp-https.vercel.app
+VAPID_PUBLIC_KEY             # Generate with: npx web-push generate-vapid-keys
+VAPID_PRIVATE_KEY            # (same command)
+VAPID_EMAIL                  # mailto:your@email.com
 ```
 
 ### Google OAuth Setup

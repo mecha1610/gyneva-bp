@@ -2,6 +2,33 @@
 
 All notable changes to the GYNEVA Business Plan application are documented here.
 
+## [0.19.8] - 2026-02-23
+
+### Added
+- **PWA (Progressive Web App)**: app is now installable on Android and iPhone directly from the browser — no App Store required
+- **Web App Manifest** (`public/manifest.json`): `name`, `short_name`, `start_url`, `display: standalone`, `theme_color`, `orientation: any`
+- **App icons**: 5 PNG sizes generated — 72×72, 192×192, 512×512, 512×512 maskable (Android adaptive), 180×180 Apple touch icon
+- **Service worker** (`public/sw.js`): install caches the app shell (`/`), activate cleans old caches, fetch uses network-first with cache fallback, push shows notifications, notificationclick focuses/opens the app
+- **iOS meta tags**: `apple-mobile-web-app-capable`, `apple-mobile-web-app-status-bar-style`, `apple-mobile-web-app-title`, `apple-touch-icon` link
+- **`Service-Worker-Allowed: /`** header on `sw.js` via `vercel.json` to allow service worker scope at root
+- **Push notifications (Web Push API)**: users can subscribe to push via `🔔` button in topbar; admin can broadcast to all subscribers from the admin panel
+- **`PushSubscription` Prisma model**: stores endpoint, p256dh, auth keys per user with cascade delete; mapped to `push_subscriptions` table
+- **`api/push/index.ts`**: `POST /push` to subscribe (requires auth), `POST /push?action=send` to broadcast (requires ADMIN); cleans stale subscriptions (410/404 responses)
+- **VAPID key pair**: `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_EMAIL` env vars; `web-push` npm package for server-side push delivery
+- **Admin push UI**: title + message form in admin panel to send push notifications to all subscribed users
+
+### Changed
+- Removed `api/health.ts` to stay within the Vercel Hobby plan 12 serverless function limit
+- `vercel.json`: added `sw.js` header rule (`Service-Worker-Allowed`, `no-cache`)
+
+## [0.19.7] - 2026-02-23
+
+### Added
+- **Dark/black theme**: complete dark mode covering all sections, tables, charts, login card, modals, topbar, sidebar, and exec dashboard
+- **Theme toggle button** (`🌙/☀️`) in topbar; persists choice to localStorage
+- **Flash-of-unstyled-content prevention**: inline `<head>` script applies saved theme before first paint
+- **CSS custom property overrides**: `[data-theme="dark"]` attribute block overrides all `--p`, `--bg`, `--card`, `--txt`, `--brd`, etc. variables plus hardcoded color overrides for specific components (tables, badges, verdicts, controls, login card)
+
 ## [0.19.6] - 2026-02-23
 
 ### Security
