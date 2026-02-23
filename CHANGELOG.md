@@ -2,6 +2,11 @@
 
 All notable changes to the GYNEVA Business Plan application are documented here.
 
+## [0.19.6] - 2026-02-23
+
+### Security
+- **Security headers**: added `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, and `Referrer-Policy: strict-origin-when-cross-origin` to all `/api/*` responses via `vercel.json`
+
 ## [0.19.5] - 2026-02-23
 
 ### Security
