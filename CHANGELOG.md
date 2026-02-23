@@ -2,6 +2,14 @@
 
 All notable changes to the GYNEVA Business Plan application are documented here.
 
+## [0.19.4] - 2026-02-23
+
+### Changed
+- **Prisma upgraded v5 → v7.4.1**: bumped `prisma`, `@prisma/client`, and `@prisma/adapter-neon` to 7.4.1
+- **`prisma.config.ts`**: new required config file for Prisma v7 CLI operations (replaces `url`/`directUrl` in `schema.prisma`); uses `POSTGRES_URL_NON_POOLING` for migrate/introspect
+- **`schema.prisma`**: removed `url`/`directUrl` datasource properties (now in `prisma.config.ts`) and removed `driverAdapters` from `previewFeatures` (GA since v6)
+- **`db.ts`**: `PrismaNeon` now takes `PoolConfig` directly instead of a `Pool` instance; removed `as any` cast on `PrismaClient` constructor
+
 ## [0.19.3] - 2026-02-23
 
 ### Fixed
