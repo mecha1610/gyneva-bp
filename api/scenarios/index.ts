@@ -62,6 +62,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const { name, params, businessPlanId, isShared } = parsed.data;
 
+    if (businessPlanId) {
+      const plan = await prisma.businessPlan.findUnique({ where: { id: businessPlanId } });
+      if (!plan || !plan.isActive || (plan.userId !== user.id && user.role !== 'ADMIN')) {
+        return badRequest(res, 'Invalid or unauthorized business plan');
+      }
+    }
+
     const scenario = await prisma.simulatorScenario.create({
       data: {
         userId: user.id,

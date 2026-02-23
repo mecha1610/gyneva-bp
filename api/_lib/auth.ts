@@ -6,7 +6,10 @@ import type { IncomingMessage, ServerResponse } from 'http';
 import { prisma } from './db';
 import type { User } from '@prisma/client';
 
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+if (!GOOGLE_CLIENT_ID) {
+  throw new Error('Missing required environment variable: GOOGLE_CLIENT_ID');
+}
 const SESSION_COOKIE = 'gyneva_session';
 const SESSION_DURATION_MS = 24 * 60 * 60 * 1000; // 24 hours
 
@@ -82,7 +85,7 @@ export async function getSessionUser(req: IncomingMessage): Promise<User | null>
 
   if (!session || session.expiresAt < new Date()) {
     if (session) {
-      await prisma.session.delete({ where: { id: session.id } }).catch(() => {});
+      await prisma.session.delete({ where: { id: session.id } }).catch(err => console.warn('[auth] Failed to delete expired session:', err));
     }
     return null;
   }

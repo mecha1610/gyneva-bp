@@ -48,7 +48,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     await prisma.user.delete({ where: { id: userId } });
 
     // Also remove from AllowedEmail if present
-    await prisma.allowedEmail.deleteMany({ where: { email: user.email } }).catch(() => {});
+    await prisma.allowedEmail.deleteMany({ where: { email: user.email } }).catch(err => console.warn('[admin] Failed to remove allowedEmail on user delete:', err));
 
     return res.status(200).json({ ok: true, id: userId });
   } catch (err) {
