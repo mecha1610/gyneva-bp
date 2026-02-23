@@ -51,8 +51,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           data: { token, email, role, expiresAt, createdBy: admin.email },
         });
 
-        const origin = req.headers.origin || req.headers.referer?.replace(/\/$/, '') || '';
-        const link = origin + '/?invite=' + token;
+        const appOrigin = (process.env.ALLOWED_ORIGIN || '').replace(/\/$/, '');
+        const link = appOrigin + '/?invite=' + token;
         return res.status(201).json({ invite, link });
       }
 

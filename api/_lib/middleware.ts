@@ -7,8 +7,7 @@ import { errorResponse } from './errors';
 
 const ALLOWED_ORIGINS = [
   process.env.ALLOWED_ORIGIN,
-  'http://localhost:3000',
-  'http://localhost:5173',
+  ...(process.env.NODE_ENV !== 'production' ? ['http://localhost:3000', 'http://localhost:5173'] : []),
 ].filter(Boolean) as string[];
 
 export function setCors(req: VercelRequest, res: VercelResponse): boolean {
