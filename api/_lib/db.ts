@@ -1,4 +1,3 @@
-import { Pool } from '@neondatabase/serverless';
 import { PrismaNeon } from '@prisma/adapter-neon';
 import { PrismaClient } from '@prisma/client';
 
@@ -10,9 +9,8 @@ function createPrismaClient(): PrismaClient {
     throw new Error('POSTGRES_PRISMA_URL is not set');
   }
 
-  const pool = new Pool({ connectionString });
-  const adapter = new PrismaNeon(pool);
-  return new PrismaClient({ adapter } as any);
+  const adapter = new PrismaNeon({ connectionString });
+  return new PrismaClient({ adapter });
 }
 
 export const prisma = globalForPrisma.prisma ?? createPrismaClient();
