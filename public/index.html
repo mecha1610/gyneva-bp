@@ -734,7 +734,70 @@ table.dt tr:hover td{background:#f8fafb}
 .logout-btn:hover{background:rgba(214,48,49,.06);color:var(--danger);border-color:var(--danger)}
 .user-info{display:flex;align-items:center;gap:.5rem;font-size:.8rem;color:var(--p)}
 .user-info img{width:26px;height:26px;border-radius:50%;border:2px solid var(--brd)}
+
+/* === DARK THEME === */
+[data-theme="dark"]{color-scheme:dark;--p:#9dc5e0;--pl:#5b9bd5;--bg:#0d0d0d;--card:#181818;--txt:#e0e0e0;--txtL:#777;--brd:#282828;--sh:0 2px 16px rgba(0,0,0,.5)}
+[data-theme="dark"] .sidebar{background:linear-gradient(180deg,#111 0%,#080808 100%)}
+[data-theme="dark"] .exec-dash{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%)}
+[data-theme="dark"] #login-screen,[data-theme="dark"] #invite-screen{background:linear-gradient(135deg,#0a0a0a 0%,#0d0d0d 50%,#0a2a20 100%)}
+[data-theme="dark"] .login-card{background:#181818}
+[data-theme="dark"] .login-card .logo-auth h1{color:var(--p)}
+[data-theme="dark"] .login-card .subtitle,[data-theme="dark"] .login-card .access-info{color:var(--txtL)}
+[data-theme="dark"] .login-card .divider{background:var(--brd)}
+[data-theme="dark"] .login-form input{background:#1f1f1f;border-color:var(--brd);color:var(--txt)}
+[data-theme="dark"] .login-or{color:#555}
+[data-theme="dark"] .login-or::before,[data-theme="dark"] .login-or::after{background:var(--brd)}
+[data-theme="dark"] .invite-card h2{color:var(--p)}
+[data-theme="dark"] table.dt th{background:#1f1f1f}
+[data-theme="dark"] table.dt td{border-bottom-color:#222}
+[data-theme="dark"] table.dt tr:hover td{background:#1f1f1f}
+[data-theme="dark"] .admin-users-table td{border-bottom-color:#222}
+[data-theme="dark"] .rev-controls,[data-theme="dark"] .opt-controls,[data-theme="dark"] .risk-controls,[data-theme="dark"] .cf-controls,[data-theme="dark"] .team-controls,[data-theme="dark"] .profit-controls{background:#111}
+[data-theme="dark"] .diff-item{background:#1f1f1f}
+[data-theme="dark"] .exp{background:#1a1a1a;color:#9dc5e0;border-left-color:var(--pl)}
+[data-theme="dark"] .exp strong{color:var(--p)}
+[data-theme="dark"] .sim-group{border-bottom-color:#282828}
+[data-theme="dark"] .profit-type .pt-row{border-bottom-color:#282828}
+[data-theme="dark"] .team-profile .tp-row{border-bottom-color:#282828}
+[data-theme="dark"] .team-profile .tp-bar{background:#282828}
+[data-theme="dark"] .sg-head,[data-theme="dark"] .compare-grid .cg-head{background:#1f1f1f}
+[data-theme="dark"] .sg-cell,[data-theme="dark"] .compare-grid .cg-cell{border-bottom-color:#222}
+[data-theme="dark"] .risk-exposure{background:#1f1f1f}
+[data-theme="dark"] .risk-sens-bar-ct{background:#282828}
+[data-theme="dark"] .invite-link-box{background:#1f1f1f}
+[data-theme="dark"] .version-item:hover{background:#1f1f1f}
+[data-theme="dark"] .pd-item:hover{background:#1f1f1f}
+[data-theme="dark"] .sim-year-tabs{background:#111}
+[data-theme="dark"] .sim-tab.active{background:var(--card)}
+[data-theme="dark"] .scenario-item{border-bottom-color:#222}
+[data-theme="dark"] .scenario-item:hover{background:#1f1f1f}
+[data-theme="dark"] .sens-tag{background:#1f1f1f;border-color:#333}
+[data-theme="dark"] .sim-compare{background:rgba(93,189,217,.04);border-color:rgba(93,189,217,.12)}
+[data-theme="dark"] .sim-summary-yr{background:#1f1f1f}
+[data-theme="dark"] .ov-year .ov-metric{border-bottom-color:#282828}
+[data-theme="dark"] .pill{background:rgba(93,189,217,.08);border-color:rgba(93,189,217,.15)}
+[data-theme="dark"] .sim-row input[type=range]{background:#282828}
+[data-theme="dark"] select{background:var(--card);color:var(--txt);border-color:var(--brd)}
+[data-theme="dark"] .admin-invite-form input,[data-theme="dark"] .admin-add input{background:#1f1f1f;color:var(--txt);border-color:var(--brd)}
+[data-theme="dark"] .hamburger span{background:var(--txt)}
+[data-theme="dark"] .badge.critique{background:rgba(192,57,43,.15);color:#e74c3c}
+[data-theme="dark"] .badge.important{background:rgba(214,136,16,.12);color:#fdcb6e}
+[data-theme="dark"] .badge.moyen{background:rgba(46,134,193,.12);color:#5dade2}
+[data-theme="dark"] .badge.faible{background:rgba(39,174,96,.12);color:#2ecc71}
+[data-theme="dark"] .badge.eleve{background:rgba(192,57,43,.15);color:#e74c3c}
+[data-theme="dark"] .badge.tres-eleve{background:#7b1f1f;color:#ff8080}
+[data-theme="dark"] .verdict.green{background:rgba(0,184,148,.1);color:#2ecc9a}
+[data-theme="dark"] .verdict.orange{background:rgba(253,203,110,.08);color:#fdcb6e}
+[data-theme="dark"] .verdict.red{background:rgba(214,48,49,.1);color:#e74c3c}
+[data-theme="dark"] .opt-reco.positive{background:rgba(0,184,148,.08);color:#2ecc9a}
+[data-theme="dark"] .opt-reco.warning{background:rgba(225,112,85,.08);color:#e74c3c}
+[data-theme="dark"] .import-warnings{color:#fdcb6e}
+[data-theme="dark"] .sc-verdict{background:rgba(0,184,148,.08);border-color:rgba(0,184,148,.2);color:#2ecc9a}
+[data-theme="dark"] .topbar{box-shadow:0 1px 8px rgba(0,0,0,.4)}
+[data-theme="dark"] .card:hover{box-shadow:0 4px 24px rgba(0,0,0,.4)}
+[data-theme="dark"] .kpi:hover{box-shadow:0 6px 20px rgba(0,0,0,.4);transform:translateY(-3px)}
 </style>
+<script>if(localStorage.getItem('theme')==='dark')document.documentElement.setAttribute('data-theme','dark');</script>
 </head>
 <body>
 
@@ -822,6 +885,7 @@ table.dt tr:hover td{background:#f8fafb}
   <div class="spacer"></div>
   <div class="status-pill static" id="statusPill"><div class="status-dot static" id="statusDot"></div><span id="statusLabel" data-i18n="topbar.statusDefault">Données par défaut</span></div>
   <button class="btn" id="langToggle" onclick="setLang(currentLang==='fr'?'en':'fr')">EN</button>
+  <button class="btn" id="themeToggle" onclick="toggleTheme()" title="Thème sombre / clair">&#127769;</button>
   <button class="btn" onclick="document.getElementById('fileInput').click()">&#128196; <span data-i18n="topbar.import">Importer Excel</span></button>
   <input type="file" id="fileInput" accept=".xlsx,.xls" style="display:none" onchange="handleFile(this.files[0])">
   <button class="btn" onclick="openVersionPanel()">&#128338; <span data-i18n="topbar.versions">Versions</span></button>
@@ -1400,6 +1464,16 @@ async function api(path, opts = {}) {
 
 // ===== i18n ENGINE =====
 let currentLang = localStorage.getItem('lang') || (navigator.language && navigator.language.startsWith('en') ? 'en' : 'fr');
+
+// ===== THEME =====
+function toggleTheme() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const theme = isDark ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('theme', theme);
+  const btn = document.getElementById('themeToggle');
+  if (btn) btn.innerHTML = theme === 'dark' ? '&#9728;&#65039;' : '&#127769;';
+}
 
 const TRANSLATIONS = {
 fr: {
@@ -5154,6 +5228,10 @@ async function grantAccess(user) {
 
   // Restore exec dashboard collapsed state
   if(localStorage.getItem('execCollapsed')==='1'){const ed=document.getElementById('execDashboard');if(ed){ed.classList.add('collapsed');document.getElementById('execToggle').innerHTML='&#9650;';}}
+
+  // Restore theme toggle button icon
+  const themeBtn = document.getElementById('themeToggle');
+  if (themeBtn) themeBtn.innerHTML = localStorage.getItem('theme') === 'dark' ? '&#9728;&#65039;' : '&#127769;';
 
   // Show admin nav if admin
   if (user.role === 'ADMIN') {
