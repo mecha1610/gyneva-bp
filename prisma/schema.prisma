@@ -23,9 +23,10 @@ model User {
   lastLoginAt DateTime? @map("last_login_at")
   createdAt   DateTime  @default(now()) @map("created_at")
 
-  sessions      Session[]
-  businessPlans BusinessPlan[]
-  scenarios     SimulatorScenario[]
+  sessions           Session[]
+  businessPlans      BusinessPlan[]
+  scenarios          SimulatorScenario[]
+  pushSubscriptions  PushSubscription[]
 
   @@map("users")
 }
@@ -111,6 +112,20 @@ model InviteToken {
 
   @@index([token])
   @@map("invite_tokens")
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("push_subscriptions")
 }
 
 model SimulatorScenario {

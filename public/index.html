@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GYNEVA — Business Plan Interactif</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0f2b46">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GYNEVA">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
@@ -886,6 +892,7 @@ table.dt tr:hover td{background:#f8fafb}
   <div class="status-pill static" id="statusPill"><div class="status-dot static" id="statusDot"></div><span id="statusLabel" data-i18n="topbar.statusDefault">Données par défaut</span></div>
   <button class="btn" id="langToggle" onclick="setLang(currentLang==='fr'?'en':'fr')">EN</button>
   <button class="btn" id="themeToggle" onclick="toggleTheme()" title="Thème sombre / clair">&#127769;</button>
+  <button class="btn" id="pushToggle" onclick="togglePushSubscription()" title="Notifications push" style="display:none">&#128276;</button>
   <button class="btn" onclick="document.getElementById('fileInput').click()">&#128196; <span data-i18n="topbar.import">Importer Excel</span></button>
   <input type="file" id="fileInput" accept=".xlsx,.xls" style="display:none" onchange="handleFile(this.files[0])">
   <button class="btn" onclick="openVersionPanel()">&#128338; <span data-i18n="topbar.versions">Versions</span></button>
@@ -1433,6 +1440,17 @@ table.dt tr:hover td{background:#f8fafb}
     </div>
     <div class="admin-pending" id="adminPending"></div>
   </div>
+  <!-- Push Notifications -->
+  <div class="card" style="margin-top:1.2rem">
+    <h2><span class="ic">&#128276;</span> Notifications push</h2>
+    <div class="exp">Envoyez une notification instantan&eacute;e &agrave; tous les utilisateurs abonn&eacute;s.</div>
+    <div class="admin-invite-form">
+      <input type="text" id="pushTitle" placeholder="Titre" style="min-width:160px">
+      <input type="text" id="pushBody" placeholder="Message" style="flex:2;min-width:220px">
+      <button class="btn primary" onclick="sendPushNotification()">Envoyer</button>
+    </div>
+    <div id="pushResult" style="font-size:.8rem;margin-top:.5rem;color:var(--acc)"></div>
+  </div>
   <!-- Whitelist emails (Google OAuth) -->
   <div class="card" style="margin-top:1.2rem">
     <h2><span class="ic">&#128274;</span> Whitelist emails (Google OAuth)</h2>
@@ -1464,6 +1482,58 @@ async function api(path, opts = {}) {
 
 // ===== i18n ENGINE =====
 let currentLang = localStorage.getItem('lang') || (navigator.language && navigator.language.startsWith('en') ? 'en' : 'fr');
+
+// ===== SERVICE WORKER + PUSH =====
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(err => console.warn('[SW] Registration failed:', err));
+}
+
+const VAPID_PUBLIC_KEY = 'BD_vHd67Oa4F9gD5SV89m-jqMyU_6EptdSyAwF2R-2PZ-EXkRlA3qZ5wlAljYLxoXaD-40KYp80Wz4rdicS4bfA';
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const raw = atob(base64);
+  return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
+}
+
+async function initPushButton() {
+  if (!('PushManager' in window) || !('serviceWorker' in navigator)) return;
+  const btn = document.getElementById('pushToggle');
+  if (!btn) return;
+  btn.style.display = '';
+  updatePushButtonState();
+}
+
+function updatePushButtonState() {
+  const btn = document.getElementById('pushToggle');
+  if (!btn) return;
+  const perm = Notification.permission;
+  if (perm === 'denied') {
+    btn.innerHTML = '&#128277;'; btn.title = 'Notifications bloquées (autorisez dans les paramètres)'; btn.disabled = true;
+  } else if (perm === 'granted') {
+    btn.innerHTML = '&#128276;&#65039;'; btn.title = 'Notifications activées'; btn.style.color = 'var(--acc)';
+  } else {
+    btn.innerHTML = '&#128276;'; btn.title = 'Activer les notifications'; btn.disabled = false; btn.style.color = '';
+  }
+}
+
+async function togglePushSubscription() {
+  if (Notification.permission === 'granted') return; // already subscribed
+  try {
+    const perm = await Notification.requestPermission();
+    if (perm !== 'granted') { updatePushButtonState(); return; }
+    const reg = await navigator.serviceWorker.ready;
+    const sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+    });
+    await api('/push/subscribe', { method: 'POST', body: JSON.stringify(sub.toJSON()) });
+    updatePushButtonState();
+  } catch (err) {
+    console.warn('[Push] Subscription failed:', err);
+  }
+}
 
 // ===== THEME =====
 function toggleTheme() {
@@ -4454,6 +4524,23 @@ async function removeAllowedEmail(email) {
   }
 }
 
+async function sendPushNotification() {
+  const title = document.getElementById('pushTitle').value.trim();
+  const body  = document.getElementById('pushBody').value.trim();
+  const res   = document.getElementById('pushResult');
+  if (!title || !body) { res.textContent = 'Titre et message requis.'; res.style.color='var(--danger)'; return; }
+  try {
+    const r = await api('/push/send', { method: 'POST', body: JSON.stringify({ title, body }) });
+    res.textContent = `✓ Envoyé à ${r.sent} abonné(s).`;
+    res.style.color = 'var(--acc)';
+    document.getElementById('pushTitle').value = '';
+    document.getElementById('pushBody').value  = '';
+  } catch(e) {
+    res.textContent = 'Erreur lors de l\'envoi.';
+    res.style.color = 'var(--danger)';
+  }
+}
+
 async function createInvite() {
   const emailInput=document.getElementById('inviteEmail');
   const roleSelect=document.getElementById('inviteRole');
@@ -5232,6 +5319,9 @@ async function grantAccess(user) {
   // Restore theme toggle button icon
   const themeBtn = document.getElementById('themeToggle');
   if (themeBtn) themeBtn.innerHTML = localStorage.getItem('theme') === 'dark' ? '&#9728;&#65039;' : '&#127769;';
+
+  // Init push notification button
+  initPushButton();
 
   // Show admin nav if admin
   if (user.role === 'ADMIN') {
