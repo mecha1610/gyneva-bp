@@ -4530,7 +4530,7 @@ async function sendPushNotification() {
   const res   = document.getElementById('pushResult');
   if (!title || !body) { res.textContent = 'Titre et message requis.'; res.style.color='var(--danger)'; return; }
   try {
-    const r = await api('/push/send', { method: 'POST', body: JSON.stringify({ title, body }) });
+    const r = await api('/push?action=send', { method: 'POST', body: JSON.stringify({ title, body }) });
     res.textContent = `✓ Envoyé à ${r.sent} abonné(s).`;
     res.style.color = 'var(--acc)';
     document.getElementById('pushTitle').value = '';
