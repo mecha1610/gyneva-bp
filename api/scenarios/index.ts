@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { z } from 'zod';
+import { Prisma } from '@prisma/client';
 import { prisma } from '../_lib/db';
 import { setCors, checkRateLimit, allowMethods, requireAuth } from '../_lib/middleware';
 import { badRequest, serverError } from '../_lib/errors';
@@ -73,7 +74,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       data: {
         userId: user.id,
         name,
-        params: params as any,
+        params: params as Prisma.InputJsonValue,
         businessPlanId: businessPlanId || null,
         isShared: isShared ?? false,
       },

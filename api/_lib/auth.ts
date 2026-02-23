@@ -115,7 +115,7 @@ export function setSessionCookie(res: ServerResponse, token: string): void {
   res.setHeader('Set-Cookie', serialize(SESSION_COOKIE, token, {
     httpOnly: true,
     secure: isProduction,
-    sameSite: isProduction ? 'strict' : 'lax',
+    sameSite: 'strict',
     path: '/',
     maxAge: SESSION_DURATION_MS / 1000,
   }));

@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { z } from 'zod';
+import { Prisma } from '@prisma/client';
 import { prisma } from '../_lib/db';
 import { setCors, checkRateLimit, allowMethods, requireAuth } from '../_lib/middleware';
 import { badRequest, notFound, serverError, errorResponse } from '../_lib/errors';
@@ -80,7 +81,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           businessPlanId: id,
           versionNumber: versionCount + 1,
           label: updates.versionLabel || `Auto-snapshot before update`,
-          data: plan.data as any,
+          data: plan.data as Prisma.InputJsonValue,
           constants: {
             consultDay: plan.consultDay,
             fee: plan.fee,
@@ -96,7 +97,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       where: { id },
       data: {
         ...(updates.name && { name: updates.name }),
-        ...(updates.data && { data: updates.data as any }),
+        ...(updates.data && { data: updates.data as Prisma.InputJsonValue }),
         ...(updates.consultDay != null && { consultDay: updates.consultDay }),
         ...(updates.fee != null && { fee: updates.fee }),
         ...(updates.daysYear != null && { daysYear: updates.daysYear }),
