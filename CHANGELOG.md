@@ -2,6 +2,22 @@
 
 All notable changes to the GYNEVA Business Plan application are documented here.
 
+## [0.19.3] - 2026-02-23
+
+### Fixed
+- **Scenario update missing `retro` param**: `PUT /api/scenarios/:id` schema was missing the `retro` field (rétrocession %), making it impossible to update — now matches the create schema with `min(20)`, `max(60)`, default 40
+- **Excel import size validation**: added explicit guard on base64 string length and decoded buffer size before parsing, preventing DoS via oversized payloads (max 10 MB enforced at both stages)
+- **Password minimum length**: invite acceptance raised from 8 → 12 characters (NIST SP 800-63B)
+- **JSON type casts**: replaced `as any` with `as Prisma.InputJsonValue` in `plans/[id].ts`, `scenarios/index.ts`, and `scenarios/[id].ts` for type-safe JSON field writes
+
+### Security
+- **`GOOGLE_CLIENT_ID` startup validation**: replaced non-null assertion (`!`) with an explicit check that throws at module load time if the env var is missing, preventing silent runtime failure
+- **Invite link URL injection**: invite link now built from `ALLOWED_ORIGIN` env var instead of the user-controlled `req.headers.origin` header, preventing phishing URL generation
+- **`businessPlanId` ownership check**: `POST /api/scenarios` now validates that the linked plan exists, is active, and belongs to the requesting user before creating a scenario
+- **CORS localhost origins**: hardcoded `localhost:3000` / `localhost:5173` origins only included when `NODE_ENV !== 'production'`
+- **Cookie `sameSite`**: always `'strict'` regardless of environment (was `'lax'` in non-production, opening CSRF exposure)
+- **Silent error swallowing**: `.catch(() => {})` replaced with `console.warn(...)` on expired session delete and allowedEmail cleanup
+
 ## [0.19.2] - 2026-02-22
 
 ### Added
