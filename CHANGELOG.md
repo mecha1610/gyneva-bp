@@ -2,6 +2,15 @@
 
 All notable changes to the GYNEVA Business Plan application are documented here.
 
+## [0.19.5] - 2026-02-23
+
+### Security
+- **CORS `Allow-Credentials` leak**: `Access-Control-Allow-Credentials: true` was set unconditionally on every response — moved inside the allowed-origin block so it is never sent to disallowed origins
+- **Invite acceptance race condition**: user creation, token mark-used, and `allowedEmail` upsert are now wrapped in a single `prisma.$transaction`, eliminating the TOCTOU window where concurrent requests with the same token could produce duplicate users or partial state
+
+### Fixed
+- **Plan numeric bounds**: `revSpec` and `capex` fields in both `POST /api/plans` and `PUT /api/plans/:id` were unbounded — capped at `max(10_000_000)` and `max(5_000_000)` respectively
+
 ## [0.19.4] - 2026-02-23
 
 ### Changed
