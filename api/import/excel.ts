@@ -111,7 +111,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return badRequest(res, 'Missing file data (expected base64-encoded xlsx)');
     }
 
+    const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10 MB
+    if (file.length > Math.ceil(MAX_FILE_BYTES * 4 / 3)) {
+      return badRequest(res, 'File too large (max 10 MB)');
+    }
     const buffer = Buffer.from(file, 'base64');
+    if (buffer.length > MAX_FILE_BYTES) {
+      return badRequest(res, 'File too large after decoding (max 10 MB)');
+    }
     const workbook = XLSX.read(buffer, { type: 'buffer' });
 
     // Find "Backend" sheet, or fallback to first sheet if only one exists

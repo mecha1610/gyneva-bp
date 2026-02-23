@@ -7,7 +7,7 @@ import { badRequest, notFound, serverError, errorResponse } from '../../_lib/err
 
 const acceptSchema = z.object({
   name: z.string().min(1).max(200),
-  password: z.string().min(8).max(200),
+  password: z.string().min(12).max(200),
 });
 
 async function findValidToken(token: string) {

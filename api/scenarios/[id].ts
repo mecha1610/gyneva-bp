@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { z } from 'zod';
+import { Prisma } from '@prisma/client';
 import { prisma } from '../_lib/db';
 import { setCors, checkRateLimit, allowMethods, requireAuth } from '../_lib/middleware';
 import { badRequest, notFound, serverError, errorResponse } from '../_lib/errors';
@@ -68,7 +69,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       where: { id },
       data: {
         ...(parsed.data.name && { name: parsed.data.name }),
-        ...(parsed.data.params && { params: parsed.data.params as any }),
+        ...(parsed.data.params && { params: parsed.data.params as Prisma.InputJsonValue }),
         ...(parsed.data.isShared != null && { isShared: parsed.data.isShared }),
       },
     });
