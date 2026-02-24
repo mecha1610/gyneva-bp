@@ -2,6 +2,18 @@
 
 All notable changes to the GYNEVA Business Plan application are documented here.
 
+## [0.21.1] - 2026-02-24
+
+### Fixed
+- **Google OAuth authentication**: login no longer returns "Erreur d'authentification" after successful Google sign-in
+- **Root cause**: root-level `api/` Vercel Serverless Functions were deployed with higher routing priority than Next.js App Router routes (`src/app/api/`), causing all `/api/*` requests to hit the legacy functions — which crashed at startup with `SyntaxError: Cannot use import statement outside a module` (ESM/CJS conflict), returning HTTP 500 with no JSON body
+- **Diagnosis trace**: HTTP 500 with empty JSON → `e.error` undefined → French fallback message shown; Vercel function logs confirmed the crash at `import { z } from 'zod'`
+
+### Changed
+- Removed entire legacy `api/` folder (16 files) — all endpoints were already fully migrated to `src/app/api/` Route Handlers in previous phases
+- Added missing Next.js route `GET /api/plans/[id]/versions/[versionId]` (`src/app/api/plans/[id]/versions/[versionId]/route.ts`) that existed only in the legacy folder
+- Updated Google OAuth client ID in `public/index.html` and `.env.example` to the new `gyneva-bp` Google Cloud project client (`514838020625-eff5kis0…`) — the old `gen-lang-client-*` AI Studio client was deleted
+
 ## [0.21.0] - 2026-02-24
 
 ### Added
