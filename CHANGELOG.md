@@ -2,6 +2,22 @@
 
 All notable changes to the GYNEVA Business Plan application are documented here.
 
+## [0.21.0] - 2026-02-24
+
+### Added
+- **Phase 5 — full content migration**: all 7 remaining placeholder pages replaced with production-ready React components; the Next.js app now mirrors 100% of the `public/index.html` feature set
+- **Revenue page** (`/revenue`): profile toggle filters (Associés / Indépendants / Internes / Sage-femmes), stacked bar chart per profile, 4 KPIs (revSpec potential, CA period, growth %, diversification score), retrocession model explanation card
+- **Cashflow page** (`/cashflow`): 4-scenario BFR comparison (baseline, LAMal 1m, LAMal 3m, factoring), monthly net bar chart (green/red per month), scenario cards with first-negative-month detection
+- **Team page** (`/team`): ETP stacked bar chart (4 profiles), CA/FTE productivity line with 3-month SMA, profile cards with proportional bars, year/period navigator
+- **Profit page** (`/profit`): per-associé local sliders (nb associés + charges imprévues), ROI cumulé + payback KPIs, médecin vs non-médecin breakdown, cumulative profit line vs CAPEX reference
+- **Risks page** (`/risks`): SVG semi-circle gauge (composite score 0–100 = stress 0–50 + matrix 0–50), 3-scenario stress test (base / pess −25% / opt +25%), sensitivity bars (4 individual factor impacts), interactive 7-risk matrix (click to cycle prob/impact 1→5, sortable by exposure), 8-item unbudgeted charges table + donut chart by criticité
+- **Optimisations page** (`/optimize`): factoring toggle + cash % slider + LAMal delay select (all independent from global simulator), `computeOptScenario` engine mirroring original cashflow logic, 4-scenario BFR comparison cards with active-config highlight, 4-line cashflow chart (36 months) with active scenario bold + filled
+- **Admin page** (`/admin`): users table with avatar/initials, role `<select>` with optimistic update, inline delete confirmation (no browser alert), invite link generator (48h expiry, clipboard copy), push notification broadcast form, Google OAuth whitelist manager (add/remove emails)
+
+### Changed
+- All new pages use CSS Modules with shared design tokens from `globals.css`; chart components are named exports dynamically imported with `ssr: false`
+- Chart tooltip types fixed throughout (`parsed: { y: number | null }`) for Chart.js v4 TypeScript compatibility
+
 ## [0.20.0] - 2026-02-24
 
 ### Changed
