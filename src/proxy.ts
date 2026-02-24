@@ -32,6 +32,13 @@ export function proxy(request: NextRequest) {
 
   const session = request.cookies.get(SESSION_COOKIE);
   if (!session?.value) {
+    // API routes return 401 JSON — do not redirect to login
+    if (pathname.startsWith('/api/')) {
+      return NextResponse.json(
+        { error: 'Authentication required', code: 'UNAUTHORIZED' },
+        { status: 401 },
+      );
+    }
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('from', pathname);
     return NextResponse.redirect(loginUrl);

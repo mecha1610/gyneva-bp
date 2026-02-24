@@ -2,6 +2,17 @@
 
 All notable changes to the GYNEVA Business Plan application are documented here.
 
+## [0.21.2] - 2026-02-24
+
+### Fixed
+- **Vercel project framework**: project was configured as static site (`framework: null`, `outputDirectory: public`) — updated to `framework: nextjs` via Vercel API so Next.js App Router routes are now compiled and deployed (`next build` runs, all 11 `/api/*` routes and 8 pages active)
+- **`NEXT_PUBLIC_GOOGLE_CLIENT_ID` trailing `\n`**: env var stored with a trailing newline causing `invalid_client` error from Google; deleted and re-added all 6 vars (Production + Preview + Development) using `printf` to avoid shell newline injection
+- **Middleware returning 307 for unauthenticated API requests**: `src/proxy.ts` was redirecting all unauthenticated requests (including `/api/*`) to `/login`; API routes now correctly return `401 UNAUTHORIZED` JSON instead
+- **Google token error handling**: invalid/malformed credential now returns `400 BAD_REQUEST` instead of `500 INTERNAL_ERROR`
+
+### Changed
+- `.env.example`: added VAPID env vars (`VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_EMAIL`) with generation instructions
+
 ## [0.21.1] - 2026-02-24
 
 ### Fixed

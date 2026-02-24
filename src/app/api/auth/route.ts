@@ -103,8 +103,18 @@ export async function POST(request: NextRequest) {
 
     return badRequest('Unknown action: ' + action);
   } catch (err) {
-    if (err instanceof Error && err.message.includes('Token used too late')) {
-      return badRequest('Google token expired, please sign in again');
+    if (err instanceof Error) {
+      if (err.message.includes('Token used too late')) {
+        return badRequest('Google token expired, please sign in again');
+      }
+      if (
+        err.message.includes('Wrong number of segments') ||
+        err.message.includes('Invalid JWT') ||
+        err.message.includes('No pem found') ||
+        err.message.includes('invalid_token')
+      ) {
+        return badRequest('Invalid credential');
+      }
     }
     console.error('[API Error]', err);
     return errorResponse(500, 'INTERNAL_ERROR', 'Internal server error');
