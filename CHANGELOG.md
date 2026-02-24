@@ -2,6 +2,20 @@
 
 All notable changes to the GYNEVA Business Plan application are documented here.
 
+## [0.20.0] - 2026-02-24
+
+### Changed
+- **Complete UX/CX redesign**: modernised look & feel across the entire app — refined colour palette, cleaner typography, updated spacing and shadows
+- **New CSS design system**: semantic tokens added (`--s2` surface inset, `--txtXL` tertiary text, `--brd2` strong border, `--sh-md` medium shadow, `--r-sm` small radius); dark theme updated with slate palette (`#0F172A` background, `#1E293B` cards, `#162032` inset surfaces)
+- **Sidebar — SVG inline icons**: replaced emoji characters with 9 SVG icons (overview grid, simulator sliders, revenue bars, cashflow curve, team silhouettes, risk triangle, profit circle, optimize lightbulb, admin gear); icons inherit `currentColor` for seamless theme switching
+- **Sidebar — collapsed/expanded**: smooth 230 px → 58 px width transition; active item highlighted with blue left border and subtle fill; icon opacity transitions on hover/active
+- **Topbar — Actions dropdown**: Import Excel, Versions, Comparer, Export PDF and Notifications grouped under a single `Actions ▾` button; topbar reduced from 9+ elements to 5 visual zones; dropdown closes automatically on outside click
+- **36-month timeline scrubber**: replaced Y1/Y2/Y3 tab buttons in Simulator, Revenue, Cashflow and Team sections with a draggable scrubber spanning 36 months — coloured year segments (red/amber/green), M6–M36 tick marks, draggable thumb, and a hover tooltip showing CA / Résultat / Trésorerie per month; "Vue 3 ans" and individual year buttons remain for quick selection
+- **Auto-logout warning**: inactivity banner colour updated to match new design tokens
+
+### Added
+- **`initScrubbers()`**: scrubber engine with click-on-track, thumb drag, and hover tooltip; dispatches to existing `switchSimYear`, `setRevYear`, `setCfYear`, `setTeamYear` functions; guarded against double-initialisation on re-login
+
 ## [0.19.8] - 2026-02-23
 
 ### Added
