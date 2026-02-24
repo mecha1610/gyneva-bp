@@ -1,0 +1,315 @@
+/* ── Page description ── */
+.desc {
+  font-size: .85rem;
+  color: var(--txtL);
+  margin-bottom: 1.4rem;
+  line-height: 1.55;
+}
+
+/* ── Card ── */
+.card {
+  background: var(--card);
+  border-radius: var(--r);
+  border: 1px solid var(--brd);
+  box-shadow: var(--sh);
+  padding: 1.2rem;
+  margin-bottom: 1.2rem;
+}
+.card:last-child { margin-bottom: 0; }
+.cardTitle {
+  font-size: .9rem;
+  font-weight: 700;
+  color: var(--p);
+  margin-bottom: .3rem;
+}
+.cardDesc {
+  font-size: .78rem;
+  color: var(--txtL);
+  margin-bottom: 1rem;
+}
+
+/* ── 2-column grid (Invite + Push) ── */
+.twoCol {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+  margin-bottom: 1.2rem;
+}
+
+/* ── States ── */
+.loadingState {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  color: var(--txtL);
+  font-size: .85rem;
+  padding: 2rem 0;
+}
+.spinner {
+  width: 18px; height: 18px;
+  border: 2px solid var(--brd);
+  border-top-color: var(--pl);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.errorState {
+  background: rgba(239,68,68,.06);
+  border: 1px solid rgba(239,68,68,.2);
+  border-radius: var(--r);
+  padding: 1rem 1.2rem;
+  color: #8b2020;
+  font-size: .85rem;
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+}
+.emptyState {
+  text-align: center;
+  padding: 1.5rem 0;
+  color: var(--txtL);
+  font-size: .82rem;
+}
+
+/* ── Users table ── */
+.tableWrap { overflow-x: auto; }
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .8rem;
+}
+.table th {
+  text-align: left;
+  font-size: .67rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  color: var(--txtL);
+  padding: .4rem .7rem .6rem;
+  border-bottom: 1px solid var(--brd);
+  white-space: nowrap;
+}
+.table td {
+  padding: .6rem .7rem;
+  border-bottom: 1px solid rgba(0,0,0,.04);
+  vertical-align: middle;
+}
+.table tr:last-child td { border-bottom: none; }
+.table tr:hover td { background: var(--s2); }
+
+/* Avatar + identity cell */
+.identity {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+}
+.avatar {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.avatarInitials {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: var(--pl);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .7rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.userName  { font-weight: 600; color: var(--txt); line-height: 1.2; }
+.userEmail { font-size: .72rem; color: var(--txtL); }
+
+/* Role select */
+.roleSelect {
+  background: var(--s2);
+  border: 1px solid var(--brd);
+  border-radius: var(--r-sm);
+  padding: .2rem .4rem;
+  font-size: .75rem;
+  color: var(--txt);
+  cursor: pointer;
+  outline: none;
+  min-width: 80px;
+}
+.roleSelect:disabled { opacity: .5; cursor: default; }
+.roleSelect:focus { border-color: var(--pl); }
+
+/* Auth badge */
+.authBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: .25rem;
+  border-radius: 3px;
+  padding: .1rem .4rem;
+  font-size: .65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .3px;
+}
+.authGoogle   { background: rgba(66,133,244,.1); color: #2563eb; }
+.authPassword { background: rgba(16,185,129,.1); color: #00755a; }
+.authInvited  { background: rgba(245,158,11,.1); color: #7d5a12; }
+
+/* Date cell */
+.dateCell { color: var(--txtL); font-size: .75rem; white-space: nowrap; }
+
+/* Action buttons */
+.btnDanger {
+  background: none;
+  border: 1px solid rgba(239,68,68,.3);
+  border-radius: var(--r-sm);
+  padding: .2rem .55rem;
+  font-size: .72rem;
+  font-weight: 600;
+  color: var(--danger);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btnDanger:hover { background: rgba(239,68,68,.06); border-color: var(--danger); }
+.btnConfirm {
+  background: var(--danger);
+  border: none;
+  border-radius: var(--r-sm);
+  padding: .2rem .55rem;
+  font-size: .72rem;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btnCancel {
+  background: var(--s2);
+  border: 1px solid var(--brd);
+  border-radius: var(--r-sm);
+  padding: .2rem .55rem;
+  font-size: .72rem;
+  font-weight: 600;
+  color: var(--txtL);
+  cursor: pointer;
+  margin-left: .3rem;
+}
+.confirmCell { display: flex; align-items: center; gap: .3rem; }
+
+/* ── Forms ── */
+.formRow {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  flex-wrap: wrap;
+}
+.input {
+  background: var(--s2);
+  border: 1px solid var(--brd);
+  border-radius: var(--r-sm);
+  padding: .4rem .7rem;
+  font-size: .82rem;
+  color: var(--txt);
+  outline: none;
+  flex: 1;
+  min-width: 0;
+}
+.input:focus { border-color: var(--pl); background: var(--card); }
+.input::placeholder { color: var(--txtXL); }
+.select {
+  background: var(--s2);
+  border: 1px solid var(--brd);
+  border-radius: var(--r-sm);
+  padding: .4rem .6rem;
+  font-size: .82rem;
+  color: var(--txt);
+  cursor: pointer;
+  outline: none;
+}
+.select:focus { border-color: var(--pl); }
+.btnPrimary {
+  background: var(--pl);
+  border: none;
+  border-radius: var(--r-sm);
+  padding: .4rem .9rem;
+  font-size: .82rem;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.btnPrimary:hover   { opacity: .9; }
+.btnPrimary:disabled { opacity: .5; cursor: default; }
+
+/* ── Invite link box ── */
+.linkBox {
+  margin-top: .8rem;
+  background: var(--s2);
+  border: 1px solid var(--brd);
+  border-radius: var(--r-sm);
+  padding: .65rem .9rem;
+  font-size: .78rem;
+}
+.linkLabel { font-weight: 700; color: var(--p); margin-bottom: .3rem; }
+.linkRow {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+.linkText {
+  font-family: monospace;
+  font-size: .72rem;
+  color: var(--txtL);
+  word-break: break-all;
+  flex: 1;
+}
+.btnCopy {
+  background: var(--s2);
+  border: 1px solid var(--brd);
+  border-radius: var(--r-sm);
+  padding: .2rem .55rem;
+  font-size: .72rem;
+  font-weight: 600;
+  color: var(--txt);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.btnCopy:hover { border-color: var(--pl); color: var(--pl); }
+.btnCopied { color: var(--acc) !important; border-color: var(--acc) !important; }
+
+/* ── Push result ── */
+.pushResult {
+  margin-top: .6rem;
+  font-size: .78rem;
+  font-weight: 600;
+}
+.pushOk  { color: var(--acc); }
+.pushErr { color: var(--danger); }
+
+/* ── Whitelist emails ── */
+.emailList { list-style: none; margin: 0 0 .9rem; padding: 0; }
+.emailItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .4rem 0;
+  border-bottom: 1px solid rgba(0,0,0,.04);
+  font-size: .8rem;
+  gap: .5rem;
+}
+.emailItem:last-child { border-bottom: none; }
+.emailAddr { color: var(--txt); font-family: monospace; font-size: .78rem; }
+.emailMeta { font-size: .7rem; color: var(--txtL); }
+.btnSmallDanger {
+  background: none;
+  border: 1px solid rgba(239,68,68,.25);
+  border-radius: var(--r-sm);
+  padding: .1rem .4rem;
+  font-size: .68rem;
+  font-weight: 600;
+  color: var(--danger);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.btnSmallDanger:hover { background: rgba(239,68,68,.06); }

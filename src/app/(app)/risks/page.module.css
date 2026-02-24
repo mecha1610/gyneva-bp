@@ -1,0 +1,288 @@
+/* ── Verdict ── */
+.verdict {
+  border-radius: var(--r);
+  padding: 1rem 1.2rem;
+  display: flex;
+  align-items: flex-start;
+  gap: .8rem;
+  font-size: .85rem;
+  line-height: 1.55;
+  margin-bottom: 1.2rem;
+}
+.verdictIc { font-size: 1.4rem; flex-shrink: 0; }
+.verdictGreen  { background: rgba(0,184,148,.08);  border: 1px solid rgba(0,184,148,.2);  color: #00755a; }
+.verdictOrange { background: rgba(245,158,11,.1);   border: 1px solid rgba(245,158,11,.25); color: #7d5a12; }
+.verdictRed    { background: rgba(239,68,68,.08);   border: 1px solid rgba(239,68,68,.2);  color: #8b2020; }
+
+/* ── Top row (gauge + scenarios) ── */
+.topRow {
+  display: grid;
+  grid-template-columns: 256px 1fr;
+  gap: .9rem;
+  margin-bottom: 1.2rem;
+  align-items: start;
+}
+
+/* ── Gauge card ── */
+.gaugeCard {
+  background: var(--card);
+  border-radius: var(--r);
+  border: 1px solid var(--brd);
+  box-shadow: var(--sh);
+  padding: 1.1rem 1.2rem;
+}
+.gaugeWrap {
+  position: relative;
+  margin: .4rem 0 .2rem;
+}
+.gaugeSvg {
+  width: 100%;
+  display: block;
+}
+.gaugeLabel {
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  pointer-events: none;
+}
+.gaugeScore    { font-size: 2rem; font-weight: 800; line-height: 1; }
+.gaugeSubtitle { font-size: .7rem; color: var(--txtL); font-weight: 600; }
+.gaugeBreakdown { margin-top: .7rem; border-top: 1px solid var(--brd); padding-top: .6rem; }
+.gbRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: .75rem;
+  padding: .15rem 0;
+  color: var(--txtL);
+}
+.gbRow span:last-child { font-weight: 700; color: var(--txt); }
+
+/* ── Scenario cards ── */
+.scenarios {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: .9rem;
+  align-items: start;
+}
+.scenCard {
+  background: var(--card);
+  border-radius: var(--r);
+  border: 1px solid var(--brd);
+  box-shadow: var(--sh);
+  overflow: hidden;
+}
+.scenLabel {
+  padding: .55rem .9rem;
+  font-size: .78rem;
+  font-weight: 700;
+  border-bottom: 1px solid var(--brd);
+}
+.scenRed   .scenLabel { color: var(--danger); background: rgba(239,68,68,.05); }
+.scenBlue  .scenLabel { color: var(--pl);     background: rgba(37,99,235,.05); }
+.scenGreen .scenLabel { color: var(--acc);    background: rgba(16,185,129,.05); }
+.scenRows  { padding: .6rem .9rem; }
+.scenRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: .76rem;
+  padding: .2rem 0;
+  border-bottom: 1px solid rgba(0,0,0,.04);
+}
+.scenRow:last-child { border-bottom: none; }
+.scenRow span:first-child { color: var(--txtL); }
+.scenRow span:last-child  { font-weight: 700; color: var(--txt); }
+.valGreen { color: var(--acc) !important; }
+.valRed   { color: var(--danger) !important; }
+
+/* ── Card ── */
+.card {
+  background: var(--card);
+  border-radius: var(--r);
+  border: 1px solid var(--brd);
+  box-shadow: var(--sh);
+  padding: 1.2rem;
+  margin-bottom: 1.2rem;
+}
+.card:last-child { margin-bottom: 0; }
+.cardTitle {
+  font-size: .9rem;
+  font-weight: 700;
+  color: var(--p);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ── Chart boxes ── */
+.chartBox   { height: 200px; position: relative; }
+.chartBoxSm { height: 180px; position: relative; }
+
+/* ── Sensitivity bars ── */
+.sensGrid { display: flex; flex-direction: column; gap: .6rem; }
+.sensRow  { display: grid; grid-template-columns: 200px 1fr 90px; align-items: center; gap: .8rem; }
+.sensLabel  { font-size: .78rem; color: var(--txtL); }
+.sensBarWrap {
+  height: 8px;
+  background: var(--brd);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.sensBar {
+  height: 100%;
+  background: var(--danger);
+  border-radius: 4px;
+  transition: width .3s ease;
+}
+.sensVal { font-size: .75rem; font-weight: 700; color: var(--txt); text-align: right; }
+
+/* ── Risk matrix ── */
+.sortBtn {
+  font-size: .72rem;
+  font-weight: 600;
+  color: var(--pl);
+  background: var(--s2);
+  border: 1px solid var(--brd);
+  border-radius: var(--r-sm);
+  padding: .25rem .65rem;
+  cursor: pointer;
+}
+.sortBtn:hover { border-color: var(--pl); }
+
+.matrixTable { width: 100%; }
+.matrixHeader {
+  display: grid;
+  grid-template-columns: 1fr 140px 140px 80px;
+  gap: .5rem;
+  font-size: .68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  color: var(--txtL);
+  padding: .3rem .5rem .5rem;
+  border-bottom: 1px solid var(--brd);
+  margin-bottom: .2rem;
+}
+.matrixRow {
+  display: grid;
+  grid-template-columns: 1fr 140px 140px 80px;
+  gap: .5rem;
+  align-items: center;
+  padding: .45rem .5rem;
+  border-radius: var(--r-sm);
+}
+.matrixRow:hover { background: var(--s2); }
+.riskLabel { font-size: .8rem; color: var(--txt); }
+.riskBtn {
+  display: flex;
+  align-items: center;
+  gap: .3rem;
+  background: none;
+  border: 1px solid var(--brd);
+  border-radius: var(--r-sm);
+  padding: .3rem .5rem;
+  cursor: pointer;
+  font-size: .72rem;
+}
+.riskBtn:hover { border-color: var(--pl); }
+.riskProb:hover  { border-color: var(--warn); }
+.riskImpact:hover { border-color: var(--danger); }
+.dotFill, .dotEmpty {
+  display: inline-block;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.dotFill  { background: var(--pl); }
+.dotEmpty { background: var(--brd2); }
+.riskProb  .dotFill { background: var(--warn); }
+.riskImpact .dotFill { background: var(--danger); }
+.btnVal { color: var(--txtL); font-weight: 600; margin-left: .1rem; }
+.expBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px; height: 24px;
+  border-radius: var(--r-sm);
+  font-size: .78rem;
+  font-weight: 800;
+}
+.expLow  { background: rgba(16,185,129,.12); color: #00755a; }
+.expMed  { background: rgba(245,158,11,.12); color: #7d5a12; }
+.expHigh { background: rgba(239,68,68,.12);  color: #8b2020; }
+
+/* ── Charges breakdown ── */
+.breakdown {
+  display: grid;
+  grid-template-columns: 1fr 260px;
+  gap: .9rem;
+  margin-bottom: 1.2rem;
+}
+.chargesCard, .donutCard {
+  background: var(--card);
+  border-radius: var(--r);
+  border: 1px solid var(--brd);
+  box-shadow: var(--sh);
+  overflow: hidden;
+}
+.breakdownHeader {
+  padding: .75rem 1rem;
+  border-bottom: 1px solid var(--brd);
+  font-size: .85rem;
+  font-weight: 700;
+  color: var(--p);
+}
+.chargesBody { padding: .5rem .75rem .75rem; }
+.donutBody   { padding: .75rem; }
+.chargesHeader {
+  display: grid;
+  grid-template-columns: 1fr 80px 80px 72px;
+  gap: .4rem;
+  font-size: .65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  color: var(--txtL);
+  padding: .25rem .25rem .4rem;
+  border-bottom: 1px solid var(--brd);
+  margin-bottom: .2rem;
+}
+.chargesRow {
+  display: grid;
+  grid-template-columns: 1fr 80px 80px 72px;
+  gap: .4rem;
+  align-items: center;
+  padding: .3rem .25rem;
+  border-bottom: 1px solid rgba(0,0,0,.04);
+  font-size: .76rem;
+}
+.chargesRow:last-of-type { border-bottom: none; }
+.chLabel { color: var(--txtL); }
+.chVal   { font-weight: 700; font-family: monospace; font-size: .74rem; color: var(--txt); }
+.chargesTotal {
+  display: grid;
+  grid-template-columns: 1fr 80px 80px 72px;
+  gap: .4rem;
+  padding: .5rem .25rem 0;
+  border-top: 1px solid var(--brd);
+  margin-top: .3rem;
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--p);
+}
+.chargesTotal span:nth-child(2),
+.chargesTotal span:nth-child(3) { font-family: monospace; font-size: .76rem; color: var(--acc); }
+.critBadge {
+  display: inline-block;
+  border-radius: 3px;
+  padding: .1rem .35rem;
+  font-size: .65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .3px;
+}
+.critcritique  { background: rgba(239,68,68,.1);  color: #8b2020; }
+.critimportant { background: rgba(245,158,11,.1); color: #7d5a12; }
+.critmoyen     { background: rgba(37,99,235,.1);  color: #1a4a7a; }
