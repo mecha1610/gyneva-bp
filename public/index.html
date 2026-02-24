@@ -5373,6 +5373,7 @@ async function grantAccess(user) {
   runSim();
   loadPlanList();
   refreshOverlayScenarios();
+  initInactivityTimer();
 }
 
 function getDefaultData() {
@@ -5398,7 +5399,51 @@ function getDefaultData() {
   };
 }
 
+// ── Inactivity auto-logout ──────────────────────────────────────────
+const INACTIVITY_MS      = 10 * 60 * 1000; // 10 min → logout
+const INACTIVITY_WARN_MS =  9 * 60 * 1000; //  9 min → warning banner
+let _inactivityTimer = null;
+let _inactivityWarnTimer = null;
+
+function _resetInactivityTimer() {
+  clearTimeout(_inactivityTimer);
+  clearTimeout(_inactivityWarnTimer);
+  const warn = document.getElementById('inactivity-warn');
+  if (warn) warn.style.display = 'none';
+  _inactivityWarnTimer = setTimeout(() => {
+    const w = document.getElementById('inactivity-warn');
+    if (!w) return;
+    const msg  = currentLang === 'en' ? 'You will be logged out in 1 minute due to inactivity.' : 'Déconnexion dans 1 minute pour inactivité.';
+    const btn  = currentLang === 'en' ? 'Stay logged in' : 'Rester connecté';
+    w.innerHTML = '<span>' + msg + '</span><button onclick="_resetInactivityTimer()" style="background:#fff;color:#e17055;border:none;border-radius:4px;padding:.3rem .9rem;cursor:pointer;font-weight:600;white-space:nowrap">' + btn + '</button>';
+    w.style.display = 'flex';
+  }, INACTIVITY_WARN_MS);
+  _inactivityTimer = setTimeout(() => logout(), INACTIVITY_MS);
+}
+
+function initInactivityTimer() {
+  if (!document.getElementById('inactivity-warn')) {
+    const w = document.createElement('div');
+    w.id = 'inactivity-warn';
+    w.style.cssText = 'display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:#e17055;color:#fff;padding:.75rem 1.5rem;justify-content:space-between;align-items:center;font-size:.9rem;gap:1rem;box-shadow:0 2px 8px rgba(0,0,0,.3)';
+    document.body.appendChild(w);
+  }
+  ['mousemove','mousedown','keydown','scroll','touchstart'].forEach(e =>
+    document.addEventListener(e, _resetInactivityTimer, { passive: true }));
+  _resetInactivityTimer();
+}
+
+function clearInactivityTimer() {
+  clearTimeout(_inactivityTimer);
+  clearTimeout(_inactivityWarnTimer);
+  ['mousemove','mousedown','keydown','scroll','touchstart'].forEach(e =>
+    document.removeEventListener(e, _resetInactivityTimer));
+  const w = document.getElementById('inactivity-warn');
+  if (w) w.remove();
+}
+
 async function logout() {
+  clearInactivityTimer();
   try { await api('/auth?action=logout', { method: 'POST' }); } catch(e) {}
   currentUser = null;
   currentPlanId = null;
