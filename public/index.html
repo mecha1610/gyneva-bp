@@ -14,32 +14,37 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
 <style>
-:root{--p:#0f2b46;--pl:#1a4a7a;--acc:#00b894;--acc2:#00cec9;--warn:#fdcb6e;--danger:#d63031;--bg:#f0f3f8;--card:#fff;--txt:#2d3436;--txtL:#636e72;--brd:#dfe6e9;--sh:0 2px 16px rgba(0,0,0,.06);--r:14px;--trans:all .25s cubic-bezier(.4,0,.2,1)}
+:root{--p:#1B3A5C;--pl:#2563EB;--acc:#10B981;--acc2:#06B6D4;--warn:#F59E0B;--danger:#EF4444;--bg:#F1F5F9;--card:#FFFFFF;--s2:#F8FAFC;--txt:#0F172A;--txtL:#64748B;--txtXL:#94A3B8;--brd:#E2E8F0;--brd2:#CBD5E1;--sh:0 1px 3px rgba(0,0,0,.07),0 1px 2px rgba(0,0,0,.05);--sh-md:0 4px 6px rgba(0,0,0,.06),0 2px 4px rgba(0,0,0,.05);--r:10px;--r-sm:6px;--trans:all .2s cubic-bezier(.4,0,.2,1)}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6;-webkit-font-smoothing:antialiased}
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 /* === SIDEBAR === */
 .layout{display:flex;min-height:100vh}
-.sidebar{width:260px;background:linear-gradient(180deg,var(--p) 0%,#0a1f33 100%);color:#fff;padding:0;position:fixed;top:0;left:0;bottom:0;z-index:200;display:flex;flex-direction:column;transition:var(--trans);overflow:hidden}
-.sidebar.collapsed{width:64px}
-.sidebar .logo{padding:1.5rem 1.2rem;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:.8rem}
-.sidebar .logo h1{font-size:1.15rem;font-weight:700;letter-spacing:-.3px;white-space:nowrap}
-.sidebar .logo .dot{width:10px;height:10px;border-radius:50%;background:var(--acc);flex-shrink:0}
-.sidebar .logo-sub{font-size:.65rem;opacity:.5;margin-top:2px;white-space:nowrap}
-.sidebar nav{flex:1;padding:.8rem 0}
-.sidebar nav button{width:100%;background:none;border:none;color:rgba(255,255,255,.6);padding:.7rem 1.2rem;text-align:left;cursor:pointer;font-size:.82rem;font-weight:500;display:flex;align-items:center;gap:.7rem;transition:var(--trans);white-space:nowrap;border-left:3px solid transparent}
-.sidebar nav button:hover{color:#fff;background:rgba(255,255,255,.06)}
-.sidebar nav button.active{color:#fff;background:rgba(0,184,148,.1);border-left-color:var(--acc)}
-.sidebar nav button .nav-icon{font-size:1.1rem;width:24px;text-align:center;flex-shrink:0}
-.sidebar nav button .nav-label{overflow:hidden}
-.sidebar .sidebar-footer{padding:1rem 1.2rem;border-top:1px solid rgba(255,255,255,.08);font-size:.7rem;opacity:.4;white-space:nowrap}
-.toggle-btn{position:absolute;top:1.5rem;right:-14px;width:28px;height:28px;border-radius:50%;background:var(--pl);border:2px solid var(--bg);color:#fff;cursor:pointer;font-size:.75rem;display:flex;align-items:center;justify-content:center;z-index:201;transition:var(--trans)}
+.sidebar{width:230px;background:linear-gradient(180deg,#0F2340 0%,#091829 100%);color:#fff;padding:0;position:fixed;top:0;left:0;bottom:0;z-index:200;display:flex;flex-direction:column;transition:width .2s cubic-bezier(.4,0,.2,1);overflow:hidden}
+.sidebar.collapsed{width:58px}
+.sidebar .logo{padding:1.2rem 1rem;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:.75rem;min-height:62px}
+.sidebar .logo h1{font-size:1.05rem;font-weight:700;letter-spacing:-.3px;white-space:nowrap;opacity:1;transition:opacity .15s}
+.sidebar .logo .dot{width:8px;height:8px;border-radius:50%;background:var(--acc);flex-shrink:0}
+.sidebar .logo-sub{font-size:.62rem;opacity:.45;margin-top:2px;white-space:nowrap;transition:opacity .15s}
+.sidebar.collapsed .logo h1,.sidebar.collapsed .logo-sub{opacity:0;pointer-events:none}
+.sidebar nav{flex:1;padding:.5rem 0;overflow:hidden}
+.sidebar nav button{width:100%;background:none;border:none;color:rgba(255,255,255,.55);padding:.65rem 1rem;text-align:left;cursor:pointer;font-size:.8rem;font-weight:500;display:flex;align-items:center;gap:.75rem;transition:var(--trans);white-space:nowrap;border-left:3px solid transparent;position:relative}
+.sidebar nav button:hover{color:#fff;background:rgba(255,255,255,.05)}
+.sidebar nav button.active{color:#fff;background:rgba(37,99,235,.15);border-left-color:var(--pl)}
+.sidebar nav button .nav-icon{width:20px;height:20px;flex-shrink:0;display:flex;align-items:center;justify-content:center;opacity:.7;transition:opacity .2s}
+.sidebar nav button:hover .nav-icon,.sidebar nav button.active .nav-icon{opacity:1}
+.sidebar nav button .nav-label{overflow:hidden;transition:opacity .15s,max-width .2s}
+.sidebar.collapsed nav button .nav-label{opacity:0;max-width:0;pointer-events:none}
+.sidebar.collapsed nav button{padding:.65rem 0;justify-content:center}
+.sidebar .sidebar-footer{padding:.9rem 1rem;border-top:1px solid rgba(255,255,255,.07);font-size:.65rem;opacity:.35;white-space:nowrap;transition:opacity .15s}
+.sidebar.collapsed .sidebar-footer{opacity:0}
+.toggle-btn{position:absolute;top:1.2rem;right:-13px;width:26px;height:26px;border-radius:50%;background:var(--pl);border:2px solid var(--bg);color:#fff;cursor:pointer;font-size:.7rem;display:flex;align-items:center;justify-content:center;z-index:201;transition:var(--trans);box-shadow:0 2px 8px rgba(37,99,235,.3)}
 .toggle-btn:hover{background:var(--acc)}
 
 /* === MAIN === */
-.main-area{margin-left:260px;transition:var(--trans);flex:1;min-width:0}
-.sidebar.collapsed ~ .main-area{margin-left:64px}
+.main-area{margin-left:230px;transition:var(--trans);flex:1;min-width:0}
+.sidebar.collapsed ~ .main-area{margin-left:58px}
 
 /* === TOP BAR === */
 .topbar{background:var(--card);border-bottom:1px solid var(--brd);padding:.8rem 2rem;display:flex;align-items:center;gap:1rem;position:sticky;top:0;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,.04)}
@@ -742,7 +747,7 @@ table.dt tr:hover td{background:#f8fafb}
 .user-info img{width:26px;height:26px;border-radius:50%;border:2px solid var(--brd)}
 
 /* === DARK THEME === */
-[data-theme="dark"]{color-scheme:dark;--p:#9dc5e0;--pl:#5b9bd5;--bg:#0d0d0d;--card:#181818;--txt:#e0e0e0;--txtL:#777;--brd:#282828;--sh:0 2px 16px rgba(0,0,0,.5)}
+[data-theme="dark"]{color-scheme:dark;--p:#60A5FA;--pl:#3B82F6;--acc:#34D399;--acc2:#22D3EE;--bg:#0F172A;--card:#1E293B;--s2:#162032;--txt:#F1F5F9;--txtL:#94A3B8;--txtXL:#64748B;--brd:#334155;--brd2:#475569;--sh:0 2px 16px rgba(0,0,0,.5);--sh-md:0 4px 12px rgba(0,0,0,.4)}
 [data-theme="dark"] .sidebar{background:linear-gradient(180deg,#111 0%,#080808 100%)}
 [data-theme="dark"] .exec-dash{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%)}
 [data-theme="dark"] #login-screen,[data-theme="dark"] #invite-screen{background:linear-gradient(135deg,#0a0a0a 0%,#0d0d0d 50%,#0a2a20 100%)}
@@ -802,6 +807,39 @@ table.dt tr:hover td{background:#f8fafb}
 [data-theme="dark"] .topbar{box-shadow:0 1px 8px rgba(0,0,0,.4)}
 [data-theme="dark"] .card:hover{box-shadow:0 4px 24px rgba(0,0,0,.4)}
 [data-theme="dark"] .kpi:hover{box-shadow:0 6px 20px rgba(0,0,0,.4);transform:translateY(-3px)}
+
+/* === ACTIONS DROPDOWN === */
+.actions-btn-wrap{position:relative}
+.actions-menu{display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--card);border:1px solid var(--brd);border-radius:var(--r);box-shadow:var(--sh-md);min-width:190px;z-index:300;overflow:hidden}
+.actions-menu.open{display:block}
+.actions-menu button{width:100%;background:none;border:none;padding:.6rem 1rem;font-size:.8rem;font-weight:500;text-align:left;cursor:pointer;color:var(--txt);display:flex;align-items:center;gap:.6rem;transition:var(--trans);white-space:nowrap}
+.actions-menu button:hover{background:var(--s2);color:var(--pl)}
+.actions-menu hr{border:none;border-top:1px solid var(--brd);margin:.2rem 0}
+
+/* === TIME SCRUBBER === */
+.time-scrubber{margin-bottom:1.4rem;user-select:none;padding-bottom:1rem}
+.ts-meta{display:flex;align-items:center;gap:.5rem;margin-bottom:.6rem;flex-wrap:wrap}
+.ts-all,.ts-years button{padding:.28rem .7rem;border-radius:20px;border:1px solid var(--brd);background:var(--s2);color:var(--txtL);font-size:.74rem;font-weight:600;cursor:pointer;transition:var(--trans)}
+.ts-all:hover,.ts-years button:hover{border-color:var(--pl);color:var(--pl)}
+.ts-all.active,.ts-years button.active{background:var(--pl);color:#fff;border-color:var(--pl)}
+.ts-years{display:flex;gap:.35rem}
+.ts-lbl{font-size:.7rem;color:var(--txtXL);margin-left:auto;font-variant-numeric:tabular-nums;font-weight:500}
+.ts-track{position:relative;height:26px;background:var(--s2);border-radius:13px;border:1px solid var(--brd);cursor:crosshair;overflow:visible;margin:.2rem 0}
+.ts-seg{position:absolute;top:0;bottom:0;border-radius:0}
+.ts-y1{left:0;width:33.33%;background:rgba(239,68,68,.1);border-radius:13px 0 0 13px}
+.ts-y2{left:33.33%;width:33.34%;background:rgba(245,158,11,.08)}
+.ts-y3{right:0;width:33.33%;background:rgba(16,185,129,.1);border-radius:0 13px 13px 0}
+.ts-seg.active{outline:2px solid var(--pl);outline-offset:-1px;z-index:1}
+.ts-marks{position:absolute;bottom:-18px;left:0;right:0;font-size:.6rem;color:var(--txtXL);pointer-events:none}
+.ts-mark{position:absolute;transform:translateX(-50%)}
+.ts-thumb{position:absolute;top:50%;transform:translate(-50%,-50%);width:16px;height:16px;border-radius:50%;background:var(--pl);border:3px solid var(--card);box-shadow:0 2px 6px rgba(37,99,235,.4);cursor:grab;z-index:10}
+.ts-thumb:active{cursor:grabbing;transform:translate(-50%,-50%) scale(1.2)}
+.ts-tooltip{display:none;position:absolute;background:var(--card);border:1px solid var(--brd);border-radius:var(--r-sm);padding:.5rem .75rem;font-size:.74rem;box-shadow:var(--sh-md);z-index:400;min-width:155px;pointer-events:none;white-space:nowrap}
+.ts-tooltip strong{display:block;margin-bottom:.25rem;color:var(--txt);font-size:.76rem}
+.ts-tooltip span{display:block;color:var(--txtL);line-height:1.5}
+[data-theme="dark"] .ts-track{background:var(--s2);border-color:var(--brd)}
+[data-theme="dark"] .ts-thumb{border-color:var(--card);box-shadow:0 2px 8px rgba(0,0,0,.5)}
+[data-theme="dark"] .ts-tooltip{background:var(--card);border-color:var(--brd)}
 </style>
 <script>if(localStorage.getItem('theme')==='dark')document.documentElement.setAttribute('data-theme','dark');</script>
 </head>
@@ -862,15 +900,15 @@ table.dt tr:hover td{background:#f8fafb}
     </div>
   </div>
   <nav>
-    <button class="active" onclick="nav('overview',this)"><span class="nav-icon">&#128200;</span><span class="nav-label" data-i18n="sidebar.overview">Vue d'ensemble</span><span class="nav-badge none" id="badge-overview"></span></button>
-    <button onclick="nav('simulator',this)"><span class="nav-icon">&#9881;&#65039;</span><span class="nav-label" data-i18n="sidebar.simulator">Simulateur</span></button>
-    <button onclick="nav('revenue',this)"><span class="nav-icon">&#128176;</span><span class="nav-label" data-i18n="sidebar.revenue">Revenus</span><span class="nav-badge none" id="badge-revenue"></span></button>
-    <button onclick="nav('cashflow',this)"><span class="nav-icon">&#128202;</span><span class="nav-label" data-i18n="sidebar.cashflow">Trésorerie</span><span class="nav-badge none" id="badge-cashflow"></span></button>
-    <button onclick="nav('team',this)"><span class="nav-icon">&#128101;</span><span class="nav-label" data-i18n="sidebar.team">Équipe</span><span class="nav-badge none" id="badge-team"></span></button>
-    <button onclick="nav('risks',this)"><span class="nav-icon">&#9888;&#65039;</span><span class="nav-label" data-i18n="sidebar.risks">Risques</span><span class="nav-badge none" id="badge-risks"></span></button>
-    <button onclick="nav('profit',this)"><span class="nav-icon">&#128181;</span><span class="nav-label" data-i18n="sidebar.profit">Profit associés</span><span class="nav-badge none" id="badge-profit"></span></button>
-    <button onclick="nav('optimize',this)"><span class="nav-icon">&#128161;</span><span class="nav-label" data-i18n="sidebar.optimize">Optimisations</span><span class="nav-badge none" id="badge-optimize"></span></button>
-    <button id="navAdmin" style="display:none" onclick="nav('admin',this)"><span class="nav-icon">&#128274;</span><span class="nav-label" data-i18n="sidebar.admin">Admin</span></button>
+    <button class="active" onclick="nav('overview',this)"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span class="nav-label" data-i18n="sidebar.overview">Vue d'ensemble</span><span class="nav-badge none" id="badge-overview"></span></button>
+    <button onclick="nav('simulator',this)"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="8" cy="6" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="16" cy="12" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="10" cy="18" r="2" fill="currentColor" stroke="none"/></svg></span><span class="nav-label" data-i18n="sidebar.simulator">Simulateur</span></button>
+    <button onclick="nav('revenue',this)"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg></span><span class="nav-label" data-i18n="sidebar.revenue">Revenus</span><span class="nav-badge none" id="badge-revenue"></span></button>
+    <button onclick="nav('cashflow',this)"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17C6 17 8 7 12 7C16 7 18 14 21 14"/><path d="M3 21h18"/></svg></span><span class="nav-label" data-i18n="sidebar.cashflow">Trésorerie</span><span class="nav-badge none" id="badge-cashflow"></span></button>
+    <button onclick="nav('team',this)"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="7" r="3"/><path d="M2 21v-1a6 6 0 0 1 12 0v1"/><path d="M15 11a4 4 0 0 1 4 4v2"/><circle cx="17" cy="7" r="3"/></svg></span><span class="nav-label" data-i18n="sidebar.team">Équipe</span><span class="nav-badge none" id="badge-team"></span></button>
+    <button onclick="nav('risks',this)"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><circle cx="12" cy="17" r="1" fill="currentColor" stroke="none"/></svg></span><span class="nav-label" data-i18n="sidebar.risks">Risques</span><span class="nav-badge none" id="badge-risks"></span></button>
+    <button onclick="nav('profit',this)"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10"/><path d="M9.5 9.5a2.5 2.5 0 0 1 5 0c0 1.38-1.12 2.5-2.5 2.5S9.5 13.12 9.5 14.5a2.5 2.5 0 0 0 5 0"/></svg></span><span class="nav-label" data-i18n="sidebar.profit">Profit associés</span><span class="nav-badge none" id="badge-profit"></span></button>
+    <button onclick="nav('optimize',this)"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21h6"/><path d="M12 3a7 7 0 0 1 3.6 13H8.4A7 7 0 0 1 12 3z"/><line x1="12" y1="16" x2="12" y2="21"/></svg></span><span class="nav-label" data-i18n="sidebar.optimize">Optimisations</span><span class="nav-badge none" id="badge-optimize"></span></button>
+    <button id="navAdmin" style="display:none" onclick="nav('admin',this)"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg></span><span class="nav-label" data-i18n="sidebar.admin">Admin</span></button>
   </nav>
   <div class="sidebar-footer"><span>Analyse confidentielle &middot; 2025</span></div>
 </div>
@@ -892,12 +930,18 @@ table.dt tr:hover td{background:#f8fafb}
   <div class="status-pill static" id="statusPill"><div class="status-dot static" id="statusDot"></div><span id="statusLabel" data-i18n="topbar.statusDefault">Données par défaut</span></div>
   <button class="btn" id="langToggle" onclick="setLang(currentLang==='fr'?'en':'fr')">EN</button>
   <button class="btn" id="themeToggle" onclick="toggleTheme()" title="Thème sombre / clair">&#127769;</button>
-  <button class="btn" id="pushToggle" onclick="togglePushSubscription()" title="Notifications push" style="display:none">&#128276;</button>
-  <button class="btn" onclick="document.getElementById('fileInput').click()">&#128196; <span data-i18n="topbar.import">Importer Excel</span></button>
-  <input type="file" id="fileInput" accept=".xlsx,.xls" style="display:none" onchange="handleFile(this.files[0])">
-  <button class="btn" onclick="openVersionPanel()">&#128338; <span data-i18n="topbar.versions">Versions</span></button>
-  <button class="btn" onclick="openCompare()">&#128200; <span data-i18n="topbar.compare">Comparer</span></button>
-  <button class="btn primary" onclick="exportPDF()">&#128424; <span data-i18n="topbar.exportPdf">Export PDF</span></button>
+  <div class="actions-btn-wrap">
+    <button class="btn" onclick="toggleActionsMenu()" id="actionsToggleBtn">Actions &#9660;</button>
+    <div class="actions-menu" id="actionsMenu">
+      <button onclick="document.getElementById('fileInput').click();closeActionsMenu()">&#128196; <span data-i18n="topbar.import">Importer Excel</span></button>
+      <button onclick="openVersionPanel();closeActionsMenu()">&#128338; <span data-i18n="topbar.versions">Versions</span></button>
+      <button onclick="openCompare();closeActionsMenu()">&#128200; <span data-i18n="topbar.compare">Comparer</span></button>
+      <hr>
+      <button id="pushToggle" onclick="togglePushSubscription();closeActionsMenu()" style="display:none">&#128276; Notifications</button>
+      <button onclick="exportPDF();closeActionsMenu()" style="color:var(--pl);font-weight:600">&#128424; <span data-i18n="topbar.exportPdf">Export PDF</span></button>
+    </div>
+    <input type="file" id="fileInput" accept=".xlsx,.xls" style="display:none" onchange="handleFile(this.files[0])">
+  </div>
 </div>
 
 <div class="exec-dash" id="execDashboard">
@@ -1089,12 +1133,32 @@ table.dt tr:hover td{background:#f8fafb}
 
     <!-- RESULTS PANEL -->
     <div class="sim-results">
-      <!-- YEAR TABS -->
-      <div class="sim-year-tabs" id="simYearTabs">
-        <button class="sim-tab active" data-year="all" onclick="switchSimYear('all',this)">Vue 3 ans<span class="tab-sub">Synth&egrave;se</span></button>
-        <button class="sim-tab" data-year="1" onclick="switchSimYear('1',this)">Ann&eacute;e 1<span class="tab-sub">D&eacute;marrage</span></button>
-        <button class="sim-tab" data-year="2" onclick="switchSimYear('2',this)">Ann&eacute;e 2<span class="tab-sub">Croissance</span></button>
-        <button class="sim-tab" data-year="3" onclick="switchSimYear('3',this)">Ann&eacute;e 3<span class="tab-sub">Croisi&egrave;re</span></button>
+      <!-- TIME SCRUBBER -->
+      <div class="time-scrubber" data-section="simulator">
+        <div class="ts-meta">
+          <button class="ts-all active" onclick="tsSetAll(this)">Vue 3 ans</button>
+          <div class="ts-years">
+            <button onclick="tsSetYear(this,1)">Année 1 · Démarrage</button>
+            <button onclick="tsSetYear(this,2)">Année 2 · Croissance</button>
+            <button onclick="tsSetYear(this,3)">Année 3 · Croisière</button>
+          </div>
+          <span class="ts-lbl">M1–36</span>
+        </div>
+        <div class="ts-track" id="ts-track-simulator">
+          <div class="ts-seg ts-y1"></div>
+          <div class="ts-seg ts-y2"></div>
+          <div class="ts-seg ts-y3"></div>
+          <div class="ts-marks">
+            <span class="ts-mark" style="left:16.7%">M6</span>
+            <span class="ts-mark" style="left:33.3%">M12</span>
+            <span class="ts-mark" style="left:50%">M18</span>
+            <span class="ts-mark" style="left:66.7%">M24</span>
+            <span class="ts-mark" style="left:83.3%">M30</span>
+            <span class="ts-mark" style="left:100%">M36</span>
+          </div>
+          <div class="ts-thumb" id="ts-thumb-simulator" style="left:50%"></div>
+        </div>
+        <div class="ts-tooltip" id="ts-tip-simulator"></div>
       </div>
       <!-- YEAR OVERVIEW TIMELINE -->
       <div class="sim-year-overview">
@@ -1150,13 +1214,32 @@ table.dt tr:hover td{background:#f8fafb}
     <div id="revVerdictText"><strong>Analyse du chiffre d'affaires en cours.</strong></div>
   </div>
   <div class="rev-controls">
-    <div class="rev-ctrl">
-      <label>P&eacute;riode</label>
-      <div class="rev-year-btns">
-        <button class="rev-year-btn active" onclick="setRevYear('all',this)">Tous</button>
-        <button class="rev-year-btn" onclick="setRevYear('1',this)">Y1</button>
-        <button class="rev-year-btn" onclick="setRevYear('2',this)">Y2</button>
-        <button class="rev-year-btn" onclick="setRevYear('3',this)">Y3</button>
+    <div class="rev-ctrl" style="width:100%">
+      <div class="time-scrubber" data-section="revenue" style="margin-bottom:0;padding-bottom:1.2rem;width:100%">
+        <div class="ts-meta">
+          <button class="ts-all active" onclick="tsSetAll(this)">Vue 3 ans</button>
+          <div class="ts-years">
+            <button onclick="tsSetYear(this,1)">Année 1</button>
+            <button onclick="tsSetYear(this,2)">Année 2</button>
+            <button onclick="tsSetYear(this,3)">Année 3</button>
+          </div>
+          <span class="ts-lbl">M1–36</span>
+        </div>
+        <div class="ts-track" id="ts-track-revenue">
+          <div class="ts-seg ts-y1"></div>
+          <div class="ts-seg ts-y2"></div>
+          <div class="ts-seg ts-y3"></div>
+          <div class="ts-marks">
+            <span class="ts-mark" style="left:16.7%">M6</span>
+            <span class="ts-mark" style="left:33.3%">M12</span>
+            <span class="ts-mark" style="left:50%">M18</span>
+            <span class="ts-mark" style="left:66.7%">M24</span>
+            <span class="ts-mark" style="left:83.3%">M30</span>
+            <span class="ts-mark" style="left:100%">M36</span>
+          </div>
+          <div class="ts-thumb" id="ts-thumb-revenue" style="left:50%"></div>
+        </div>
+        <div class="ts-tooltip" id="ts-tip-revenue"></div>
       </div>
     </div>
     <div class="rev-profile-bar" id="revProfileBar">
@@ -1191,13 +1274,32 @@ table.dt tr:hover td{background:#f8fafb}
     <div id="cfVerdictText"><strong>Analyse de la tr&eacute;sorerie en cours.</strong></div>
   </div>
   <div class="cf-controls">
-    <div class="cf-ctrl">
-      <label>P&eacute;riode</label>
-      <div class="cf-year-btns">
-        <button class="cf-year-btn active" onclick="setCfYear('all',this)">Tous</button>
-        <button class="cf-year-btn" onclick="setCfYear('1',this)">Y1</button>
-        <button class="cf-year-btn" onclick="setCfYear('2',this)">Y2</button>
-        <button class="cf-year-btn" onclick="setCfYear('3',this)">Y3</button>
+    <div class="cf-ctrl" style="width:100%">
+      <div class="time-scrubber" data-section="cashflow" style="margin-bottom:0;padding-bottom:1.2rem;width:100%">
+        <div class="ts-meta">
+          <button class="ts-all active" onclick="tsSetAll(this)">Vue 3 ans</button>
+          <div class="ts-years">
+            <button onclick="tsSetYear(this,1)">Année 1</button>
+            <button onclick="tsSetYear(this,2)">Année 2</button>
+            <button onclick="tsSetYear(this,3)">Année 3</button>
+          </div>
+          <span class="ts-lbl">M1–36</span>
+        </div>
+        <div class="ts-track" id="ts-track-cashflow">
+          <div class="ts-seg ts-y1"></div>
+          <div class="ts-seg ts-y2"></div>
+          <div class="ts-seg ts-y3"></div>
+          <div class="ts-marks">
+            <span class="ts-mark" style="left:16.7%">M6</span>
+            <span class="ts-mark" style="left:33.3%">M12</span>
+            <span class="ts-mark" style="left:50%">M18</span>
+            <span class="ts-mark" style="left:66.7%">M24</span>
+            <span class="ts-mark" style="left:83.3%">M30</span>
+            <span class="ts-mark" style="left:100%">M36</span>
+          </div>
+          <div class="ts-thumb" id="ts-thumb-cashflow" style="left:50%"></div>
+        </div>
+        <div class="ts-tooltip" id="ts-tip-cashflow"></div>
       </div>
     </div>
   </div>
@@ -1225,13 +1327,32 @@ table.dt tr:hover td{background:#f8fafb}
     <div id="teamVerdictText"><strong>Equipe en croissance.</strong></div>
   </div>
   <div class="team-controls">
-    <div class="team-ctrl">
-      <label>P&eacute;riode</label>
-      <div class="team-year-btns">
-        <button class="team-year-btn active" onclick="setTeamYear('all',this)">Tous</button>
-        <button class="team-year-btn" onclick="setTeamYear('1',this)">Y1</button>
-        <button class="team-year-btn" onclick="setTeamYear('2',this)">Y2</button>
-        <button class="team-year-btn" onclick="setTeamYear('3',this)">Y3</button>
+    <div class="team-ctrl" style="width:100%">
+      <div class="time-scrubber" data-section="team" style="margin-bottom:0;padding-bottom:1.2rem;width:100%">
+        <div class="ts-meta">
+          <button class="ts-all active" onclick="tsSetAll(this)">Vue 3 ans</button>
+          <div class="ts-years">
+            <button onclick="tsSetYear(this,1)">Année 1</button>
+            <button onclick="tsSetYear(this,2)">Année 2</button>
+            <button onclick="tsSetYear(this,3)">Année 3</button>
+          </div>
+          <span class="ts-lbl">M1–36</span>
+        </div>
+        <div class="ts-track" id="ts-track-team">
+          <div class="ts-seg ts-y1"></div>
+          <div class="ts-seg ts-y2"></div>
+          <div class="ts-seg ts-y3"></div>
+          <div class="ts-marks">
+            <span class="ts-mark" style="left:16.7%">M6</span>
+            <span class="ts-mark" style="left:33.3%">M12</span>
+            <span class="ts-mark" style="left:50%">M18</span>
+            <span class="ts-mark" style="left:66.7%">M24</span>
+            <span class="ts-mark" style="left:83.3%">M30</span>
+            <span class="ts-mark" style="left:100%">M36</span>
+          </div>
+          <div class="ts-thumb" id="ts-thumb-team" style="left:50%"></div>
+        </div>
+        <div class="ts-tooltip" id="ts-tip-team"></div>
       </div>
     </div>
     <div class="team-ctrl">
@@ -5374,6 +5495,7 @@ async function grantAccess(user) {
   loadPlanList();
   refreshOverlayScenarios();
   initInactivityTimer();
+  initScrubbers();
 }
 
 function getDefaultData() {
@@ -5535,6 +5657,140 @@ async function handleGoogleResponse(response) {
     errEl.textContent = e.error || t('login.googleError');
     errEl.style.display = 'block';
   }
+}
+
+// ── Actions menu ──────────────────────────────────────────────────────────
+function toggleActionsMenu() {
+  const menu = document.getElementById('actionsMenu');
+  if (!menu) return;
+  menu.classList.toggle('open');
+  if (menu.classList.contains('open')) {
+    setTimeout(() => document.addEventListener('click', _closeActionsOnOutside), 0);
+  }
+}
+function closeActionsMenu() {
+  const menu = document.getElementById('actionsMenu');
+  if (menu) menu.classList.remove('open');
+  document.removeEventListener('click', _closeActionsOnOutside);
+}
+function _closeActionsOnOutside(e) {
+  const wrap = document.getElementById('actionsToggleBtn')?.closest('.actions-btn-wrap');
+  if (wrap && !wrap.contains(e.target)) closeActionsMenu();
+}
+
+// ── Time Scrubber ─────────────────────────────────────────────────────────
+const TS_DISPATCH = {
+  simulator: y => switchSimYear(y === 'all' ? 'all' : String(y), null),
+  revenue:   y => setRevYear(y === 'all' ? 'all' : String(y), null),
+  cashflow:  y => setCfYear(y === 'all' ? 'all' : String(y), null),
+  team:      y => setTeamYear(y === 'all' ? 'all' : String(y), null),
+};
+
+function tsSetAll(btn) {
+  const sc = btn.closest('.time-scrubber');
+  const sid = sc.dataset.section;
+  sc.querySelectorAll('.ts-years button').forEach(b => b.classList.remove('active'));
+  sc.querySelectorAll('.ts-seg').forEach(s => s.classList.remove('active'));
+  btn.classList.add('active');
+  sc.querySelector('.ts-lbl').textContent = 'M1–36';
+  _tsMoveThumb(sc, 17.5);
+  TS_DISPATCH[sid]?.('all');
+}
+
+function tsSetYear(btn, year) {
+  const sc = btn.closest('.time-scrubber');
+  const sid = sc.dataset.section;
+  sc.querySelector('.ts-all').classList.remove('active');
+  sc.querySelectorAll('.ts-years button').forEach(b => b.classList.remove('active'));
+  sc.querySelectorAll('.ts-seg').forEach(s => s.classList.remove('active'));
+  btn.classList.add('active');
+  const seg = sc.querySelector('.ts-y' + year);
+  if (seg) seg.classList.add('active');
+  const startM = (year - 1) * 12;
+  const endM = year * 12 - 1;
+  sc.querySelector('.ts-lbl').textContent = 'M' + (startM + 1) + '–' + (endM + 1);
+  const midPct = ((startM + endM) / 2) / 35 * 100;
+  _tsMoveThumb(sc, midPct);
+  TS_DISPATCH[sid]?.(year);
+}
+
+function _tsMoveThumb(sc, pct) {
+  const thumb = sc.querySelector('.ts-thumb');
+  if (thumb) thumb.style.left = Math.max(0, Math.min(100, pct)) + '%';
+}
+
+function _tsShowTip(sc, month) {
+  const sid = sc.dataset.section;
+  const tip = document.getElementById('ts-tip-' + sid);
+  if (!tip || !D) return;
+  const m = Math.max(0, Math.min(35, Math.round(month)));
+  const y = Math.floor(m / 12) + 1;
+  const fmt = v => 'CHF ' + fmtN(v);
+  tip.innerHTML = '<strong>M' + (m + 1) + ' · Année ' + y + '</strong>' +
+    '<span>CA ' + fmt(D.ca[m]) + '</span>' +
+    '<span>Résultat ' + fmt(D.result[m]) + '</span>' +
+    '<span>Tréso ' + fmt((D.cashflow || D.ca)[m] || 0) + '</span>';
+  tip.style.display = 'block';
+}
+
+function initScrubbers() {
+  document.querySelectorAll('.time-scrubber').forEach(sc => {
+    if (sc.dataset.initialized) return;
+    sc.dataset.initialized = '1';
+    const track = sc.querySelector('.ts-track');
+    if (!track) return;
+    const sid = sc.dataset.section;
+    const tip = document.getElementById('ts-tip-' + sid);
+    const thumb = sc.querySelector('.ts-thumb');
+
+    // Click on track → jump to year
+    track.addEventListener('click', e => {
+      if (e.target === thumb) return;
+      const rect = track.getBoundingClientRect();
+      const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      const month = Math.round(pct * 35);
+      const year = Math.floor(month / 12) + 1;
+      const yearBtn = sc.querySelectorAll('.ts-years button')[year - 1];
+      if (yearBtn) tsSetYear(yearBtn, year);
+    });
+
+    // Drag thumb
+    let dragging = false;
+    if (thumb) {
+      thumb.addEventListener('mousedown', e => { dragging = true; e.preventDefault(); });
+      thumb.addEventListener('touchstart', e => { dragging = true; }, { passive: true });
+    }
+    document.addEventListener('mousemove', e => {
+      if (!dragging) return;
+      const rect = track.getBoundingClientRect();
+      const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      const month = Math.round(pct * 35);
+      if (thumb) thumb.style.left = (pct * 100) + '%';
+      _tsShowTip(sc, month);
+      if (tip) { tip.style.left = Math.min(pct * rect.width, rect.width - 165) + 'px'; tip.style.top = '-90px'; }
+    });
+    document.addEventListener('mouseup', e => {
+      if (!dragging) return;
+      dragging = false;
+      const rect = track.getBoundingClientRect();
+      const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      const month = Math.round(pct * 35);
+      const year = Math.floor(month / 12) + 1;
+      const yearBtn = sc.querySelectorAll('.ts-years button')[year - 1];
+      if (yearBtn) tsSetYear(yearBtn, year);
+      if (tip) tip.style.display = 'none';
+    });
+
+    // Hover tooltip on track
+    track.addEventListener('mousemove', e => {
+      const rect = track.getBoundingClientRect();
+      const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      const month = Math.round(pct * 35);
+      _tsShowTip(sc, month);
+      if (tip) { tip.style.left = Math.min(pct * rect.width, rect.width - 165) + 'px'; tip.style.top = '-90px'; }
+    });
+    track.addEventListener('mouseleave', () => { if (!dragging && tip) tip.style.display = 'none'; });
+  });
 }
 
 // Init auth on page load
