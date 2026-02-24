@@ -1,0 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* ── Design tokens ── */
+:root {
+  --p:      #1B3A5C;
+  --pl:     #2563EB;
+  --acc:    #10B981;
+  --acc2:   #06B6D4;
+  --warn:   #F59E0B;
+  --danger: #EF4444;
+  --bg:     #F1F5F9;
+  --card:   #FFFFFF;
+  --s2:     #F8FAFC;
+  --txt:    #0F172A;
+  --txtL:   #64748B;
+  --txtXL:  #94A3B8;
+  --brd:    #E2E8F0;
+  --brd2:   #CBD5E1;
+  --sh:     0 1px 3px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.05);
+  --sh-md:  0 4px 6px rgba(0,0,0,.06), 0 2px 4px rgba(0,0,0,.05);
+  --r:      10px;
+  --r-sm:   6px;
+  --trans:  all .2s cubic-bezier(.4,0,.2,1);
+
+  --sidebar-w:     230px;
+  --sidebar-w-col: 58px;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --p:      #60A5FA;
+  --pl:     #3B82F6;
+  --acc:    #34D399;
+  --acc2:   #22D3EE;
+  --bg:     #0F172A;
+  --card:   #1E293B;
+  --s2:     #162032;
+  --txt:    #F1F5F9;
+  --txtL:   #94A3B8;
+  --txtXL:  #64748B;
+  --brd:    #334155;
+  --brd2:   #475569;
+  --sh:     0 2px 16px rgba(0,0,0,.5);
+  --sh-md:  0 4px 12px rgba(0,0,0,.4);
+}
+
+/* ── Reset ── */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--txt);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Utilities ── */
+.btn {
+  padding: .45rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--brd);
+  background: var(--card);
+  color: var(--txt);
+  font-size: .8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--trans);
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  text-decoration: none;
+}
+
+.btn:hover {
+  border-color: var(--pl);
+  color: var(--pl);
+}
+
+.btn.primary {
+  background: var(--pl);
+  color: #fff;
+  border-color: var(--pl);
+}
+
+.btn.primary:hover {
+  background: var(--p);
+}

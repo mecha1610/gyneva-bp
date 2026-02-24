@@ -1,0 +1,199 @@
+/* ── KPI grid ── */
+.kpiGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: .9rem;
+  margin-bottom: 1.2rem;
+}
+
+/* ── Verdict banner ── */
+.verdict {
+  border-radius: var(--r);
+  padding: 1.2rem 1.4rem;
+  margin-bottom: 1.2rem;
+  display: flex;
+  align-items: flex-start;
+  gap: .9rem;
+  font-size: .88rem;
+  line-height: 1.6;
+}
+
+.verdict .ic { font-size: 1.6rem; flex-shrink: 0; }
+.verdictGreen { background: rgba(0,184,148,.08); border: 1px solid rgba(0,184,148,.2); color: #00755a; }
+.verdictOrange { background: rgba(253,203,110,.12); border: 1px solid rgba(253,203,110,.3); color: #7d5a12; }
+.verdictRed { background: rgba(214,48,49,.08); border: 1px solid rgba(214,48,49,.2); color: #8b2020; }
+
+/* ── KPI card ── */
+.kpi {
+  background: var(--card);
+  border-radius: var(--r);
+  padding: 1.2rem;
+  border: 1px solid var(--brd);
+  box-shadow: var(--sh);
+  transition: var(--trans);
+  position: relative;
+  overflow: hidden;
+}
+
+.kpi:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,.08); }
+.kpi::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: var(--r) var(--r) 0 0;
+}
+.kpiGreen::before { background: var(--acc); }
+.kpiOrange::before { background: var(--warn); }
+.kpiRed::before { background: var(--danger); }
+.kpiBlue::before { background: var(--pl); }
+
+.kpiLabel { font-size: .7rem; color: var(--txtL); text-transform: uppercase; letter-spacing: .6px; font-weight: 600; }
+.kpiValue { font-size: 1.6rem; font-weight: 800; color: var(--p); margin: .4rem 0 .1rem; }
+.kpiValueGreen { color: var(--acc); }
+.kpiValueOrange { color: #e17055; }
+.kpiValueRed { color: var(--danger); }
+.kpiSub { font-size: .73rem; color: var(--txtL); }
+
+/* ── Year timeline ── */
+.yearTimeline {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: .9rem;
+  margin-bottom: 1.2rem;
+}
+
+.yearCard {
+  background: var(--card);
+  border-radius: var(--r);
+  padding: 1rem;
+  border: 1px solid var(--brd);
+  box-shadow: var(--sh);
+  position: relative;
+  overflow: hidden;
+}
+
+.yearCard::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+
+.yearY1::before { background: linear-gradient(90deg, #e17055, #fdcb6e); }
+.yearY2::before { background: linear-gradient(90deg, #fdcb6e, #00b894); }
+.yearY3::before { background: #00b894; }
+
+.yearCardTitle {
+  font-size: .82rem;
+  font-weight: 700;
+  color: var(--p);
+  margin-bottom: .5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.phase {
+  font-size: .65rem;
+  font-weight: 600;
+  padding: .15rem .45rem;
+  border-radius: 10px;
+}
+
+.phaseStart { background: rgba(225,112,85,.1); color: #e17055; }
+.phaseGrow  { background: rgba(253,203,110,.15); color: #7d5a12; }
+.phaseCruise { background: rgba(0,184,148,.1); color: var(--acc); }
+
+.yearMetric {
+  display: flex;
+  justify-content: space-between;
+  font-size: .78rem;
+  padding: .25rem 0;
+  border-bottom: 1px solid rgba(0,0,0,.03);
+}
+.yearMetric:last-child { border-bottom: none; }
+.yearMetricLabel { color: var(--txtL); }
+.yearMetricValue { font-weight: 700; color: var(--txt); }
+
+/* ── Summary grid ── */
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: .9rem;
+  margin-bottom: 1.2rem;
+}
+
+.summaryCard {
+  background: var(--card);
+  border-radius: var(--r);
+  padding: 1rem;
+  border: 1px solid var(--brd);
+  box-shadow: var(--sh);
+  text-align: center;
+}
+
+.summaryIc { font-size: 1.4rem; margin-bottom: .3rem; }
+.summaryTitle { font-size: .78rem; font-weight: 700; color: var(--p); margin-bottom: .3rem; }
+.summaryValue { font-size: 1.1rem; font-weight: 800; margin: .2rem 0; }
+.summaryValueGreen { color: var(--acc); }
+.summaryValueOrange { color: #e17055; }
+.summaryValueRed { color: var(--danger); }
+.summarySub { font-size: .7rem; color: var(--txtL); }
+
+.summaryTag {
+  display: inline-block;
+  font-size: .63rem;
+  font-weight: 600;
+  padding: .12rem .4rem;
+  border-radius: 10px;
+  margin-top: .3rem;
+}
+.tagGreen { background: rgba(0,184,148,.1); color: var(--acc); }
+.tagOrange { background: rgba(225,112,85,.1); color: #e17055; }
+.tagRed { background: rgba(214,48,49,.1); color: var(--danger); }
+
+/* ── Card ── */
+.card {
+  background: var(--card);
+  border-radius: var(--r);
+  box-shadow: var(--sh);
+  padding: 1.5rem;
+  margin-bottom: 1.2rem;
+  border: 1px solid var(--brd);
+}
+
+.cardTitle {
+  font-size: .95rem;
+  color: var(--p);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-weight: 700;
+}
+
+.chartBox { height: 260px; position: relative; }
+
+/* ── Explanation box ── */
+.exp {
+  background: rgba(26,74,122,.04);
+  border-left: 3px solid var(--pl);
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  padding: .8rem 1rem;
+  font-size: .82rem;
+  color: var(--txtL);
+  margin-bottom: 1rem;
+}
+
+/* ── Pills ── */
+.pills { display: flex; flex-wrap: wrap; gap: .4rem; margin: .5rem 0; }
+.pill {
+  background: rgba(26,74,122,.06);
+  border-radius: 20px;
+  padding: .35rem .85rem;
+  font-size: .78rem;
+  color: var(--p);
+  font-weight: 500;
+  border: 1px solid rgba(26,74,122,.1);
+}

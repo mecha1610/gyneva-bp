@@ -1,0 +1,245 @@
+.topbar {
+  background: var(--card);
+  border-bottom: 1px solid var(--brd);
+  padding: .8rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 8px rgba(0,0,0,.04);
+}
+
+/* Plan switcher */
+.planWrap {
+  position: relative;
+}
+
+.planBtn {
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+  background: none;
+  border: 1px solid var(--brd);
+  border-radius: var(--r-sm);
+  padding: .3rem .7rem;
+  font-size: .82rem;
+  font-weight: 500;
+  color: var(--txt);
+  cursor: pointer;
+  transition: var(--trans);
+  font-family: inherit;
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.planBtn:hover {
+  border-color: var(--pl);
+  color: var(--pl);
+}
+
+.planName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.statusDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.live {
+  background: var(--acc);
+  animation: pulse 2s infinite;
+}
+
+.staticDot {
+  background: var(--warn);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .3; }
+}
+
+.planDropdown {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 6px);
+  background: var(--card);
+  border: 1px solid var(--brd);
+  border-radius: var(--r);
+  box-shadow: var(--sh-md);
+  min-width: 180px;
+  z-index: 200;
+  overflow: hidden;
+}
+
+.planItem {
+  display: block;
+  width: 100%;
+  padding: .55rem 1rem;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: .82rem;
+  color: var(--txt);
+  cursor: pointer;
+  transition: background .15s;
+  font-family: inherit;
+}
+
+.planItem:hover {
+  background: var(--s2);
+}
+
+.activePlan {
+  color: var(--pl);
+  font-weight: 600;
+}
+
+.pageTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--p);
+  white-space: nowrap;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.iconBtn {
+  background: none;
+  border: 1px solid var(--brd);
+  border-radius: var(--r-sm);
+  padding: .35rem .5rem;
+  cursor: pointer;
+  font-size: .9rem;
+  color: var(--txt);
+  transition: var(--trans);
+  line-height: 1;
+}
+
+.iconBtn:hover {
+  border-color: var(--pl);
+}
+
+/* Actions dropdown */
+.actionsWrap {
+  position: relative;
+}
+
+.actionsBtn {
+  padding: .45rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--brd);
+  background: var(--card);
+  color: var(--txt);
+  font-size: .8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--trans);
+}
+
+.actionsBtn:hover {
+  border-color: var(--pl);
+  color: var(--pl);
+}
+
+.actionsMenu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  background: var(--card);
+  border: 1px solid var(--brd);
+  border-radius: var(--r);
+  box-shadow: var(--sh-md);
+  min-width: 180px;
+  z-index: 200;
+  overflow: hidden;
+}
+
+.actionsMenu button {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  width: 100%;
+  padding: .6rem 1rem;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: .82rem;
+  color: var(--txt);
+  cursor: pointer;
+  transition: background .15s;
+  font-family: inherit;
+}
+
+.actionsMenu button:hover {
+  background: var(--s2);
+}
+
+.menuItemPrimary {
+  color: var(--pl) !important;
+  font-weight: 600 !important;
+}
+
+.menuDivider {
+  border: none;
+  border-top: 1px solid var(--brd);
+  margin: 0;
+}
+
+/* User area */
+.userArea {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+
+.avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--brd);
+  object-fit: cover;
+}
+
+.avatarPlaceholder {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--brd);
+  background: var(--pl);
+  color: #fff;
+  font-size: .75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logoutBtn {
+  background: none;
+  border: 1px solid var(--brd);
+  color: var(--txtL);
+  padding: .35rem .8rem;
+  border-radius: 8px;
+  font-size: .75rem;
+  cursor: pointer;
+  transition: all .25s ease;
+  font-family: inherit;
+}
+
+.logoutBtn:hover {
+  background: rgba(239,68,68,.06);
+  color: var(--danger);
+  border-color: var(--danger);
+}

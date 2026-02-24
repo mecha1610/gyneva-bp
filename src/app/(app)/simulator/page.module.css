@@ -1,0 +1,533 @@
+/* ── Layout ── */
+.layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 1.2rem;
+  align-items: start;
+}
+
+/* ── Slider panel ── */
+.sliderPanel {
+  background: var(--card);
+  border-radius: var(--r);
+  border: 1px solid var(--brd);
+  box-shadow: var(--sh);
+  overflow: hidden;
+  position: sticky;
+  top: 4rem;
+}
+
+.sliderPanelHeader {
+  padding: 1rem 1.2rem .8rem;
+  border-bottom: 1px solid var(--brd);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sliderPanelTitle {
+  font-size: .9rem;
+  font-weight: 700;
+  color: var(--p);
+}
+
+.resetBtn {
+  background: none;
+  border: 1px solid var(--brd);
+  border-radius: var(--r-sm);
+  padding: .25rem .6rem;
+  font-size: .72rem;
+  color: var(--txtL);
+  cursor: pointer;
+  transition: var(--trans);
+  font-family: inherit;
+}
+
+.resetBtn:hover {
+  border-color: var(--pl);
+  color: var(--pl);
+}
+
+/* ── Slider groups ── */
+.sliderGroup {
+  border-bottom: 1px solid var(--brd);
+}
+
+.sliderGroup:last-child {
+  border-bottom: none;
+}
+
+.groupHeader {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .65rem 1.2rem;
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--txtL);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  cursor: pointer;
+  user-select: none;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+}
+
+.groupHeader:hover {
+  background: var(--s2);
+}
+
+.groupChevron {
+  margin-left: auto;
+  font-size: .65rem;
+  transition: transform .2s;
+}
+
+.groupChevronOpen {
+  transform: rotate(180deg);
+}
+
+.groupBody {
+  padding: .4rem 1rem .8rem;
+}
+
+/* ── Individual slider row ── */
+.sliderRow {
+  margin-bottom: .6rem;
+}
+
+.sliderRow:last-child {
+  margin-bottom: 0;
+}
+
+.sliderLabel {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: .25rem;
+}
+
+.sliderName {
+  font-size: .75rem;
+  color: var(--txt);
+  font-weight: 500;
+}
+
+.sliderValue {
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--pl);
+  min-width: 60px;
+  text-align: right;
+}
+
+.slider {
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  appearance: none;
+  background: linear-gradient(to right, var(--pl) 0%, var(--brd2) 0%);
+  cursor: pointer;
+  outline: none;
+}
+
+.slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--pl);
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,.2);
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--pl);
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,.2);
+  cursor: pointer;
+}
+
+/* Toggle (factoring) */
+.toggleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: .6rem;
+}
+
+.toggleLabel {
+  font-size: .75rem;
+  color: var(--txt);
+  font-weight: 500;
+}
+
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggleSlider {
+  position: absolute;
+  inset: 0;
+  background: var(--brd2);
+  border-radius: 18px;
+  cursor: pointer;
+  transition: background .2s;
+}
+
+.toggleSlider::before {
+  content: '';
+  position: absolute;
+  height: 12px;
+  width: 12px;
+  left: 3px;
+  top: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform .2s;
+}
+
+.toggle input:checked + .toggleSlider {
+  background: var(--pl);
+}
+
+.toggle input:checked + .toggleSlider::before {
+  transform: translateX(16px);
+}
+
+/* Select (delay) */
+.selectRow {
+  margin-bottom: .6rem;
+}
+
+.selectLabel {
+  font-size: .75rem;
+  color: var(--txt);
+  font-weight: 500;
+  display: block;
+  margin-bottom: .25rem;
+}
+
+.select {
+  width: 100%;
+  padding: .3rem .5rem;
+  border: 1px solid var(--brd);
+  border-radius: var(--r-sm);
+  background: var(--card);
+  color: var(--txt);
+  font-size: .78rem;
+  font-family: inherit;
+  cursor: pointer;
+  outline: none;
+}
+
+.select:focus {
+  border-color: var(--pl);
+}
+
+/* ── Content area ── */
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+/* ── Verdict ── */
+.verdict {
+  border-radius: var(--r);
+  padding: 1rem 1.2rem;
+  display: flex;
+  align-items: flex-start;
+  gap: .8rem;
+  font-size: .85rem;
+  line-height: 1.55;
+}
+
+.verdictIc { font-size: 1.4rem; flex-shrink: 0; }
+.verdictGreen  { background: rgba(0,184,148,.08); border: 1px solid rgba(0,184,148,.2); color: #00755a; }
+.verdictOrange { background: rgba(245,158,11,.1);  border: 1px solid rgba(245,158,11,.25); color: #7d5a12; }
+.verdictRed    { background: rgba(239,68,68,.08);  border: 1px solid rgba(239,68,68,.2);  color: #8b2020; }
+
+/* ── Top KPI row ── */
+.kpiRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: .8rem;
+}
+
+.kpiCard {
+  background: var(--card);
+  border-radius: var(--r);
+  padding: 1rem;
+  border: 1px solid var(--brd);
+  box-shadow: var(--sh);
+  position: relative;
+  overflow: hidden;
+}
+
+.kpiCard::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: var(--r) var(--r) 0 0;
+  background: var(--pl);
+}
+
+.kpiLabel {
+  font-size: .68rem;
+  font-weight: 600;
+  color: var(--txtL);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+
+.kpiValue {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--p);
+  margin: .3rem 0 .15rem;
+}
+
+.kpiValueGreen  { color: var(--acc); }
+.kpiValueRed    { color: var(--danger); }
+.kpiValueOrange { color: #e17055; }
+
+.kpiDelta {
+  font-size: .7rem;
+  font-weight: 600;
+}
+
+.deltaUp   { color: var(--acc); }
+.deltaDown { color: var(--danger); }
+.deltaNone { color: var(--txtL); }
+
+/* ── Year nav ── */
+.yearNav {
+  background: var(--card);
+  border-radius: var(--r);
+  border: 1px solid var(--brd);
+  box-shadow: var(--sh);
+  overflow: hidden;
+}
+
+.yearNavHeader {
+  padding: .8rem 1.2rem;
+  border-bottom: 1px solid var(--brd);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.yearNavTitle {
+  font-size: .88rem;
+  font-weight: 700;
+  color: var(--p);
+}
+
+.yearBtns {
+  display: flex;
+  gap: .4rem;
+}
+
+.yearBtn {
+  background: none;
+  border: 1px solid var(--brd);
+  border-radius: var(--r-sm);
+  padding: .28rem .7rem;
+  font-size: .75rem;
+  font-weight: 600;
+  color: var(--txtL);
+  cursor: pointer;
+  transition: var(--trans);
+  font-family: inherit;
+}
+
+.yearBtn:hover { border-color: var(--pl); color: var(--pl); }
+
+.yearBtnActive {
+  background: var(--pl);
+  border-color: var(--pl);
+  color: #fff;
+}
+
+.yearBody {
+  padding: 1rem 1.2rem;
+}
+
+/* Year cards (all view) */
+.yearCards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: .7rem;
+}
+
+.yearCard {
+  background: var(--s2);
+  border-radius: var(--r-sm);
+  padding: .8rem;
+  border: 1px solid var(--brd);
+}
+
+.yearCardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: .4rem;
+}
+
+.yearCardTitle {
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--p);
+}
+
+.yearPhase {
+  font-size: .62rem;
+  font-weight: 600;
+  padding: .1rem .4rem;
+  border-radius: 10px;
+}
+
+.phaseStart  { background: rgba(225,112,85,.1);   color: #e17055; }
+.phaseGrow   { background: rgba(245,158,11,.12);  color: #7d5a12; }
+.phaseCruise { background: rgba(0,184,148,.1);    color: var(--acc); }
+
+.yearMetric {
+  display: flex;
+  justify-content: space-between;
+  font-size: .75rem;
+  padding: .2rem 0;
+  border-bottom: 1px solid rgba(0,0,0,.04);
+}
+.yearMetric:last-child { border-bottom: none; }
+.yearMetricLabel { color: var(--txtL); }
+.yearMetricValue { font-weight: 700; color: var(--txt); }
+
+/* Single-year detail */
+.yearDetail {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: .7rem;
+}
+
+.detailCard {
+  background: var(--s2);
+  border-radius: var(--r-sm);
+  padding: .9rem;
+  border: 1px solid var(--brd);
+}
+
+.detailLabel {
+  font-size: .68rem;
+  font-weight: 600;
+  color: var(--txtL);
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  margin-bottom: .3rem;
+}
+
+.detailValue {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--p);
+}
+
+.detailSub {
+  font-size: .68rem;
+  color: var(--txtL);
+  margin-top: .15rem;
+}
+
+.sensitivityTag {
+  display: inline-block;
+  font-size: .63rem;
+  font-weight: 600;
+  padding: .1rem .35rem;
+  border-radius: 8px;
+  margin-top: .3rem;
+}
+
+.tagGreen  { background: rgba(0,184,148,.1);  color: var(--acc); }
+.tagOrange { background: rgba(245,158,11,.12); color: #b45309; }
+.tagRed    { background: rgba(239,68,68,.1);  color: var(--danger); }
+
+/* ── Chart card ── */
+.chartCard {
+  background: var(--card);
+  border-radius: var(--r);
+  border: 1px solid var(--brd);
+  box-shadow: var(--sh);
+  padding: 1.2rem;
+}
+
+.chartCardTitle {
+  font-size: .88rem;
+  font-weight: 700;
+  color: var(--p);
+  margin-bottom: 1rem;
+}
+
+.chartBox { height: 220px; position: relative; }
+
+/* ── Compare panel ── */
+.compareCard {
+  background: var(--card);
+  border-radius: var(--r);
+  border: 1px solid var(--brd);
+  box-shadow: var(--sh);
+  overflow: hidden;
+}
+
+.compareHeader {
+  padding: .8rem 1.2rem;
+  background: rgba(37,99,235,.04);
+  border-bottom: 1px solid var(--brd);
+  font-size: .82rem;
+  font-weight: 700;
+  color: var(--pl);
+}
+
+.compareGrid {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 0;
+}
+
+.compareRow {
+  display: contents;
+}
+
+.compareRow > div {
+  padding: .55rem 1rem;
+  font-size: .8rem;
+  border-bottom: 1px solid var(--brd);
+}
+
+.compareRow:last-child > div {
+  border-bottom: none;
+}
+
+.compareMetric { color: var(--txtL); font-weight: 500; }
+.compareBase   { color: var(--txt); text-align: right; font-family: monospace; font-size: .78rem; }
+.compareSim    { text-align: right; font-weight: 700; font-family: monospace; font-size: .78rem; }
+
+.compareUp   { color: var(--acc); }
+.compareDown { color: var(--danger); }
