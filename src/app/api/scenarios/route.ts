@@ -40,6 +40,8 @@ export async function GET(request: NextRequest) {
   try {
     const planId = new URL(request.url).searchParams.get('planId');
 
+    // isShared=true scenarios are visible to all authenticated users (intentional:
+    // allows sharing reference scenarios across the team)
     const scenarios = await prisma.simulatorScenario.findMany({
       where: {
         OR: [{ userId: user.id }, { isShared: true }],

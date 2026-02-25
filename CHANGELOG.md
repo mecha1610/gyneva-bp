@@ -2,6 +2,16 @@
 
 All notable changes to the GYNEVA Business Plan application are documented here.
 
+## [0.21.3] - 2026-02-25
+
+### Fixed
+- **Middleware file naming**: `src/proxy.ts` (named export `proxy()`) renamed to `src/middleware.ts` (default export `middleware()`) — canonical Next.js middleware convention
+- **Session cleanup never running**: `cleanExpiredSessions()` existed in `src/lib/server/auth.ts` but was never called; added Vercel Cron job (`GET /api/cron/cleanup`, daily 3 am UTC) and `CRON_SECRET` env var for protection
+
+### Changed
+- **`vercel.json`**: added `crons` entry for daily expired-session cleanup
+- **`src/app/api/scenarios/route.ts`**: added comment documenting intentional `isShared` cross-user visibility (team reference scenarios)
+
 ## [0.21.2] - 2026-02-24
 
 ### Fixed

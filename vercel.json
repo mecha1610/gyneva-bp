@@ -1,5 +1,11 @@
 {
   "ignoreCommand": "git diff HEAD^ HEAD --name-only | grep -qvE '^(README\\.md|CHANGELOG\\.md|docs/)'",
+  "crons": [
+    {
+      "path": "/api/cron/cleanup",
+      "schedule": "0 3 * * *"
+    }
+  ],
   "headers": [
     {
       "source": "/api/(.*)",
