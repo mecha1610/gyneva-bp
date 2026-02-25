@@ -14,7 +14,7 @@ const PUBLIC_PATHS = [
   '/sw.js',
 ];
 
-export default function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Allow public paths
