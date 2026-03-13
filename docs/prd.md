@@ -1,3 +1,100 @@
+# GYNEVA BP — Living Product Requirements Document
+
+> **App version:** v0.21.3
+> **Document type:** Living PRD — read by Claude Code for product context.
+> Updated whenever shipped versions or intentions change.
+
+---
+
+## Product vision
+
+GYNEVA BP is an interactive financial planning application for the founders of a Geneva gynecology clinic, enabling 36-month revenue projections, cashflow scenario analysis, and investor-ready reporting.
+
+---
+
+## Users & roles
+
+| Role | Can do |
+|------|--------|
+| ADMIN | Full access: user management, invite creation, whitelist management, push broadcast, all plan/scenario CRUD |
+| EDITOR | Plan and scenario CRUD, Excel import, version history, comparison — no user management |
+| VIEWER | Read-only: view plans, scenarios, version history — no edits, no import |
+
+---
+
+## Feature inventory
+
+| Feature | Status | Version |
+|---------|--------|---------|
+| Overview dashboard | Shipped | v0.1.0 |
+| Simulator (14-param) | Shipped | v0.1.0 |
+| Revenue (profile filters) | Shipped | v0.5.0 |
+| Cashflow scenarios | Shipped | v0.11.0 |
+| Team (ETP charts) | Shipped | v0.10.0 |
+| Risks (gauge + matrix) | Shipped | v0.8.0 |
+| Profit (ROI, per-associate) | Shipped | v0.9.0 |
+| Optimisations (BFR controls) | Shipped | v0.7.0 |
+| Excel import (.xlsx, drag-and-drop) | Shipped | v0.2.0 |
+| Version history (auto-snapshot + restore) | Shipped | v0.2.0 |
+| Multi-plan management | Shipped | v0.3.0 |
+| Scenario comparison (side-by-side) | Shipped | v0.17.0 |
+| Scenario overlay on dashboard | Shipped | v0.3.0 |
+| PDF export (jsPDF, 9 pages) | Shipped (SPA only — not yet migrated to Next.js; button present in Topbar.tsx but unimplemented) | v0.15.0 |
+| Executive dashboard panel | Shipped | v0.16.0 |
+| 36-month timeline scrubber | Shipped | v0.20.0 |
+| Bilingual UI (FR/EN) | Shipped | v0.19.0 |
+| Dark/light theme | Shipped | v0.19.7 |
+| Google OAuth 2.0 | Shipped | v0.1.0 |
+| Email/password auth + invites | Shipped | v0.18.0 |
+| Role-based access (ADMIN/EDITOR/VIEWER) | Shipped | v0.1.0 |
+| Admin panel (users, whitelist, invites) | Shipped | v0.18.0 |
+| PWA (installable, offline) | Shipped | v0.19.8 |
+| Push notifications (Web Push / VAPID) | Shipped | v0.19.8 |
+| Session cleanup cron (daily 3am UTC) | Shipped | v0.21.3 |
+| Next.js App Router migration | Shipped | v0.21.0 |
+
+---
+
+## Business logic constants
+
+Key financial model parameters Claude must know when touching financial logic:
+
+- **Consultations/day:** 16
+- **Fee/consultation:** CHF 225
+- **Working days/year:** 215
+- **Revenue/specialist/year:** CHF 923,432
+- **Cash patients (OI/ONU) share:** ~15%
+- **Retrocession rate:** configurable 20–60% (default 40%)
+- **Sage-femme revenue:** CHF 13,333/month at capacity
+- **Factoring cost:** 1.5%
+- **CAPEX:** CHF 523,000
+- **3 cashflow scenarios:** Factoring (lowest BFR), LAMal 1-month delay, LAMal 3-month delay (highest BFR)
+- **Data structure:** 17 monthly arrays × 36 months (JSONB) + 5 scalar constants per BusinessPlan
+
+---
+
+## Known limitations & tech debt
+
+- `public/index.html` (~5900-line legacy SPA) still present — all 8 sections migrated to Next.js, pending deletion PR
+- `lib/` is outside `src/` due to SPA sharing — can be restructured once SPA is deleted
+- In-memory rate limiting resets on cold start — not persistent across Vercel serverless instances
+- Google OAuth client ID is hardcoded in `public/index.html` (should use an env var injection — only matters until the SPA is deleted)
+- No persistent test database setup — E2E tests require manual `npm run db:seed` against a test DB
+
+---
+
+## Roadmap
+
+No committed roadmap items as of v0.21.3. Candidates: SPA deletion/cleanup, persistent rate limiting (Redis), enhanced PDF customization.
+
+---
+
+## Historical PRDs
+
+This section preserves historical PRD content for reference and traceability.
+
+#### PRD-v1 (v0.15–v0.17, shipped)
+
 # PRD — Fonctionnalites v0.15 a v0.17
 
 ## Contexte
