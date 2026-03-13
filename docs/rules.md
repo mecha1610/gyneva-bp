@@ -28,7 +28,8 @@
 - **Enforce `revSpec` cap (10,000,000) and `capex` cap (5,000,000) in Zod schemas** — these limits come from regulatory requirements and must be rejected before reaching the DB.
 
 ### Testing
-- **Unit tests via vitest target pure functions in `lib/` only** — no DB, no network calls; `tests/simulation.test.ts` holds 45 tests, add new ones there when touching `computeSimulation()`.
+- **Unit tests via vitest target pure functions in `lib/` only** — no DB, no network calls; add new ones when touching `computeSimulation()`.
+- **`tests/simulation.test.ts` is the canonical unit test file** (45 tests) — when modifying `computeSimulation()` or any `lib/` pure function, add tests here, not in a new file.
 - **E2E tests hit real endpoints** — run `npm run db:seed` against a dedicated test database before Playwright; mocked DB tests have historically passed while production migrations failed.
 - **Never mock the DB in E2E tests** — real migrations can fail silently behind a mock; integration confidence requires the actual Prisma client and schema.
 
