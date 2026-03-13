@@ -31,6 +31,7 @@ Create four AI-agent-facing documents that give Claude Code optimal context when
 - Prisma v7 URL split: runtime uses `POSTGRES_PRISMA_URL`, CLI uses `POSTGRES_URL_NON_POOLING` via `prisma.config.ts`
 - `build` = `prisma generate && next build`
 - Cron job at `/api/cron/cleanup` requires `CRON_SECRET`
+- Environment variable reference: `POSTGRES_PRISMA_URL`, `POSTGRES_URL_NON_POOLING`, `NEXT_PUBLIC_GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_ID`, `SESSION_SECRET`, `ALLOWED_ORIGIN`, `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_EMAIL`, `CRON_SECRET` — one-line description for each
 
 ---
 
@@ -43,6 +44,7 @@ Create four AI-agent-facing documents that give Claude Code optimal context when
 - Request flow diagram (proxy.ts → App Router → API handlers → lib/server → Prisma → Neon)
 - Directory responsibilities (one line per directory)
 - Data flow (plan data via Zustand, simulator via pure function)
+- **SPA/Next.js boundary:** which URLs are served by the SPA vs. App Router, whether `lib/` functions are consumed by both runtimes, and migration status (`public/index.html` is being actively replaced — all 8 pages now migrated; SPA retained as fallback until deleted in a future cleanup)
 - Key design decisions with rationale (why proxy.ts, why Prisma v7 split, why lib/ is separate, why SPA still exists)
 
 ---
@@ -56,7 +58,7 @@ Create four AI-agent-facing documents that give Claude Code optimal context when
 - **React pages:** CSS Modules only, charts dynamically imported with `ssr: false`, Zustand for state, no business logic in pages
 - **Shared lib/:** Pure functions only, types.ts as single source of truth, constants.ts owns defaults
 - **Financial data:** All monetary values are integers (Math.round everywhere), 36-month arrays always length 36, retrocession as integer 20–60
-- **Testing:** vitest for unit, Playwright for E2E, never mock the DB
+- **Testing:** vitest for unit tests targeting pure functions in `lib/` (no DB interaction); Playwright for E2E tests; never mock the DB in E2E tests (use `npm run db:seed` against a dedicated test database)
 - **Git/deployment:** typecheck must pass before commit, always run full build locally before pushing
 
 ---
@@ -68,13 +70,13 @@ Create four AI-agent-facing documents that give Claude Code optimal context when
 **Structure:**
 - Product vision (one sentence)
 - Users & roles (ADMIN/EDITOR/VIEWER capabilities)
-- Feature inventory table (feature | status | version shipped) — covers all shipped features at v0.21.3
+- Feature inventory table (feature | status | version shipped) — derive by cross-referencing: 8 authenticated page routes (`src/app/(app)/`), 7 API route groups (`src/app/api/`), and `PRD-v1.md` feature list for v0.15–0.17; current version is v0.21.3
 - Key metrics & business logic (financial model constants, 36-month data structure, 3 cashflow scenarios)
 - Known limitations & tech debt
 - Roadmap (placeholder for future features)
 - Historical PRDs (absorbed from `PRD-v1.md`)
 
-**Absorbs:** `docs/PRD-v1.md` — content folded into the historical PRDs section, original file deleted.
+**Absorbs:** `docs/PRD-v1.md` — copied verbatim under a `## Historical: PRD-v1 (v0.15–0.17)` collapsible section, preserved in its original French. Delete `docs/PRD-v1.md` only after `prd.md` is committed and the content is verified present.
 
 ---
 
