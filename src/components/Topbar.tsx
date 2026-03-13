@@ -152,6 +152,7 @@ export default function Topbar({ userName, userPicture }: Props) {
         <button
           className={styles.planBtn}
           onClick={() => setPlanDropOpen(o => !o)}
+          aria-expanded={planDropOpen}
         >
           <span
             className={`${styles.statusDot} ${isLive ? styles.live : styles.staticDot}`}
