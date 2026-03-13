@@ -211,7 +211,7 @@ export default function Topbar({ userName, userPicture }: Props) {
               role="menuitem"
               className={styles.menuItemPrimary}
               onClick={() => setActionsOpen(false)}
-              title="Export PDF (visualisation SPA uniquement — non disponible dans l'application Next.js)"
+              title="Export PDF (fonctionnalité à venir)"
             >
               <IconDownload /> Export PDF
             </button>
