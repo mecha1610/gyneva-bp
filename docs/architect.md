@@ -45,7 +45,6 @@ src/
       import/excel/               # POST parse xlsx
       admin/users/                # GET list / POST add / DELETE remove email
       admin/users/[id]/           # PUT role/name / DELETE user
-      admin/invites/              # GET list / POST create
       push/                       # POST subscribe / POST?action=send broadcast
       cron/cleanup/               # GET daily session cleanup (protected by CRON_SECRET)
     login/           # Public login page (no auth required)
