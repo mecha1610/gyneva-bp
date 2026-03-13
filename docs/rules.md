@@ -40,5 +40,5 @@
 
 ### Git / Deployment
 - **`npm run build` runs `prisma generate && next build`** — if you add a Prisma model, run `npm run db:push` first or the generate step will fail against a stale schema.
-- **Do not skip `vercel pull` before building in CI** — env vars must come from Vercel; hardcoded values cause silent differences between local and production builds.
+- **Run `vercel pull` locally to sync env vars before testing a production build** — CI fetches them automatically via Vercel's build pipeline.
 - **Commit message format: `type(scope): description`** — e.g., `fix(auth): handle missing GOOGLE_CLIENT_ID at startup`; this format drives the CHANGELOG generator.

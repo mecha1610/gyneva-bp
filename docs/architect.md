@@ -58,7 +58,7 @@ src/
     auth.ts          # createSession(), validateSession(), deleteSession(), cleanExpiredSessions()
     db.ts            # Prisma singleton with Neon adapter (pooled connection)
     errors.ts        # Standardized error response helpers
-    middleware.ts    # requireAuth(), requireAdmin(), withCors(), withRateLimit()
+    middleware.ts    # requireAuth(), requireAdmin(), withCors(), withRateLimit() (server-only auth guards — unrelated to `src/proxy.ts` edge middleware)
   stores/
     useAppStore.ts   # Zustand: active plan data (36-month arrays + constants), plan list, overlay scenario
     useSimStore.ts   # Zustand: simulator parameters (14 params); results derived on-demand via useSimResult() selector
@@ -111,8 +111,8 @@ Browser → src/proxy.ts          (edge: check gyneva_session cookie)
 
 ## Key Design Decisions
 
-1. **`src/proxy.ts` not `middleware.ts`** — Next.js 16 renamed middleware to `proxy.ts`; using the old name triggers deprecation warnings.
-2. **Prisma v7 URL split** — `schema.prisma` has no `url`/`directUrl`; those live in `prisma.config.ts`. This is Prisma v7's mandatory new pattern.
+1. **`src/proxy.ts` not `middleware.ts`** — The file must be named `src/proxy.ts` (not `middleware.ts`). Named export `proxy()` is the convention used here; a default export also works per Next.js 16 but is not used in this project.
+2. **Prisma v7 URL split** — `schema.prisma` has no `url`/`directUrl`; those live in `prisma.config.ts`. This is Prisma v7's mandatory new pattern. At runtime, `src/lib/server/db.ts` reads `POSTGRES_PRISMA_URL` directly via the Neon adapter — it is not referenced by `prisma.config.ts`.
 3. **`lib/` is outside `src/`** — Intentionally shared between the legacy SPA and Next.js. Can move into `src/lib/` after the SPA is deleted.
 4. **No business logic in Route Handlers** — API routes validate input (Zod) and call `lib/server/` helpers only. All financial logic lives in `lib/compute.ts` and `lib/simulation.ts`.
 5. **Zustand for plan state** — Avoids prop drilling across the 8-section dashboard. `AppStoreInitializer` hydrates the store on mount.

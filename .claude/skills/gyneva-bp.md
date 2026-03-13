@@ -32,7 +32,7 @@ npm run db:studio     # open Prisma Studio GUI
 
 ## Critical Gotchas
 
-1. **`src/proxy.ts` — do NOT rename back to `middleware.ts`**: Next.js 16 renamed middleware from `middleware.ts` to `proxy.ts`. Using `middleware.ts` still works but triggers a deprecation warning. Export must be `export function proxy()`.
+1. **`src/proxy.ts` — do NOT rename back to `middleware.ts`**: The file must be named `src/proxy.ts` (not `middleware.ts`). Named export `proxy()` is the convention used here; a default export also works per Next.js 16 but is not used in this project.
 
 2. **`NEXT_PUBLIC_GOOGLE_CLIENT_ID` trailing newline**: Setting this via shell `echo` adds a `\n`, causing `invalid_client` from Google. Always use `printf` or the Vercel Dashboard UI when setting it.
 
@@ -41,6 +41,8 @@ npm run db:studio     # open Prisma Studio GUI
 4. **Build requires Prisma client first**: `npm run build` = `prisma generate && next build`. If a new Prisma model is added, run `npm run db:push` before building locally.
 
 5. **Cron job requires `CRON_SECRET`**: `GET /api/cron/cleanup` (daily session cleanup at 3am UTC) is protected by this env var. Vercel sets `Authorization: Bearer <CRON_SECRET>` automatically on cron invocations.
+
+6. **`SimulatorScenario.params` schema comment says "13 simulator parameters"** — this is stale. `SimulatorParams` in `lib/types.ts` has 14 fields. Trust the TypeScript type, not the schema comment.
 
 ---
 

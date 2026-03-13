@@ -39,7 +39,7 @@ GYNEVA BP is an interactive financial planning application for the founders of a
 | Multi-plan management | Shipped | v0.3.0 |
 | Scenario comparison (side-by-side) | Shipped | v0.17.0 |
 | Scenario overlay on dashboard | Shipped | v0.3.0 |
-| PDF export (jsPDF, 9 pages) | Shipped | v0.15.0 |
+| PDF export (jsPDF, 9 pages) | Shipped (SPA only — not yet migrated to Next.js; button present in Topbar.tsx but unimplemented) | v0.15.0 |
 | Executive dashboard panel | Shipped | v0.16.0 |
 | 36-month timeline scrubber | Shipped | v0.20.0 |
 | Bilingual UI (FR/EN) | Shipped | v0.19.0 |
