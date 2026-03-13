@@ -6,7 +6,14 @@ import type { RevProfile } from '@/stores/useSimStore';
 import { computeDerived } from '@lib/compute';
 import styles from './page.module.css';
 
-const RevenueChart = dynamic(() => import('./RevenueChart'), { ssr: false });
+const RevenueChart = dynamic(() => import('./RevenueChart'), { ssr: false, loading: () => <div className={styles.chartSkeleton} /> });
+
+// ── SVG Icons ───────────────────────────────────────────────────────────────
+
+function IconCheck() { return <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 11 4 16"/></svg>; }
+function IconAlert() { return <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>; }
+function IconX() { return <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>; }
+function IconTrending() { return <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>; }
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -96,7 +103,7 @@ export default function RevenuePage() {
   score += (caY3 - caY2) > 0 ? 3 : (caY3 - caY2) === 0 ? 1 : 0;
 
   const verdictColor = score >= 9 ? 'Green' : score >= 5 ? 'Orange' : 'Red';
-  const verdictIcon  = score >= 9 ? '💰' : score >= 5 ? '⚠️' : '❌';
+  const VerdictIcon = score >= 9 ? IconCheck : score >= 5 ? IconAlert : IconX;
   const verdictText  =
     score >= 9
       ? `Revenus solides — CA Y3 ${fmt(caY3)}, croissance ${growthY1Y3}% sur 3 ans, ${activeCount} sources actives.`
@@ -111,13 +118,21 @@ export default function RevenuePage() {
 
   // ── Render ────────────────────────────────────────────────────────────────
 
+  // Suppress unused variable warning for D
+  void D;
+
   return (
     <div>
 
+      <div className={styles.pageHeader}>
+        <h1 className={styles.pageTitle}>Chiffre d&apos;affaires</h1>
+        <p className={styles.pageSubtitle}>Analyse des revenus par source sur 36 mois</p>
+      </div>
+
       {/* Verdict */}
       <div className={`${styles.verdict} ${styles[`verdict${verdictColor}`]}`}>
-        <div className={styles.verdictIc}>{verdictIcon}</div>
-        <div><strong>Analyse du chiffre d&apos;affaires.</strong>{' '}{verdictText}</div>
+        <div className={styles.ic}><VerdictIcon /></div>
+        <div className={styles.verdictBody}><strong>Analyse du chiffre d&apos;affaires.</strong>{' '}{verdictText}</div>
       </div>
 
       {/* Controls */}
@@ -185,7 +200,7 @@ export default function RevenuePage() {
       {/* Stacked bar chart */}
       <div className={styles.card}>
         <div className={styles.cardTitle}>
-          💰 CA mensuel par source
+          <IconTrending /> CA mensuel par source
           {activeYear !== 'all' && ` — Année ${activeYear}`}
         </div>
         <div className={styles.chartBox}>
@@ -248,7 +263,7 @@ export default function RevenuePage() {
 
       {/* Revenue sharing model */}
       <div className={styles.modelCard}>
-        <div className={styles.modelTitle}>💱 Modèle de partage du chiffre d&apos;affaires</div>
+        <div className={styles.modelTitle}>Modèle de partage du chiffre d&apos;affaires</div>
         <div className={styles.modelExp}>
           <strong>Associés :</strong> 60 % de leurs honoraires pour eux, 40 % pour GynEva.<br />
           <strong>Indépendants :</strong> 60 % pour eux, 40 % pour GynEva.<br />

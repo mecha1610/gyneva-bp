@@ -5,8 +5,16 @@ import { useState } from 'react';
 import { useSimStore } from '@/stores/useSimStore';
 import styles from './page.module.css';
 
-const EtpChart          = dynamic(() => import('./TeamChart').then(m => ({ default: m.EtpChart })),          { ssr: false });
-const ProductivityChart = dynamic(() => import('./TeamChart').then(m => ({ default: m.ProductivityChart })), { ssr: false });
+const EtpChart          = dynamic(() => import('./TeamChart').then(m => ({ default: m.EtpChart })),          { ssr: false, loading: () => <div className={styles.chartSkeleton} /> });
+const ProductivityChart = dynamic(() => import('./TeamChart').then(m => ({ default: m.ProductivityChart })), { ssr: false, loading: () => <div className={styles.chartSkeleton} /> });
+
+// ── SVG Icons ──────────────────────────────────────────────────────────────
+
+function IconAlert() { return <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>; }
+function IconX() { return <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>; }
+function IconUsers() { return <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>; }
+function IconTrending() { return <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>; }
+function IconUsersSmall() { return <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>; }
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -97,7 +105,7 @@ export default function TeamPage() {
         : `Équipe réduite — ${fteEnd} ETP. Recrutement critique pour atteindre les objectifs de CA.`;
   }
 
-  const verdictIcon = verdictColor === 'Green' ? '👥' : verdictColor === 'Orange' ? '⚠️' : '❌';
+  const VerdictIcon = verdictColor === 'Green' ? IconUsers : verdictColor === 'Orange' ? IconAlert : IconX;
 
   // ── Total ETP at Y3 (for proportional bars) ───────────────────────────────
 
@@ -108,10 +116,15 @@ export default function TeamPage() {
   return (
     <div>
 
+      <div className={styles.pageHeader}>
+        <h1 className={styles.pageTitle}>Équipe &amp; Ressources humaines</h1>
+        <p className={styles.pageSubtitle}>Montée en charge et productivité des ETP sur 36 mois</p>
+      </div>
+
       {/* Verdict */}
       <div className={`${styles.verdict} ${styles[`verdict${verdictColor}`]}`}>
-        <div className={styles.verdictIc}>{verdictIcon}</div>
-        <div><strong>Analyse de l&apos;équipe.</strong>{' '}{verdictText}</div>
+        <div className={styles.ic}><VerdictIcon /></div>
+        <div className={styles.verdictBody}><strong>Analyse de l&apos;équipe.</strong>{' '}{verdictText}</div>
       </div>
 
       {/* Controls */}
@@ -223,7 +236,7 @@ export default function TeamPage() {
       {/* ETP stacked bar chart */}
       <div className={styles.card}>
         <div className={styles.cardTitle}>
-          👤 Montée en charge de l&apos;équipe (ETP)
+          <IconUsersSmall /> Montée en charge de l&apos;équipe (ETP)
           {activeYear !== 'all' && ` — Année ${activeYear}`}
         </div>
         <div className={styles.chartBox}>
@@ -241,7 +254,7 @@ export default function TeamPage() {
       {showProd && (
         <div className={styles.card}>
           <div className={styles.cardTitle}>
-            📈 Productivité — CA par ETP
+            <IconTrending /> Productivité — CA par ETP
             {activeYear !== 'all' && ` — Année ${activeYear}`}
           </div>
           <div className={styles.chartBoxSm}>

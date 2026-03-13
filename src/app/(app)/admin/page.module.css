@@ -1,3 +1,21 @@
+/* ── Page header ── */
+.pageHeader {
+  margin-bottom: 1rem;
+}
+.pageTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--p);
+  margin: 0 0 .25rem;
+  line-height: 1.2;
+}
+.pageSubtitle {
+  font-size: .83rem;
+  color: var(--txtL);
+  margin: 0;
+  line-height: 1.5;
+}
+
 /* ── Page description ── */
 .desc {
   font-size: .85rem;
@@ -21,7 +39,11 @@
   font-weight: 700;
   color: var(--p);
   margin-bottom: .3rem;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
 }
+.cardTitle svg { color: var(--pl); flex-shrink: 0; }
 .cardDesc {
   font-size: .78rem;
   color: var(--txtL);
@@ -59,7 +81,7 @@
   border: 1px solid rgba(239,68,68,.2);
   border-radius: var(--r);
   padding: 1rem 1.2rem;
-  color: #8b2020;
+  color: var(--danger);
   font-size: .85rem;
   display: flex;
   align-items: center;
@@ -92,7 +114,7 @@
 }
 .table td {
   padding: .6rem .7rem;
-  border-bottom: 1px solid rgba(0,0,0,.04);
+  border-bottom: 1px solid var(--brd);
   vertical-align: middle;
 }
 .table tr:last-child td { border-bottom: none; }
@@ -114,7 +136,7 @@
   width: 30px; height: 30px;
   border-radius: 50%;
   background: var(--pl);
-  color: #fff;
+  color: var(--card);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -152,9 +174,9 @@
   text-transform: uppercase;
   letter-spacing: .3px;
 }
-.authGoogle   { background: rgba(66,133,244,.1); color: #2563eb; }
-.authPassword { background: rgba(16,185,129,.1); color: #00755a; }
-.authInvited  { background: rgba(245,158,11,.1); color: #7d5a12; }
+.authGoogle   { background: rgba(66,133,244,.1); color: var(--pl); }
+.authPassword { background: rgba(16,185,129,.1); color: var(--c-green-txt, #00755a); }
+.authInvited  { background: rgba(245,158,11,.1); color: var(--c-orange-txt, #7d5a12); }
 
 /* Date cell */
 .dateCell { color: var(--txtL); font-size: .75rem; white-space: nowrap; }
@@ -179,7 +201,7 @@
   padding: .2rem .55rem;
   font-size: .72rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--card);
   cursor: pointer;
   white-space: nowrap;
 }
@@ -234,7 +256,7 @@
   padding: .4rem .9rem;
   font-size: .82rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--card);
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
@@ -294,7 +316,7 @@
   align-items: center;
   justify-content: space-between;
   padding: .4rem 0;
-  border-bottom: 1px solid rgba(0,0,0,.04);
+  border-bottom: 1px solid var(--brd);
   font-size: .8rem;
   gap: .5rem;
 }

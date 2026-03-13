@@ -6,8 +6,18 @@ import { useSimStore } from '@/stores/useSimStore';
 import { computeSimulation } from '@lib/simulation';
 import styles from './page.module.css';
 
-const StressChart       = dynamic(() => import('./RiskCharts').then(m => ({ default: m.StressChart })),       { ssr: false });
-const ChargesDonutChart = dynamic(() => import('./RiskCharts').then(m => ({ default: m.ChargesDonutChart })), { ssr: false });
+const StressChart       = dynamic(() => import('./RiskCharts').then(m => ({ default: m.StressChart })),       { ssr: false, loading: () => <div className={styles.chartSkeleton} /> });
+const ChargesDonutChart = dynamic(() => import('./RiskCharts').then(m => ({ default: m.ChargesDonutChart })), { ssr: false, loading: () => <div className={styles.chartSkeleton} /> });
+
+// ── SVG icons ──────────────────────────────────────────────────────────────
+
+function IconCheck() { return <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 11 4 16"/></svg>; }
+function IconAlert() { return <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>; }
+function IconX() { return <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>; }
+function IconShield() { return <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>; }
+function IconBarChart() { return <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>; }
+function IconSliders() { return <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>; }
+function IconTarget() { return <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>; }
 
 // ── Static data ────────────────────────────────────────────────────────────
 
@@ -113,7 +123,7 @@ export default function RisksPage() {
     score >= 35 ? 'Orange' :
                   'Green';
 
-  const verdictIcon = verdictColor === 'Green' ? '✅' : verdictColor === 'Orange' ? '⚠️' : '❌';
+  const VerdictIcon = verdictColor === 'Green' ? IconCheck : verdictColor === 'Orange' ? IconAlert : IconX;
   const verdictText =
     score >= 60
       ? `Profil risqué — score ${score}/100. Plusieurs facteurs critiques à surveiller de près.`
@@ -163,10 +173,16 @@ export default function RisksPage() {
   return (
     <div>
 
+      {/* Page header */}
+      <div className={styles.pageHeader}>
+        <h1 className={styles.pageTitle}>Analyse des risques</h1>
+        <p className={styles.pageSubtitle}>Matrice de risques, stress-test et sensibilité aux variables</p>
+      </div>
+
       {/* Verdict */}
       <div className={`${styles.verdict} ${styles[`verdict${verdictColor}`]}`}>
-        <div className={styles.verdictIc}>{verdictIcon}</div>
-        <div><strong>Analyse des risques.</strong>{' '}{verdictText}</div>
+        <div className={styles.ic}><VerdictIcon /></div>
+        <div className={styles.verdictBody}><strong>Analyse des risques.</strong>{' '}{verdictText}</div>
       </div>
 
       {/* Gauge + Scenarios */}
@@ -174,7 +190,7 @@ export default function RisksPage() {
 
         {/* Score gauge */}
         <div className={styles.gaugeCard}>
-          <div className={styles.cardTitle} style={{ marginBottom: '.2rem' }}>🎯 Score global</div>
+          <div className={styles.cardTitle} style={{ marginBottom: '.2rem' }}><IconTarget /> Score global</div>
           <div className={styles.gaugeWrap}>
             <svg viewBox="0 0 120 68" className={styles.gaugeSvg}>
               <circle
@@ -241,7 +257,7 @@ export default function RisksPage() {
 
       {/* Stress comparison chart */}
       <div className={styles.card}>
-        <div className={styles.cardTitle}>📊 Comparaison scénarios — Année 3</div>
+        <div className={styles.cardTitle}><IconBarChart /> Comparaison scénarios — Année 3</div>
         <div className={styles.chartBox}>
           <StressChart
             baseCA={simBase.caY3}  baseRes={simBase.resY3}
@@ -253,7 +269,7 @@ export default function RisksPage() {
 
       {/* Sensitivity analysis */}
       <div className={styles.card}>
-        <div className={styles.cardTitle}>📉 Sensibilité — Impact sur résultat Y3 (−25%)</div>
+        <div className={styles.cardTitle}><IconSliders /> Sensibilité — Impact sur résultat Y3 (−25%)</div>
         <div className={styles.sensGrid}>
           {[
             { label: 'Consultations / jour', val: sensConsult },
@@ -275,7 +291,7 @@ export default function RisksPage() {
       {/* Risk matrix */}
       <div className={styles.card}>
         <div className={styles.cardTitle}>
-          <span>🔲 Matrice des risques</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '.4rem' }}><IconShield /> Matrice des risques</span>
           <button className={styles.sortBtn} onClick={() => setSortByExp(s => !s)}>
             {sortByExp ? 'Ordre original' : 'Trier par exposition'}
           </button>
@@ -322,7 +338,7 @@ export default function RisksPage() {
       {/* Unbudgeted charges + donut */}
       <div className={styles.breakdown}>
         <div className={styles.chargesCard}>
-          <div className={styles.breakdownHeader}>⚠️ Charges imprévues potentielles</div>
+          <div className={styles.breakdownHeader}>Charges imprévues potentielles</div>
           <div className={styles.chargesBody}>
             <div className={styles.chargesHeader}>
               <span>Poste</span>
@@ -348,7 +364,7 @@ export default function RisksPage() {
         </div>
 
         <div className={styles.donutCard}>
-          <div className={styles.breakdownHeader}>📊 Répartition par criticité</div>
+          <div className={styles.breakdownHeader}>Répartition par criticité</div>
           <div className={styles.donutBody}>
             <div className={styles.chartBoxSm}>
               <ChargesDonutChart
