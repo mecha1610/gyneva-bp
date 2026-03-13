@@ -5,6 +5,74 @@ import { useSimStore } from '@/stores/useSimStore';
 import { computeDerived } from '@lib/compute';
 import styles from './page.module.css';
 
+// ── Icons ──────────────────────────────────────────────────────────────────
+
+const IconCheck = () => (
+  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+    <polyline points="22 4 12 14.01 9 11.01"/>
+  </svg>
+);
+
+const IconAlertTriangle = () => (
+  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+    <line x1="12" y1="9" x2="12" y2="13"/>
+    <circle cx="12" cy="17" r="1" fill="currentColor" stroke="none"/>
+  </svg>
+);
+
+const IconXCircle = () => (
+  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="10"/>
+    <line x1="15" y1="9" x2="9" y2="15"/>
+    <line x1="9" y1="9" x2="15" y2="15"/>
+  </svg>
+);
+
+const IconWallet = () => (
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/>
+    <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/>
+    <path d="M18 12a2 2 0 0 0 0 4h4v-4z"/>
+  </svg>
+);
+
+const IconUsers = () => (
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+    <circle cx="9" cy="7" r="4"/>
+    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+  </svg>
+);
+
+const IconShield = () => (
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+    <line x1="12" y1="8" x2="12" y2="12"/>
+    <circle cx="12" cy="16" r="1" fill="currentColor" stroke="none"/>
+  </svg>
+);
+
+const IconTrendingUp = () => (
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+    <polyline points="17 6 23 6 23 12"/>
+  </svg>
+);
+
+const IconSliders = () => (
+  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <line x1="4" y1="6" x2="20" y2="6"/>
+    <circle cx="8" cy="6" r="2" fill="currentColor" stroke="none"/>
+    <line x1="4" y1="12" x2="20" y2="12"/>
+    <circle cx="16" cy="12" r="2" fill="currentColor" stroke="none"/>
+    <line x1="4" y1="18" x2="20" y2="18"/>
+    <circle cx="10" cy="18" r="2" fill="currentColor" stroke="none"/>
+  </svg>
+);
+
 // Lazy-load the chart to avoid SSR issues with Chart.js canvas
 const OverviewChart = dynamic(() => import('./OverviewChart'), { ssr: false });
 
@@ -55,7 +123,7 @@ export default function OverviewPage() {
     score >= 6  ? styles.verdictOrange :
                   styles.verdictRed;
 
-  const verdictIcon  = score >= 10 ? '✅' : score >= 6 ? '⚠️' : '❌';
+  const VerdictIcon  = score >= 10 ? IconCheck : score >= 6 ? IconAlertTriangle : IconXCircle;
   const verdictText  =
     score >= 10
       ? `Projet solide — marge Y3 ${margin3}%, payback ${payback} mois, trésorerie finale ${fmt(planData.cashflow[35])}.`
@@ -99,10 +167,16 @@ export default function OverviewPage() {
 
   return (
     <div>
+      {/* Page header */}
+      <div className={styles.pageHeader}>
+        <h1 className={styles.pageTitle}>Vue d&apos;ensemble</h1>
+        <p className={styles.pageSubtitle}>Analyse financière consolidée sur 36 mois</p>
+      </div>
+
       {/* Verdict */}
       <div className={`${styles.verdict} ${verdictClass}`}>
-        <div className={styles.ic}>{verdictIcon}</div>
-        <div dangerouslySetInnerHTML={{ __html: `<strong>Vue d'ensemble.</strong> ${verdictText}` }} />
+        <div className={styles.ic}><VerdictIcon /></div>
+        <p className={styles.verdictBody}><strong>Diagnostic.</strong> {verdictText}</p>
       </div>
 
       {/* KPI grid */}
@@ -179,7 +253,9 @@ export default function OverviewPage() {
 
       {/* Overview chart */}
       <div className={styles.card}>
-        <div className={styles.cardTitle}>📈 Évolution sur 3 ans</div>
+        <div className={styles.cardHeader}>
+          <div className={styles.cardTitle}><IconTrendingUp /> Évolution sur 3 ans</div>
+        </div>
         <div className={styles.chartBox}>
           <OverviewChart
             caY1={D.caY1} caY2={D.caY2} caY3={D.caY3}
@@ -192,14 +268,14 @@ export default function OverviewPage() {
       {/* Summary grid */}
       <div className={styles.summaryGrid}>
         <div className={styles.summaryCard}>
-          <div className={styles.summaryIc}>💰</div>
+          <div className={styles.summaryIc}><IconWallet /></div>
           <div className={styles.summaryTitle}>Trésorerie</div>
           <div className={`${styles.summaryValue} ${bfrValCls}`}>{fmt(bfrWorst)}</div>
           <div className={styles.summarySub}>Besoin min en fonds de roulement</div>
           <span className={`${styles.summaryTag} ${bfrTag.c}`}>{bfrTag.t}</span>
         </div>
         <div className={styles.summaryCard}>
-          <div className={styles.summaryIc}>👥</div>
+          <div className={styles.summaryIc}><IconUsers /></div>
           <div className={styles.summaryTitle}>Équipe</div>
           <div className={styles.summaryValue}>{fteEnd} ETP</div>
           <div className={styles.summarySub}>{fteGrowth > 0 ? '+' : ''}{fteGrowth}% sur 3 ans</div>
@@ -208,14 +284,14 @@ export default function OverviewPage() {
           </span>
         </div>
         <div className={styles.summaryCard}>
-          <div className={styles.summaryIc}>⚠️</div>
+          <div className={styles.summaryIc}><IconShield /></div>
           <div className={styles.summaryTitle}>Risques</div>
           <div className={styles.summaryValue}>—/100</div>
           <div className={styles.summarySub}>Score composite</div>
           <span className={`${styles.summaryTag} ${styles.tagOrange}`}>Voir Risques</span>
         </div>
         <div className={styles.summaryCard}>
-          <div className={styles.summaryIc}>📈</div>
+          <div className={styles.summaryIc}><IconTrendingUp /></div>
           <div className={styles.summaryTitle}>ROI associés</div>
           <div className={`${styles.summaryValue} ${roiValCls}`}>{roi}</div>
           <div className={styles.summarySub}>ROI cumulé 3 ans</div>
@@ -225,7 +301,9 @@ export default function OverviewPage() {
 
       {/* Assumptions */}
       <div className={styles.card}>
-        <div className={styles.cardTitle}>⚙️ Hypothèses clés du modèle</div>
+        <div className={styles.cardHeader}>
+          <div className={styles.cardTitle}><IconSliders /> Hypothèses clés du modèle</div>
+        </div>
         <div className={styles.exp}>
           Le modèle repose sur les standards TARMED pour la gynécologie à Genève.
           Chaque hypothèse est modifiable via le <strong>Simulateur</strong> ou dans le fichier Excel.

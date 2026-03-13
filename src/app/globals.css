@@ -1,47 +1,99 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
 
 /* ── Design tokens ── */
 :root {
-  --p:      #1B3A5C;
-  --pl:     #2563EB;
-  --acc:    #10B981;
-  --acc2:   #06B6D4;
-  --warn:   #F59E0B;
-  --danger: #EF4444;
-  --bg:     #F1F5F9;
-  --card:   #FFFFFF;
-  --s2:     #F8FAFC;
-  --txt:    #0F172A;
-  --txtL:   #64748B;
-  --txtXL:  #94A3B8;
-  --brd:    #E2E8F0;
-  --brd2:   #CBD5E1;
-  --sh:     0 1px 3px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.05);
-  --sh-md:  0 4px 6px rgba(0,0,0,.06), 0 2px 4px rgba(0,0,0,.05);
-  --r:      10px;
-  --r-sm:   6px;
-  --trans:  all .2s cubic-bezier(.4,0,.2,1);
+  /* Brand */
+  --p:       #0F172A;       /* Deep navy — headings, logo */
+  --pl:      #2563EB;       /* Electric blue — primary action */
+  --pl2:     #4F46E5;       /* Indigo — gradient partner */
+  --pl-grad: linear-gradient(135deg, #2563EB 0%, #4F46E5 100%);
+  --gold:    #D97706;       /* Amber gold — premium / highlight */
 
-  --sidebar-w:     230px;
-  --sidebar-w-col: 58px;
+  /* Semantic */
+  --acc:     #10B981;       /* Emerald — positive / success */
+  --acc2:    #06B6D4;       /* Cyan — info accent */
+  --warn:    #F59E0B;       /* Amber — warning */
+  --danger:  #EF4444;       /* Red — danger / negative */
+
+  /* Surfaces */
+  --bg:      #EEF2FF;       /* Indigo-50 tinted — cooler, fintech feel */
+  --card:    #FFFFFF;
+  --s2:      #F8FAFF;       /* Near-white with blue tint */
+  --glass:   rgba(255,255,255,.7); /* Glassmorphism surface */
+
+  /* Text */
+  --txt:     #0F172A;       /* Slate-900 */
+  --txtL:    #475569;       /* Slate-600 (stronger than before) */
+  --txtXL:   #94A3B8;       /* Slate-400 */
+
+  /* Borders */
+  --brd:     #DDE3F0;       /* Slightly blue-tinted */
+  --brd2:    #C7D0E5;
+
+  /* Shadows — navy-tinted for premium depth */
+  --sh:      0 1px 3px rgba(15,23,42,.07), 0 1px 2px rgba(15,23,42,.04);
+  --sh-md:   0 4px 16px rgba(15,23,42,.08), 0 2px 4px rgba(15,23,42,.04);
+  --sh-lg:   0 12px 40px rgba(15,23,42,.12), 0 4px 12px rgba(15,23,42,.06);
+  --sh-blue: 0 4px 20px rgba(37,99,235,.2); /* Glow for primary actions */
+
+  /* Radius */
+  --r:       12px;
+  --r-sm:    7px;
+  --r-lg:    16px;
+
+  /* Motion */
+  --trans:   all .2s cubic-bezier(.4,0,.2,1);
+  --trans-spring: all .25s cubic-bezier(.34,1.56,.64,1);
+
+  /* Typography */
+  --font-ui:   'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+
+  /* Layout */
+  --sidebar-w:     234px;
+  --sidebar-w-col: 60px;
+
+  /* Spacing scale */
+  --space-xs:  4px;
+  --space-sm:  8px;
+  --space-md:  16px;
+  --space-lg:  24px;
+  --space-xl:  32px;
+  --space-2xl: 48px;
 }
 
 [data-theme="dark"] {
   color-scheme: dark;
-  --p:      #60A5FA;
+  --p:      #93C5FD;        /* Light blue for headings */
   --pl:     #3B82F6;
+  --pl2:    #6366F1;
+  --pl-grad: linear-gradient(135deg, #3B82F6 0%, #6366F1 100%);
+  --gold:   #FBBF24;
+
   --acc:    #34D399;
   --acc2:   #22D3EE;
-  --bg:     #0F172A;
-  --card:   #1E293B;
-  --s2:     #162032;
-  --txt:    #F1F5F9;
+  --warn:   #FBBF24;
+
+  /* Surfaces — deep midnight, premium dark */
+  --bg:     #070C19;        /* Deeper than before */
+  --card:   #0F1B2D;        /* Deep navy card */
+  --s2:     #0B1525;
+  --glass:  rgba(15,27,45,.8);
+
+  /* Text */
+  --txt:    #EEF2FF;
   --txtL:   #94A3B8;
-  --txtXL:  #64748B;
-  --brd:    #334155;
-  --brd2:   #475569;
-  --sh:     0 2px 16px rgba(0,0,0,.5);
-  --sh-md:  0 4px 12px rgba(0,0,0,.4);
+  --txtXL:  #4B5680;
+
+  /* Borders */
+  --brd:    #1E3054;
+  --brd2:   #2A4070;
+
+  /* Shadows */
+  --sh:     0 2px 12px rgba(0,0,0,.6);
+  --sh-md:  0 4px 24px rgba(0,0,0,.5);
+  --sh-lg:  0 16px 60px rgba(0,0,0,.6);
+  --sh-blue: 0 4px 24px rgba(59,130,246,.25);
 }
 
 /* ── Reset ── */
@@ -57,7 +109,7 @@ html {
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-ui);
   background: var(--bg);
   color: var(--txt);
   line-height: 1.6;
@@ -65,14 +117,46 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ── Mono utility — for all financial figures ── */
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -.02em;
+}
+
+/* ── Focus visible (keyboard nav) ── */
+:focus-visible {
+  outline: 2px solid var(--pl);
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--pl);
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+
 /* ── Utilities ── */
 .btn {
   padding: .45rem 1rem;
-  border-radius: 8px;
+  border-radius: var(--r-sm);
   border: 1px solid var(--brd);
   background: var(--card);
   color: var(--txt);
-  font-size: .8rem;
+  font-size: .82rem;
   font-weight: 500;
   cursor: pointer;
   transition: var(--trans);
@@ -80,6 +164,7 @@ body {
   align-items: center;
   gap: .4rem;
   text-decoration: none;
+  font-family: var(--font-ui);
 }
 
 .btn:hover {
@@ -88,11 +173,13 @@ body {
 }
 
 .btn.primary {
-  background: var(--pl);
+  background: var(--pl-grad);
   color: #fff;
-  border-color: var(--pl);
+  border-color: transparent;
+  box-shadow: var(--sh-blue);
 }
 
 .btn.primary:hover {
-  background: var(--p);
+  filter: brightness(1.1);
+  box-shadow: var(--sh-blue), 0 0 0 3px rgba(37,99,235,.15);
 }
