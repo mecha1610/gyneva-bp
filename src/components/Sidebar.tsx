@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAppStore } from '@/stores/useAppStore';
@@ -127,6 +128,13 @@ export default function Sidebar({ isAdmin = false }: Props) {
   const collapsed = useAppStore(s => s.sidebarCollapsed);
   const toggleSidebar = useAppStore(s => s.toggleSidebar);
 
+  useEffect(() => {
+    document.documentElement.style.setProperty(
+      '--sidebar-current-w',
+      collapsed ? 'var(--sidebar-w-col)' : 'var(--sidebar-w)'
+    );
+  }, [collapsed]);
+
   return (
     <aside className={`${styles.sidebar} ${collapsed ? styles.collapsed : ''}`}>
       {/* Toggle button */}
@@ -135,7 +143,22 @@ export default function Sidebar({ isAdmin = false }: Props) {
         onClick={toggleSidebar}
         aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
       >
-        {collapsed ? '▶' : '◀'}
+        <svg
+          viewBox="0 0 24 24"
+          width="14"
+          height="14"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          {collapsed
+            ? <polyline points="9 18 15 12 9 6" />
+            : <polyline points="15 18 9 12 15 6" />
+          }
+        </svg>
       </button>
 
       {/* Logo */}
