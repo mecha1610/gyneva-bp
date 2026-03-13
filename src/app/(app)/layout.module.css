@@ -4,8 +4,8 @@
 }
 
 .mainArea {
-  margin-left: var(--sidebar-w);
-  transition: var(--trans);
+  margin-left: var(--sidebar-current-w, var(--sidebar-w));
+  transition: margin-left .2s cubic-bezier(.4,0,.2,1);
   flex: 1;
   min-width: 0;
   display: flex;
