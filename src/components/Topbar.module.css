@@ -125,6 +125,9 @@
   color: var(--txt);
   transition: var(--trans);
   line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .iconBtn:hover {
@@ -146,6 +149,9 @@
   font-weight: 500;
   cursor: pointer;
   transition: var(--trans);
+  display: flex;
+  align-items: center;
+  gap: .4rem;
 }
 
 .actionsBtn:hover {
@@ -169,7 +175,7 @@
 .actionsMenu button {
   display: flex;
   align-items: center;
-  gap: .5rem;
+  gap: .6rem;
   width: 100%;
   padding: .6rem 1rem;
   background: none;
@@ -224,6 +230,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.userName {
+  font-size: .8rem;
+  font-weight: 500;
+  color: var(--txt);
+  white-space: nowrap;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .logoutBtn {
