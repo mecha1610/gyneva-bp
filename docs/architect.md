@@ -61,7 +61,7 @@ src/
     middleware.ts    # requireAuth(), requireAdmin(), withCors(), withRateLimit()
   stores/
     useAppStore.ts   # Zustand: active plan data (36-month arrays + constants), plan list, overlay scenario
-    useSimStore.ts   # Zustand: simulator parameters (14 params), simulation results
+    useSimStore.ts   # Zustand: simulator parameters (14 params); results derived on-demand via useSimResult() selector
 
 lib/                 # Shared — imported by BOTH src/ components AND legacy SPA via <script>
   types.ts           # All TypeScript interfaces: BusinessPlan, SimulatorParams, SimulatorResult, etc.
