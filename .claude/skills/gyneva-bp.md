@@ -32,11 +32,11 @@ npm run db:studio     # open Prisma Studio GUI
 
 ## Critical Gotchas
 
-1. **`src/proxy.ts` — do NOT rename to `middleware.ts`**: Next.js 16 uses `proxy.ts` as the canonical middleware filename. The export must be `export function proxy()`. Renaming causes deprecation warnings.
+1. **`src/proxy.ts` — do NOT rename back to `middleware.ts`**: Next.js 16 renamed middleware from `middleware.ts` to `proxy.ts`. Using `middleware.ts` still works but triggers a deprecation warning. Export must be `export function proxy()`.
 
 2. **`NEXT_PUBLIC_GOOGLE_CLIENT_ID` trailing newline**: Setting this via shell `echo` adds a `\n`, causing `invalid_client` from Google. Always use `printf` or the Vercel Dashboard UI when setting it.
 
-3. **Prisma v7 DB URL split**: `schema.prisma` has NO `url`/`directUrl` fields. Connection strings live in `prisma.config.ts` only. Runtime uses `POSTGRES_PRISMA_URL` (pooled via Neon); CLI ops use `POSTGRES_URL_NON_POOLING`.
+3. **Prisma v7 DB URL split**: `schema.prisma` has NO `url`/`directUrl` fields. Connection strings live in `prisma.config.ts` only. Runtime uses `POSTGRES_PRISMA_URL` (pooled via Neon); CLI ops use `POSTGRES_URL_NON_POOLING`. If Prisma CLI errors with "missing datasource URL", check `prisma.config.ts`, not `schema.prisma`.
 
 4. **Build requires Prisma client first**: `npm run build` = `prisma generate && next build`. If a new Prisma model is added, run `npm run db:push` before building locally.
 
