@@ -7,6 +7,55 @@ import { useSimStore } from '@/stores/useSimStore';
 import { DEFAULT_BUSINESS_PLAN_DATA } from '@lib/constants';
 import styles from './Topbar.module.css';
 
+const IconMoon = () => (
+  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+  </svg>
+);
+
+const IconSun = () => (
+  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="5"/>
+    <line x1="12" y1="1" x2="12" y2="3"/>
+    <line x1="12" y1="21" x2="12" y2="23"/>
+    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+    <line x1="1" y1="12" x2="3" y2="12"/>
+    <line x1="21" y1="12" x2="23" y2="12"/>
+    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+  </svg>
+);
+
+const IconUpload = () => (
+  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <polyline points="16 16 12 12 8 16"/>
+    <line x1="12" y1="12" x2="12" y2="21"/>
+    <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
+  </svg>
+);
+
+const IconClock = () => (
+  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="10"/>
+    <polyline points="12 6 12 12 16 14"/>
+  </svg>
+);
+
+const IconDownload = () => (
+  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <polyline points="8 17 12 21 16 17"/>
+    <line x1="12" y1="12" x2="12" y2="21"/>
+    <path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.83"/>
+  </svg>
+);
+
+const IconChevronDown = () => (
+  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <polyline points="6 9 12 15 18 9"/>
+  </svg>
+);
+
 interface Props {
   userName?: string;
   userPicture?: string;
@@ -110,7 +159,7 @@ export default function Topbar({ userName, userPicture }: Props) {
           <span className={styles.planName}>
             {isLive ? (importFileName ?? 'Importé') : (currentPlan?.name ?? 'Plan initial')}
           </span>
-          {' ▾'}
+          <IconChevronDown />
         </button>
         {planDropOpen && allPlans.length > 0 && (
           <div className={styles.planDropdown}>
@@ -136,7 +185,7 @@ export default function Topbar({ userName, userPicture }: Props) {
         title="Basculer thème"
         aria-label="Basculer thème clair/sombre"
       >
-        {theme === 'light' ? '🌙' : '☀️'}
+        {theme === 'light' ? <IconMoon /> : <IconSun />}
       </button>
 
       {/* Actions dropdown */}
@@ -146,26 +195,24 @@ export default function Topbar({ userName, userPicture }: Props) {
           onClick={() => setActionsOpen(o => !o)}
           aria-expanded={actionsOpen}
         >
-          Actions ▾
+          Actions <IconChevronDown />
         </button>
         {actionsOpen && (
           <div className={styles.actionsMenu} role="menu">
             <button role="menuitem" onClick={() => { fileInputRef.current?.click(); setActionsOpen(false); }}>
-              📄 Importer Excel
+              <IconUpload /> Importer Excel
             </button>
             <button role="menuitem" onClick={() => setActionsOpen(false)}>
-              🕘 Versions
-            </button>
-            <button role="menuitem" onClick={() => setActionsOpen(false)}>
-              📈 Comparer
+              <IconClock /> Historique des versions
             </button>
             <hr className={styles.menuDivider} />
             <button
               role="menuitem"
               className={styles.menuItemPrimary}
               onClick={() => setActionsOpen(false)}
+              title="Export PDF (visualisation SPA uniquement — non disponible dans l'application Next.js)"
             >
-              🖨 Export PDF
+              <IconDownload /> Export PDF
             </button>
           </div>
         )}
@@ -193,6 +240,9 @@ export default function Topbar({ userName, userPicture }: Props) {
           <div className={styles.avatarPlaceholder}>
             {(userName ?? 'U')[0].toUpperCase()}
           </div>
+        )}
+        {userName && (
+          <span className={styles.userName}>{userName}</span>
         )}
         <button className={styles.logoutBtn} onClick={handleLogout}>
           Déconnexion
