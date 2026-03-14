@@ -6,6 +6,7 @@ import { useSimStore } from '@/stores/useSimStore';
 import { computeDerived } from '@lib/compute';
 import styles from './page.module.css';
 import PageHeader from '@/components/PageHeader';
+import KpiSkeleton from '@/components/KpiSkeleton';
 
 const ProfitBarChart   = dynamic(() => import('./ProfitChart').then(m => ({ default: m.ProfitBarChart })),   { ssr: false, loading: () => <div className={styles.chartSkeleton} /> });
 const ProfitCumulChart = dynamic(() => import('./ProfitChart').then(m => ({ default: m.ProfitCumulChart })), { ssr: false, loading: () => <div className={styles.chartSkeleton} /> });
@@ -33,13 +34,23 @@ function sign(v: number): string {
 // ── Component ──────────────────────────────────────────────────────────────
 
 export default function ProfitPage() {
-  const planData = useSimStore(s => s.planData);
-  const inputs   = useSimStore(s => s.inputs);
-  const D        = computeDerived(planData);
+  const isHydrated = useSimStore(s => s.isHydrated);
+  const planData   = useSimStore(s => s.planData);
+  const inputs     = useSimStore(s => s.inputs);
+  const D          = computeDerived(planData);
 
   // Local sliders (independent from simulator)
   const [nbAssoc, setNbAssoc]   = useState(inputs.assoc);
   const [charges, setCharges]   = useState(inputs.extra);
+
+  if (!isHydrated) {
+    return (
+      <div>
+        <PageHeader title="Rentabilité par associé" subtitle="ROI, payback et rémunération nette sur 3 ans" />
+        <KpiSkeleton count={4} gridClassName={styles.kpiGrid} />
+      </div>
+    );
+  }
 
   // ── Core calculations ─────────────────────────────────────────────────────
 

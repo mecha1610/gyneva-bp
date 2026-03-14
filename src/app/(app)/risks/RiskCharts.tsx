@@ -72,7 +72,7 @@ export function StressChart({ baseCA, baseRes, pessCA, pessRes, optCA, optRes }:
     },
   };
 
-  return <Bar data={data} options={options} />;
+  return <Bar data={data} options={options} aria-label="Graphique analyse des risques et charges" role="img" />;
 }
 
 // ── Charges donut chart ────────────────────────────────────────────────────
@@ -110,5 +110,5 @@ export function ChargesDonutChart({ critiqueMid, importantMid, moyenMid }: Charg
     cutout: '60%',
   };
 
-  return <Doughnut data={data} options={options} />;
+  return <Doughnut data={data} options={options} aria-label="Graphique analyse des risques et charges" role="img" />;
 }

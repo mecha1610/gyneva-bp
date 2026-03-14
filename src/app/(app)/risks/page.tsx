@@ -6,6 +6,7 @@ import { useSimStore } from '@/stores/useSimStore';
 import { computeSimulation } from '@lib/simulation';
 import styles from './page.module.css';
 import PageHeader from '@/components/PageHeader';
+import KpiSkeleton from '@/components/KpiSkeleton';
 
 const StressChart       = dynamic(() => import('./RiskCharts').then(m => ({ default: m.StressChart })),       { ssr: false, loading: () => <div className={styles.chartSkeleton} /> });
 const ChargesDonutChart = dynamic(() => import('./RiskCharts').then(m => ({ default: m.ChargesDonutChart })), { ssr: false, loading: () => <div className={styles.chartSkeleton} /> });
@@ -72,10 +73,20 @@ function cycle(v: number): number {
 // ── Component ──────────────────────────────────────────────────────────────
 
 export default function RisksPage() {
-  const inputs = useSimStore(s => s.inputs);
+  const isHydrated = useSimStore(s => s.isHydrated);
+  const inputs     = useSimStore(s => s.inputs);
 
   const [risks, setRisks]       = useState<Risk[]>(INITIAL_RISKS);
   const [sortByExp, setSortByExp] = useState(false);
+
+  if (!isHydrated) {
+    return (
+      <div>
+        <PageHeader title="Analyse des risques" subtitle="Matrice de risques, stress-test et sensibilité aux variables" />
+        <KpiSkeleton count={4} gridClassName={styles.scenarios} />
+      </div>
+    );
+  }
 
   // ── Scenarios ─────────────────────────────────────────────────────────────
 

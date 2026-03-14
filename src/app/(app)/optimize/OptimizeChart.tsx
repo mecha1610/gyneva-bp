@@ -74,5 +74,5 @@ export function OptimizeChart({ worstData, cashOnlyData, cash1mData, factData, m
     },
   };
 
-  return <Line data={data} options={options} />;
+  return <Line data={data} options={options} aria-label="Graphique optimisation de trésorerie" role="img" />;
 }

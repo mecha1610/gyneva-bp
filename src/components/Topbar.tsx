@@ -107,6 +107,14 @@ export default function Topbar({ userName, userPicture }: Props) {
     router.replace('/login');
   }
 
+  function handleExportPdf() {
+    document.body.setAttribute('data-printing', 'true');
+    window.print();
+    window.addEventListener('afterprint', () => {
+      document.body.removeAttribute('data-printing');
+    }, { once: true });
+  }
+
   const handleSwitchPlan = useCallback(async (planId: string) => {
     setPlanDropOpen(false);
     const plan = allPlans.find(p => p.id === planId);
@@ -223,10 +231,9 @@ export default function Topbar({ userName, userPicture }: Props) {
             <button
               role="menuitem"
               className={styles.menuItemPrimary}
-              onClick={() => setActionsOpen(false)}
-              title="Export PDF (fonctionnalité à venir)"
+              onClick={() => { handleExportPdf(); setActionsOpen(false); }}
             >
-              <IconDownload /> Export PDF
+              <IconDownload /> Exporter en PDF
             </button>
           </div>
         )}

@@ -6,6 +6,7 @@ import { useSimStore } from '@/stores/useSimStore';
 import { FACT_COST } from '@lib/constants';
 import styles from './page.module.css';
 import PageHeader from '@/components/PageHeader';
+import KpiSkeleton from '@/components/KpiSkeleton';
 
 const OptimizeChart = dynamic(
   () => import('./OptimizeChart').then(m => ({ default: m.OptimizeChart })),
@@ -58,8 +59,9 @@ function sliderGradient(val: number, min: number, max: number) {
 // ── Component ──────────────────────────────────────────────────────────────
 
 export default function OptimizePage() {
-  const planData = useSimStore(s => s.planData);
-  const inputs   = useSimStore(s => s.inputs);
+  const isHydrated = useSimStore(s => s.isHydrated);
+  const planData   = useSimStore(s => s.planData);
+  const inputs     = useSimStore(s => s.inputs);
 
   // Local controls — independent from simulator
   const [factoring, setFactoring] = useState(inputs.factoring);
@@ -67,6 +69,15 @@ export default function OptimizePage() {
   const [delay,     setDelay]     = useState<0 | 1 | 3>(
     ([0, 1, 3].includes(inputs.delay) ? inputs.delay : 1) as 0 | 1 | 3,
   );
+
+  if (!isHydrated) {
+    return (
+      <div>
+        <PageHeader title="Optimisation trésorerie" subtitle="Comparaison des scénarios de recouvrement LAMal sur 36 mois" />
+        <KpiSkeleton count={4} gridClassName={styles.kpiGrid} />
+      </div>
+    );
+  }
 
   const { ca, admin, opex, lab, result } = planData;
   const cp = cashPct / 100;

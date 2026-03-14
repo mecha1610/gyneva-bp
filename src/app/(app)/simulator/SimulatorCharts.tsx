@@ -80,7 +80,7 @@ export default function SimulatorCharts({ sim, activeYear, chartType }: Props) {
         x: { grid: { display: false } },
       },
     };
-    return <Chart type="bar" data={data} options={options} />;
+    return <Chart type="bar" data={data} options={options} aria-label="Graphique simulation de scénarios" role="img" />;
   }
 
   // cashflow line chart
@@ -121,5 +121,5 @@ export default function SimulatorCharts({ sim, activeYear, chartType }: Props) {
       x: { grid: { display: false }, ticks: { font: { size: 10 }, maxTicksLimit: 12 } },
     },
   };
-  return <Chart type="line" data={data} options={options} />;
+  return <Chart type="line" data={data} options={options} aria-label="Graphique simulation de scénarios" role="img" />;
 }

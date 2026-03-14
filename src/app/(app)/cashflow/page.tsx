@@ -5,6 +5,7 @@ import { useSimStore } from '@/stores/useSimStore';
 import { computeDerived } from '@lib/compute';
 import styles from './page.module.css';
 import PageHeader from '@/components/PageHeader';
+import KpiSkeleton from '@/components/KpiSkeleton';
 
 const ScenarioChart  = dynamic(() => import('./CashflowChart').then(m => ({ default: m.ScenarioChart })),  { ssr: false, loading: () => <div className={styles.chartSkeleton} /> });
 const MonthlyNetChart = dynamic(() => import('./CashflowChart').then(m => ({ default: m.MonthlyNetChart })), { ssr: false, loading: () => <div className={styles.chartSkeleton} /> });
@@ -35,10 +36,20 @@ function scenarioBorderClass(bfr: number): string {
 // ── Component ──────────────────────────────────────────────────────────────
 
 export default function CashflowPage() {
+  const isHydrated    = useSimStore(s => s.isHydrated);
   const planData      = useSimStore(s => s.planData);
   const activeYear    = useSimStore(s => s.cfActiveYear);
   const setActiveYear = useSimStore(s => s.setActiveYear);
   const D             = computeDerived(planData);
+
+  if (!isHydrated) {
+    return (
+      <div>
+        <PageHeader title="Trésorerie & Cashflow" subtitle="Scénarios de liquidité sur 36 mois" />
+        <KpiSkeleton count={4} gridClassName={styles.kpiGrid} />
+      </div>
+    );
+  }
 
   // ── Period bounds ────────────────────────────────────────────────────────
 

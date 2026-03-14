@@ -102,7 +102,7 @@ export function ScenarioChart({ baseline, tresoCash1m, tresoCash3m, tresoFact, a
     },
   };
 
-  return <Line data={data} options={options} />;
+  return <Line data={data} options={options} aria-label="Graphique cashflow et trésorerie mensuel" role="img" />;
 }
 
 // ── Monthly net bar chart ──────────────────────────────────────────────────
@@ -156,5 +156,5 @@ export function MonthlyNetChart({ ca, admin, opex, lab, activeYear }: NetProps) 
     },
   };
 
-  return <Bar data={data} options={options} />;
+  return <Bar data={data} options={options} aria-label="Graphique cashflow et trésorerie mensuel" role="img" />;
 }

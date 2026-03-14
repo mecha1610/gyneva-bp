@@ -86,5 +86,5 @@ export default function RevenueChart({ caAssoc, caIndep, caInterne, caSage, acti
     },
   };
 
-  return <Bar data={data} options={options} />;
+  return <Bar data={data} options={options} aria-label="Graphique chiffre d'affaires mensuel sur 36 mois" role="img" />;
 }

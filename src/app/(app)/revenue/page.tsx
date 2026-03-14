@@ -6,6 +6,7 @@ import type { RevProfile } from '@/stores/useSimStore';
 import { computeDerived } from '@lib/compute';
 import styles from './page.module.css';
 import PageHeader from '@/components/PageHeader';
+import KpiSkeleton from '@/components/KpiSkeleton';
 
 const RevenueChart = dynamic(() => import('./RevenueChart'), { ssr: false, loading: () => <div className={styles.chartSkeleton} /> });
 
@@ -54,12 +55,22 @@ const FTE_KEYS: Record<RevProfile, 'fteAssoc' | 'fteIndep' | 'fteInterne' | null
 // ── Component ──────────────────────────────────────────────────────────────
 
 export default function RevenuePage() {
+  const isHydrated     = useSimStore(s => s.isHydrated);
   const planData       = useSimStore(s => s.planData);
   const activeYear     = useSimStore(s => s.revActiveYear);
   const activeProfiles = useSimStore(s => s.revActiveProfiles);
   const setActiveYear  = useSimStore(s => s.setActiveYear);
   const toggleProfile  = useSimStore(s => s.toggleRevProfile);
   const D              = computeDerived(planData);
+
+  if (!isHydrated) {
+    return (
+      <div>
+        <PageHeader title="Chiffre d'affaires" subtitle="Analyse des revenus par source sur 36 mois" />
+        <KpiSkeleton count={4} gridClassName={styles.kpiGrid} />
+      </div>
+    );
+  }
 
   // ── Year range ───────────────────────────────────────────────────────────
 
