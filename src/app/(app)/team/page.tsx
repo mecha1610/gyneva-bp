@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useSimStore } from '@/stores/useSimStore';
 import styles from './page.module.css';
 import PageHeader from '@/components/PageHeader';
+import KpiSkeleton from '@/components/KpiSkeleton';
 
 const EtpChart          = dynamic(() => import('./TeamChart').then(m => ({ default: m.EtpChart })),          { ssr: false, loading: () => <div className={styles.chartSkeleton} /> });
 const ProductivityChart = dynamic(() => import('./TeamChart').then(m => ({ default: m.ProductivityChart })), { ssr: false, loading: () => <div className={styles.chartSkeleton} /> });
@@ -51,11 +52,21 @@ const PROFILES = [
 // ── Component ──────────────────────────────────────────────────────────────
 
 export default function TeamPage() {
+  const isHydrated    = useSimStore(s => s.isHydrated);
   const planData      = useSimStore(s => s.planData);
   const activeYear    = useSimStore(s => s.teamActiveYear);
   const setActiveYear = useSimStore(s => s.setActiveYear);
 
   const [showProd, setShowProd] = useState(true);
+
+  if (!isHydrated) {
+    return (
+      <div>
+        <PageHeader title="Équipe & RH" subtitle="Montée en charge et productivité des ETP sur 36 mois" />
+        <KpiSkeleton count={4} gridClassName={styles.kpiGrid} />
+      </div>
+    );
+  }
 
   // ── Period bounds ────────────────────────────────────────────────────────
 

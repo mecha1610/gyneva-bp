@@ -74,7 +74,7 @@ export function ProfitBarChart({ perY1, perY2, perY3, adjY1, adjY2, adjY3, medY1
     },
   };
 
-  return <Bar data={data} options={options} />;
+  return <Bar data={data} options={options} aria-label="Graphique résultat net et cumul sur 36 mois" role="img" />;
 }
 
 // ── Cumulative profit line chart ──────────────────────────────────────────
@@ -139,5 +139,5 @@ export function ProfitCumulChart({ result, nbAssoc, monthlyCharges, investPerAss
     },
   };
 
-  return <Line data={data} options={options} />;
+  return <Line data={data} options={options} aria-label="Graphique résultat net et cumul sur 36 mois" role="img" />;
 }

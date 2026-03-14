@@ -7,6 +7,7 @@ import { computeDerived } from '@lib/compute';
 import type { SimulatorParams } from '@lib/types';
 import styles from './page.module.css';
 import PageHeader from '@/components/PageHeader';
+import KpiSkeleton from '@/components/KpiSkeleton';
 
 const SimulatorCharts = dynamic(() => import('./SimulatorCharts'), { ssr: false, loading: () => <div className={styles.chartSkeleton} /> });
 
@@ -66,12 +67,25 @@ function SliderRow({ label, paramKey, value, min, max, step = 1, display, onChan
 // ── Main component ─────────────────────────────────────────────────────────
 
 export default function SimulatorPage() {
+  const isHydrated  = useSimStore(s => s.isHydrated);
   const inputs      = useSimStore(s => s.inputs);
   const planData    = useSimStore(s => s.planData);
   const setParam    = useSimStore(s => s.setParam);
   const resetInputs = useSimStore(s => s.resetInputs);
   const sim = useSimResult();
   const D   = computeDerived(planData);
+
+  if (!isHydrated) {
+    return (
+      <div className={styles.layout}>
+        <aside className={styles.sliderPanel} aria-hidden="true" />
+        <div className={styles.content}>
+          <PageHeader title="Simulateur de scénarios" subtitle="Ajustez les paramètres pour projeter l'impact sur 36 mois" />
+          <KpiSkeleton count={4} gridClassName={styles.kpiRow} />
+        </div>
+      </div>
+    );
+  }
 
   const [activeYear, setActiveYear] = useState<'all' | '1' | '2' | '3'>('all');
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({

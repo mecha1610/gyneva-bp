@@ -56,7 +56,7 @@ export function EtpChart({ fteAssoc, fteIndep, fteInterne, fteAdmin, activeYear 
     },
   };
 
-  return <Bar data={data} options={options} />;
+  return <Bar data={data} options={options} aria-label="Graphique effectif ETP et CA par ETP" role="img" />;
 }
 
 // ── Productivity line chart (CA / ETP per month) ──────────────────────────
@@ -132,5 +132,5 @@ export function ProductivityChart({ ca, fteTotal, activeYear }: ProdProps) {
     },
   };
 
-  return <Line data={data} options={options} />;
+  return <Line data={data} options={options} aria-label="Graphique effectif ETP et CA par ETP" role="img" />;
 }

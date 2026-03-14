@@ -101,5 +101,5 @@ export default function OverviewChart({ caY1, caY2, caY3, resY1, resY2, resY3, t
     },
   };
 
-  return <Chart type="bar" data={data} options={options} />;
+  return <Chart type="bar" data={data} options={options} aria-label="Graphique CA, résultat et trésorerie sur 3 ans" role="img" />;
 }

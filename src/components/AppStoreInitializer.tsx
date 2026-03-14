@@ -28,6 +28,7 @@ export default function AppStoreInitializer({
   const setPlans        = useAppStore(s => s.setPlans);
   const setCurrentPlanId = useAppStore(s => s.setCurrentPlanId);
   const loadPlanData     = useSimStore(s => s.loadPlanData);
+  const setHydrated      = useSimStore(s => s.setHydrated);
   const theme            = useAppStore(s => s.theme);
 
   useEffect(() => {
@@ -37,7 +38,8 @@ export default function AppStoreInitializer({
     setPlans(plans);
     if (currentPlanId) setCurrentPlanId(currentPlanId);
     loadPlanData(firstPlanData ?? DEFAULT_BUSINESS_PLAN_DATA);
-  }, [plans, currentPlanId, firstPlanData, setPlans, setCurrentPlanId, loadPlanData]);
+    setHydrated();
+  }, [plans, currentPlanId, firstPlanData, setPlans, setCurrentPlanId, loadPlanData, setHydrated]);
 
   // Apply persisted theme on mount
   useEffect(() => {

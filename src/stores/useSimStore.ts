@@ -15,6 +15,9 @@ export interface SimState {
   // Raw plan data (from DB or Excel import)
   planData: BusinessPlanData;
 
+  // True once AppStoreInitializer has seeded planData from the server
+  isHydrated: boolean;
+
   // Simulator inputs
   inputs: SimulatorParams;
 
@@ -29,6 +32,8 @@ export interface SimState {
 export interface SimActions {
   /** Replace plan data (after Excel import or plan switch) */
   loadPlanData: (data: BusinessPlanData) => void;
+  /** Mark store as hydrated (called by AppStoreInitializer after loading) */
+  setHydrated: () => void;
   /** Update one simulator parameter and re-run computeSimulation */
   setParam: (key: keyof SimulatorParams, value: number | boolean) => void;
   /** Reset simulator inputs to defaults */
@@ -49,6 +54,7 @@ type SimStore = SimState & SimActions;
 export const useSimStore = create<SimStore>()((set) => ({
   // Initial state — default plan data from constants
   planData: DEFAULT_BUSINESS_PLAN_DATA,
+  isHydrated: false,
   inputs: { ...SIMULATOR_DEFAULTS },
 
   simActiveYear: 'all',
@@ -60,6 +66,8 @@ export const useSimStore = create<SimStore>()((set) => ({
   // ── Actions ────────────────────────────────────────────────────────────
 
   loadPlanData: (data) => set({ planData: data }),
+
+  setHydrated: () => set({ isHydrated: true }),
 
   setParam: (key, value) =>
     set((state) => ({

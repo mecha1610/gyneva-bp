@@ -5,6 +5,7 @@ import { useSimStore } from '@/stores/useSimStore';
 import { computeDerived } from '@lib/compute';
 import styles from './page.module.css';
 import PageHeader from '@/components/PageHeader';
+import KpiSkeleton from '@/components/KpiSkeleton';
 
 // ── Icons ──────────────────────────────────────────────────────────────────
 
@@ -94,8 +95,18 @@ function sum(arr: number[], s: number, e: number) {
 // ── Component ──────────────────────────────────────────────────────────────
 
 export default function OverviewPage() {
-  const planData = useSimStore(s => s.planData);
+  const planData    = useSimStore(s => s.planData);
+  const isHydrated  = useSimStore(s => s.isHydrated);
   const D = computeDerived(planData);
+
+  if (!isHydrated) {
+    return (
+      <div>
+        <PageHeader title="Vue d'ensemble" subtitle="Synthèse financière et indicateurs clés du plan" />
+        <KpiSkeleton count={6} gridClassName={styles.kpiGrid} />
+      </div>
+    );
+  }
 
   // ── Computed metrics ────────────────────────────────────────────────────
   const margin3    = D.caY3 > 0 ? Math.round(D.resY3 / D.caY3 * 100) : 0;
