@@ -5,6 +5,7 @@ import { useSimStore } from '@/stores/useSimStore';
 import type { RevProfile } from '@/stores/useSimStore';
 import { computeDerived } from '@lib/compute';
 import styles from './page.module.css';
+import PageHeader from '@/components/PageHeader';
 
 const RevenueChart = dynamic(() => import('./RevenueChart'), { ssr: false, loading: () => <div className={styles.chartSkeleton} /> });
 
@@ -124,10 +125,7 @@ export default function RevenuePage() {
   return (
     <div>
 
-      <div className={styles.pageHeader}>
-        <h1 className={styles.pageTitle}>Chiffre d&apos;affaires</h1>
-        <p className={styles.pageSubtitle}>Analyse des revenus par source sur 36 mois</p>
-      </div>
+      <PageHeader title="Chiffre d'affaires" subtitle="Analyse des revenus par source sur 36 mois" />
 
       {/* Verdict */}
       <div className={`${styles.verdict} ${styles[`verdict${verdictColor}`]}`}>

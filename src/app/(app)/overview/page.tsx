@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic';
 import { useSimStore } from '@/stores/useSimStore';
 import { computeDerived } from '@lib/compute';
 import styles from './page.module.css';
+import PageHeader from '@/components/PageHeader';
 
 // ── Icons ──────────────────────────────────────────────────────────────────
 
@@ -167,11 +168,7 @@ export default function OverviewPage() {
 
   return (
     <div>
-      {/* Page header */}
-      <div className={styles.pageHeader}>
-        <h1 className={styles.pageTitle}>Vue d&apos;ensemble</h1>
-        <p className={styles.pageSubtitle}>Analyse financière consolidée sur 36 mois</p>
-      </div>
+      <PageHeader title="Vue d'ensemble" subtitle="Synthèse financière et indicateurs clés du plan" />
 
       {/* Verdict */}
       <div className={`${styles.verdict} ${verdictClass}`}>
@@ -183,19 +180,19 @@ export default function OverviewPage() {
       <div className={styles.kpiGrid}>
         <div className={`${styles.kpi} ${styles.kpiBlue}`}>
           <div className={styles.kpiLabel}>Investissement total</div>
-          <div className={styles.kpiValue}>{fmt(planData.capex)}</div>
+          <div className={styles.kpiValue} title={fmt(planData.capex)}>{fmt(planData.capex)}</div>
           <div className={styles.kpiSub}>CAPEX + équipements</div>
         </div>
         <div className={`${styles.kpi} ${styles.kpiGreen}`}>
           <div className={styles.kpiLabel}>CA Année 3</div>
-          <div className={styles.kpiValue}>{fmt(D.caY3)}</div>
+          <div className={styles.kpiValue} title={fmt(D.caY3)}>{fmt(D.caY3)}</div>
           <div className={styles.kpiSub}>
             {caGrowth > 0 ? `+${caGrowth}% vs Année 1` : 'Croissance'}
           </div>
         </div>
         <div className={`${styles.kpi} ${resClass}`}>
           <div className={styles.kpiLabel}>Résultat net Année 3</div>
-          <div className={`${styles.kpiValue} ${resValClass}`}>{fmt(D.resY3)}</div>
+          <div className={`${styles.kpiValue} ${resValClass}`} title={fmt(D.resY3)}>{fmt(D.resY3)}</div>
           <div className={styles.kpiSub}>Marge {margin3}%</div>
         </div>
         <div className={`${styles.kpi} ${resClass}`}>
@@ -210,7 +207,7 @@ export default function OverviewPage() {
         </div>
         <div className={`${styles.kpi} ${bfrClass}`}>
           <div className={styles.kpiLabel}>BFR minimum</div>
-          <div className={`${styles.kpiValue} ${bfrValClass}`}>{fmt(bfrWorst)}</div>
+          <div className={`${styles.kpiValue} ${bfrValClass}`} title={fmt(bfrWorst)}>{fmt(bfrWorst)}</div>
           <div className={styles.kpiSub}>
             {bfrWorst >= 0 ? 'Trésorerie positive' : 'Besoin en fonds de roulement'}
           </div>

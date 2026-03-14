@@ -228,3 +228,40 @@
 .sidebar.collapsed .footer {
   opacity: 0;
 }
+
+/* ── Mobile ── */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform .25s cubic-bezier(.4,0,.2,1), width .2s cubic-bezier(.4,0,.2,1);
+    width: var(--sidebar-w) !important;
+    z-index: 300;
+  }
+  .sidebar.mobileOpen {
+    transform: translateX(0);
+  }
+  .toggleBtn {
+    display: none;
+  }
+}
+
+/* ── Mobile backdrop ── */
+.backdrop {
+  display: none;
+}
+@media (max-width: 768px) {
+  .backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.45);
+    z-index: 299;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s;
+  }
+  .backdropVisible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}

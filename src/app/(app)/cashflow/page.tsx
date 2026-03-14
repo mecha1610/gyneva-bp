@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic';
 import { useSimStore } from '@/stores/useSimStore';
 import { computeDerived } from '@lib/compute';
 import styles from './page.module.css';
+import PageHeader from '@/components/PageHeader';
 
 const ScenarioChart  = dynamic(() => import('./CashflowChart').then(m => ({ default: m.ScenarioChart })),  { ssr: false, loading: () => <div className={styles.chartSkeleton} /> });
 const MonthlyNetChart = dynamic(() => import('./CashflowChart').then(m => ({ default: m.MonthlyNetChart })), { ssr: false, loading: () => <div className={styles.chartSkeleton} /> });
@@ -94,10 +95,7 @@ export default function CashflowPage() {
   return (
     <div>
 
-      <div className={styles.pageHeader}>
-        <h1 className={styles.pageTitle}>Trésorerie &amp; Cashflow</h1>
-        <p className={styles.pageSubtitle}>Scénarios de liquidité sur 36 mois</p>
-      </div>
+      <PageHeader title="Trésorerie & Cashflow" subtitle="Scénarios de liquidité sur 36 mois" />
 
       {/* Verdict */}
       <div className={`${styles.verdict} ${styles[`verdict${verdictColor}`]}`}>
@@ -124,14 +122,14 @@ export default function CashflowPage() {
       <div className={styles.kpiGrid}>
         <div className={`${styles.kpi} ${tresoFin >= 0 ? styles.kpiGreen : styles.kpiRed}`}>
           <div className={styles.kpiLabel}>Trésorerie finale</div>
-          <div className={`${styles.kpiValue} ${tresoFin >= 0 ? styles.kpiValueGreen : styles.kpiValueRed}`}>
+          <div className={`${styles.kpiValue} ${tresoFin >= 0 ? styles.kpiValueGreen : styles.kpiValueRed}`} title={fmt(tresoFin)}>
             {fmt(tresoFin)}
           </div>
           <div className={styles.kpiSub}>Fin de période (baseline)</div>
         </div>
         <div className={`${styles.kpi} ${bfrWorst >= -50_000 ? styles.kpiGreen : bfrWorst >= -150_000 ? styles.kpiOrange : styles.kpiRed}`}>
           <div className={styles.kpiLabel}>BFR minimum</div>
-          <div className={`${styles.kpiValue} ${bfrColor(bfrWorst)}`}>{fmt(bfrWorst)}</div>
+          <div className={`${styles.kpiValue} ${bfrColor(bfrWorst)}`} title={fmt(bfrWorst)}>{fmt(bfrWorst)}</div>
           <div className={styles.kpiSub}>Pire scénario (LAMal 3 mois)</div>
         </div>
         <div className={`${styles.kpi} ${critMonth === 'Aucun' ? styles.kpiGreen : styles.kpiOrange}`}>

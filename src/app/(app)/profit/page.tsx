@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useSimStore } from '@/stores/useSimStore';
 import { computeDerived } from '@lib/compute';
 import styles from './page.module.css';
+import PageHeader from '@/components/PageHeader';
 
 const ProfitBarChart   = dynamic(() => import('./ProfitChart').then(m => ({ default: m.ProfitBarChart })),   { ssr: false, loading: () => <div className={styles.chartSkeleton} /> });
 const ProfitCumulChart = dynamic(() => import('./ProfitChart').then(m => ({ default: m.ProfitCumulChart })), { ssr: false, loading: () => <div className={styles.chartSkeleton} /> });
@@ -114,10 +115,7 @@ export default function ProfitPage() {
   return (
     <div>
 
-      <div className={styles.pageHeader}>
-        <h1 className={styles.pageTitle}>Rentabilité par associé</h1>
-        <p className={styles.pageSubtitle}>ROI, payback et rémunération nette sur 3 ans</p>
-      </div>
+      <PageHeader title="Rentabilité par associé" subtitle="ROI, payback et rémunération nette sur 3 ans" />
 
       {/* Verdict */}
       <div className={`${styles.verdict} ${styles[`verdict${verdictColor}`]}`}>
@@ -173,14 +171,14 @@ export default function ProfitPage() {
         </div>
         <div className={`${styles.kpi} ${adjY3 >= 0 ? styles.kpiGreen : styles.kpiRed}`}>
           <div className={styles.kpiLabel}>Résultat / associé Y3</div>
-          <div className={`${styles.kpiValue} ${adjY3 >= 0 ? styles.kpiValueGreen : styles.kpiValueRed}`}>
+          <div className={`${styles.kpiValue} ${adjY3 >= 0 ? styles.kpiValueGreen : styles.kpiValueRed}`} title={fmt(adjY3)}>
             {fmt(adjY3)}
           </div>
           <div className={styles.kpiSub}>Après {fmt(chargesPerAssoc)} charges</div>
         </div>
         <div className={`${styles.kpi} ${styles.kpiBlue}`}>
           <div className={styles.kpiLabel}>Investissement / associé</div>
-          <div className={styles.kpiValue}>{fmt(investPerAssoc)}</div>
+          <div className={styles.kpiValue} title={fmt(investPerAssoc)}>{fmt(investPerAssoc)}</div>
           <div className={styles.kpiSub}>Part du CAPEX ({fmt(planData.capex)})</div>
         </div>
       </div>

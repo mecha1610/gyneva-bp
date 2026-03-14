@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic';
 import { useState } from 'react';
 import { useSimStore } from '@/stores/useSimStore';
 import styles from './page.module.css';
+import PageHeader from '@/components/PageHeader';
 
 const EtpChart          = dynamic(() => import('./TeamChart').then(m => ({ default: m.EtpChart })),          { ssr: false, loading: () => <div className={styles.chartSkeleton} /> });
 const ProductivityChart = dynamic(() => import('./TeamChart').then(m => ({ default: m.ProductivityChart })), { ssr: false, loading: () => <div className={styles.chartSkeleton} /> });
@@ -116,10 +117,7 @@ export default function TeamPage() {
   return (
     <div>
 
-      <div className={styles.pageHeader}>
-        <h1 className={styles.pageTitle}>Équipe &amp; Ressources humaines</h1>
-        <p className={styles.pageSubtitle}>Montée en charge et productivité des ETP sur 36 mois</p>
-      </div>
+      <PageHeader title="Équipe & RH" subtitle="Montée en charge et productivité des ETP sur 36 mois" />
 
       {/* Verdict */}
       <div className={`${styles.verdict} ${styles[`verdict${verdictColor}`]}`}>
@@ -158,7 +156,7 @@ export default function TeamPage() {
         </div>
         <div className={`${styles.kpi} ${styles.kpiGreen}`}>
           <div className={styles.kpiLabel}>CA / ETP</div>
-          <div className={`${styles.kpiValue} ${styles.kpiValueGreen}`}>{fmt(caPerFte)}</div>
+          <div className={`${styles.kpiValue} ${styles.kpiValueGreen}`} title={fmt(caPerFte)}>{fmt(caPerFte)}</div>
           <div className={styles.kpiSub}>Productivité moyenne</div>
         </div>
         <div className={styles.kpi}>

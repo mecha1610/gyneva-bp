@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import styles from './page.module.css';
+import PageHeader from '@/components/PageHeader';
 
 // ── SVG Icons ──────────────────────────────────────────────────────────────
 
@@ -243,10 +244,7 @@ export default function AdminPage() {
 
   return (
     <div>
-      <div className={styles.pageHeader}>
-        <h1 className={styles.pageTitle}>Administration</h1>
-        <p className={styles.pageSubtitle}>Gestion des utilisateurs, accès et notifications</p>
-      </div>
+      <PageHeader title="Administration" subtitle="Gestion des utilisateurs, accès et notifications" />
 
       <p className={styles.desc}>
         Gérez les utilisateurs, les accès Google OAuth, les invitations et les notifications push.

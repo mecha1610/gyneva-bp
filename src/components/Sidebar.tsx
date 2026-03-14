@@ -136,7 +136,7 @@ export default function Sidebar({ isAdmin = false }: Props) {
   }, [collapsed]);
 
   return (
-    <aside className={`${styles.sidebar} ${collapsed ? styles.collapsed : ''}`}>
+    <aside className={`${styles.sidebar} ${collapsed ? styles.collapsed : ''} ${!collapsed ? styles.mobileOpen : ''}`}>
       {/* Toggle button */}
       <button
         className={styles.toggleBtn}
@@ -210,6 +210,12 @@ export default function Sidebar({ isAdmin = false }: Props) {
       <div className={styles.footer}>
         <span>Analyse confidentielle · 2025</span>
       </div>
+      {/* Mobile backdrop */}
+      <div
+        className={`${styles.backdrop} ${!collapsed ? styles.backdropVisible : ''}`}
+        onClick={toggleSidebar}
+        aria-hidden="true"
+      />
     </aside>
   );
 }

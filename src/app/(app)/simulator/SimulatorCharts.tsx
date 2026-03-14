@@ -14,6 +14,7 @@ import {
 } from 'chart.js';
 import { Chart } from 'react-chartjs-2';
 import type { SimulationResult } from '@lib/simulation';
+import { brandedTooltip } from '@/lib/chartTooltip';
 
 ChartJS.register(
   CategoryScale,
@@ -69,12 +70,7 @@ export default function SimulatorCharts({ sim, activeYear, chartType }: Props) {
       maintainAspectRatio: false,
       plugins: {
         legend: { position: 'top' as const, labels: { usePointStyle: true, padding: 12, font: { size: 11 } } },
-        tooltip: {
-          callbacks: {
-            label: (ctx: { dataset: { label?: string }; parsed: { y: number | null } }) =>
-              ` ${ctx.dataset.label}: ${fmt(ctx.parsed.y ?? 0)}`,
-          },
-        },
+        tooltip: { enabled: false, external: brandedTooltip },
       },
       scales: {
         y: {
@@ -115,12 +111,7 @@ export default function SimulatorCharts({ sim, activeYear, chartType }: Props) {
     maintainAspectRatio: false,
     plugins: {
       legend: { position: 'top' as const, labels: { usePointStyle: true, padding: 12, font: { size: 11 } } },
-      tooltip: {
-        callbacks: {
-          label: (ctx: { dataset: { label?: string }; parsed: { y: number | null } }) =>
-            ` ${ctx.dataset.label}: ${fmt(ctx.parsed.y ?? 0)}`,
-        },
-      },
+      tooltip: { enabled: false, external: brandedTooltip },
     },
     scales: {
       y: {

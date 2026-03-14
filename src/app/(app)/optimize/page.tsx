@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useSimStore } from '@/stores/useSimStore';
 import { FACT_COST } from '@lib/constants';
 import styles from './page.module.css';
+import PageHeader from '@/components/PageHeader';
 
 const OptimizeChart = dynamic(
   () => import('./OptimizeChart').then(m => ({ default: m.OptimizeChart })),
@@ -165,11 +166,7 @@ export default function OptimizePage() {
   return (
     <div>
 
-      {/* Page header */}
-      <div className={styles.pageHeader}>
-        <h1 className={styles.pageTitle}>Optimisation trésorerie</h1>
-        <p className={styles.pageSubtitle}>Comparaison des scénarios de recouvrement LAMal sur 36 mois</p>
-      </div>
+      <PageHeader title="Optimisation trésorerie" subtitle="Comparaison des scénarios de recouvrement LAMal sur 36 mois" />
 
       {/* Verdict */}
       <div className={`${styles.verdict} ${styles[`verdict${verdictColor}`]}`}>
@@ -226,12 +223,12 @@ export default function OptimizePage() {
       <div className={styles.kpiGrid}>
         <div className={`${styles.kpi} ${styles.kpiRed}`}>
           <div className={styles.kpiLabel}>BFR pire cas</div>
-          <div className={`${styles.kpiValue} ${styles.kpiValueRed}`}>{fmt(bfrWorst)}</div>
+          <div className={`${styles.kpiValue} ${styles.kpiValueRed}`} title={fmt(bfrWorst)}>{fmt(bfrWorst)}</div>
           <div className={styles.kpiSub}>Sans aucune optimisation</div>
         </div>
         <div className={`${styles.kpi} ${bfrCurrent < -150_000 ? styles.kpiRed : bfrCurrent < -50_000 ? styles.kpiNeutral : styles.kpiGreen}`}>
           <div className={styles.kpiLabel}>BFR config actuelle</div>
-          <div className={`${styles.kpiValue} ${bfrCurrent < -50_000 ? styles.kpiValueRed : styles.kpiValueGreen}`}>{fmt(bfrCurrent)}</div>
+          <div className={`${styles.kpiValue} ${bfrCurrent < -50_000 ? styles.kpiValueRed : styles.kpiValueGreen}`} title={fmt(bfrCurrent)}>{fmt(bfrCurrent)}</div>
           <div className={styles.kpiSub}>
             {factoring
               ? `Factoring + ${cashPct}% cash`
@@ -240,7 +237,7 @@ export default function OptimizePage() {
         </div>
         <div className={`${styles.kpi} ${styles.kpiBlue}`}>
           <div className={styles.kpiLabel}>BFR économisé</div>
-          <div className={`${styles.kpiValue} ${styles.kpiValueBlue}`}>
+          <div className={`${styles.kpiValue} ${styles.kpiValueBlue}`} title={fmt(saved)}>
             {saved >= 0 ? '+' : ''}{fmt(saved)}
           </div>
           <div className={styles.kpiSub}>

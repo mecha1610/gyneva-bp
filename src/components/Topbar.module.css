@@ -277,3 +277,27 @@
   color: var(--danger);
   border-color: rgba(239,68,68,.2);
 }
+
+/* ── Hamburger (mobile only) ── */
+.hamburger {
+  display: none;
+  background: none;
+  border: 1px solid var(--brd);
+  border-radius: var(--r-sm);
+  padding: .38rem .5rem;
+  cursor: pointer;
+  color: var(--txtL);
+  transition: var(--trans);
+  align-items: center;
+  justify-content: center;
+}
+.hamburger:hover {
+  border-color: var(--pl);
+  color: var(--pl);
+  background: rgba(37,99,235,.05);
+}
+@media (max-width: 768px) {
+  .hamburger {
+    display: flex;
+  }
+}

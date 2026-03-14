@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useSimStore } from '@/stores/useSimStore';
 import { computeSimulation } from '@lib/simulation';
 import styles from './page.module.css';
+import PageHeader from '@/components/PageHeader';
 
 const StressChart       = dynamic(() => import('./RiskCharts').then(m => ({ default: m.StressChart })),       { ssr: false, loading: () => <div className={styles.chartSkeleton} /> });
 const ChargesDonutChart = dynamic(() => import('./RiskCharts').then(m => ({ default: m.ChargesDonutChart })), { ssr: false, loading: () => <div className={styles.chartSkeleton} /> });
@@ -173,11 +174,7 @@ export default function RisksPage() {
   return (
     <div>
 
-      {/* Page header */}
-      <div className={styles.pageHeader}>
-        <h1 className={styles.pageTitle}>Analyse des risques</h1>
-        <p className={styles.pageSubtitle}>Matrice de risques, stress-test et sensibilité aux variables</p>
-      </div>
+      <PageHeader title="Analyse des risques" subtitle="Matrice de risques, stress-test et sensibilité aux variables" />
 
       {/* Verdict */}
       <div className={`${styles.verdict} ${styles[`verdict${verdictColor}`]}`}>

@@ -1,0 +1,17 @@
+.pageHeader {
+  margin-bottom: 1.5rem;
+}
+
+.pageTitle {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--p);
+  letter-spacing: -.02em;
+  line-height: 1.2;
+}
+
+.pageSubtitle {
+  font-size: .82rem;
+  color: var(--txtL);
+  margin-top: .2rem;
+}

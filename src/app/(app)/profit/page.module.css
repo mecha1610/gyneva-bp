@@ -1,8 +1,3 @@
-/* ── Page header ── */
-.pageHeader { margin-bottom: 1.5rem; }
-.pageTitle { font-size: 1.25rem; font-weight: 800; color: var(--p); letter-spacing: -.02em; line-height: 1.2; }
-.pageSubtitle { font-size: .82rem; color: var(--txtL); margin-top: .2rem; }
-
 /* ── Verdict banner ── */
 .verdict {
   border-radius: var(--r);
@@ -41,6 +36,11 @@
   gap: .9rem;
   margin-bottom: 1.2rem;
 }
+
+@media (max-width: 768px) {
+  .controls { grid-template-columns: 1fr; }
+}
+
 .controlCard {
   background: var(--card);
   border-radius: var(--r);
@@ -86,6 +86,14 @@
   gap: .9rem;
   margin-bottom: 1.2rem;
 }
+
+@media (max-width: 768px) {
+  .kpiGrid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .kpiGrid { grid-template-columns: 1fr; }
+}
+
 .kpi {
   background: var(--card);
   border-radius: var(--r);
@@ -133,6 +141,14 @@
   grid-template-columns: repeat(3, 1fr);
   gap: .8rem;
 }
+
+@media (max-width: 768px) {
+  .timeline { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .timeline { grid-template-columns: 1fr; }
+}
+
 .timelineYear {
   background: var(--s2);
   border-radius: var(--r-sm);
@@ -167,6 +183,11 @@
   gap: .9rem;
   margin-bottom: 1.2rem;
 }
+
+@media (max-width: 768px) {
+  .breakdown { grid-template-columns: 1fr; }
+}
+
 .breakdownCard {
   background: var(--card);
   border-radius: var(--r);

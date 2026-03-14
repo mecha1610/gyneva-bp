@@ -6,6 +6,7 @@ import { useSimStore, useSimResult } from '@/stores/useSimStore';
 import { computeDerived } from '@lib/compute';
 import type { SimulatorParams } from '@lib/types';
 import styles from './page.module.css';
+import PageHeader from '@/components/PageHeader';
 
 const SimulatorCharts = dynamic(() => import('./SimulatorCharts'), { ssr: false, loading: () => <div className={styles.chartSkeleton} /> });
 
@@ -261,11 +262,7 @@ export default function SimulatorPage() {
       {/* ── RIGHT: Content ── */}
       <div className={styles.content}>
 
-        {/* Page header */}
-        <div className={styles.pageHeader}>
-          <h1 className={styles.pageTitle}>Simulateur de scénarios</h1>
-          <p className={styles.pageSubtitle}>Ajustez les paramètres pour projeter l&apos;impact sur 36 mois</p>
-        </div>
+        <PageHeader title="Simulateur de scénarios" subtitle="Ajustez les paramètres pour projeter l'impact sur 36 mois" />
 
         {/* Verdict */}
         <div className={`${styles.verdict} ${styles[`verdict${verdictColor}`]}`}>
