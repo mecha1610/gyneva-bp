@@ -71,6 +71,20 @@ CRON_SECRET                  # Protects /api/cron/cleanup
 
 Generate VAPID keys: `npx web-push generate-vapid-keys`
 
+## UI / Design System
+
+**Design system lives in `design-system/MASTER.md`**: All CSS tokens, component specs, icon rules, and anti-patterns. Page-specific overrides go in `design-system/pages/<page>.md`. Always check before writing new UI code.
+
+**CSS Modules + zsh glob pitfall**: `git add src/app/(app)/...` fails in zsh — `(app)` is parsed as a glob group. Use `git add -u` for tracked files and list new files individually.
+
+**Chart.js `external` tooltip typing**: The `external` callback signature conflicts with Chart.js internal generics (`borderColor` union, `TooltipItem<TType>`). Workaround: type the context parameter as `any` and cast inside — `function externalTooltip(context: any) { const { chart, tooltip } = context as TooltipContext; ... }`. See `src/lib/chartTooltip.ts`.
+
+**Zustand hydration / zero-flash pattern**: Plan data is seeded by `AppStoreInitializer` (client component) in a `useEffect`, so the first render always has empty data. Guard pages with `isHydrated` from `useSimStore` and render `<KpiSkeleton>` until it's true.
+
+**Stores**: `useAppStore` — plan data + sidebar state. `useSimStore` — simulator state + `isHydrated` flag. All pages are `'use client'`; no `metadata` exports on page files (use `(app)/layout.tsx` instead).
+
+**Print/PDF**: `@media print` in `globals.css` targets CSS Module class names via `[class*="..."]` substring selectors (hashed names make direct targeting impossible). `Topbar.tsx` `handleExportPdf()` sets `data-printing` on `body` before `window.print()`.
+
 ## Testing
 
 - **Unit**: `vitest` — `tests/simulation.test.ts` (45 tests for `computeSimulation()` in `lib/simulation.ts`)
