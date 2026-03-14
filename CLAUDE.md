@@ -30,7 +30,8 @@ src/
       auth/ plans/ scenarios/ import/ admin/ push/ cron/
     login/           # Public login page
     layout.tsx       # Root layout (theme flash prevention)
-  components/        # Sidebar.tsx, Topbar.tsx (shared layout)
+  components/        # Sidebar.tsx, Topbar.tsx (layout), PageHeader.tsx, KpiSkeleton.tsx,
+                     # ScrollToTop.tsx, AppStoreInitializer.tsx (server→client store bridge)
   lib/server/        # auth.ts (session CRUD), db.ts (Prisma singleton)
   stores/            # Zustand: useAppStore.ts (plan data), useSimStore.ts (simulator)
   proxy.ts           # Next.js 16 middleware (named export proxy())
@@ -77,11 +78,13 @@ Generate VAPID keys: `npx web-push generate-vapid-keys`
 
 **CSS Modules + zsh glob pitfall**: `git add src/app/(app)/...` fails in zsh — `(app)` is parsed as a glob group. Use `git add -u` for tracked files and list new files individually.
 
-**Chart.js `external` tooltip typing**: The `external` callback signature conflicts with Chart.js internal generics (`borderColor` union, `TooltipItem<TType>`). Workaround: type the context parameter as `any` and cast inside — `function externalTooltip(context: any) { const { chart, tooltip } = context as TooltipContext; ... }`. See `src/lib/chartTooltip.ts`.
+**Chart.js `external` tooltip typing**: Type context as `any`, cast inside. See `src/lib/chartTooltip.ts`.
 
 **Zustand hydration / zero-flash pattern**: Plan data is seeded by `AppStoreInitializer` (client component) in a `useEffect`, so the first render always has empty data. Guard pages with `isHydrated` from `useSimStore` and render `<KpiSkeleton>` until it's true.
 
 **Stores**: `useAppStore` — plan data + sidebar state. `useSimStore` — simulator state + `isHydrated` flag. All pages are `'use client'`; no `metadata` exports on page files (use `(app)/layout.tsx` instead).
+
+**`AppStoreInitializer` — server→client bridge**: `(app)/layout.tsx` is a Server Component that fetches the user's plans from Prisma and passes them as props to `AppStoreInitializer` (a client component), which seeds `useAppStore` and `useSimStore` in a `useEffect`. This is the only place DB data enters the client stores.
 
 **Print/PDF**: `@media print` in `globals.css` targets CSS Module class names via `[class*="..."]` substring selectors (hashed names make direct targeting impossible). `Topbar.tsx` `handleExportPdf()` sets `data-printing` on `body` before `window.print()`.
 
