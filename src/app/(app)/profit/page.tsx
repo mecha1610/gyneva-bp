@@ -5,9 +5,18 @@ import { useState } from 'react';
 import { useSimStore } from '@/stores/useSimStore';
 import { computeDerived } from '@lib/compute';
 import styles from './page.module.css';
+import PageHeader from '@/components/PageHeader';
 
-const ProfitBarChart   = dynamic(() => import('./ProfitChart').then(m => ({ default: m.ProfitBarChart })),   { ssr: false });
-const ProfitCumulChart = dynamic(() => import('./ProfitChart').then(m => ({ default: m.ProfitCumulChart })), { ssr: false });
+const ProfitBarChart   = dynamic(() => import('./ProfitChart').then(m => ({ default: m.ProfitBarChart })),   { ssr: false, loading: () => <div className={styles.chartSkeleton} /> });
+const ProfitCumulChart = dynamic(() => import('./ProfitChart').then(m => ({ default: m.ProfitCumulChart })), { ssr: false, loading: () => <div className={styles.chartSkeleton} /> });
+
+// ── SVG Icons ──────────────────────────────────────────────────────────────
+
+function IconCheck() { return <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 11 4 16"/></svg>; }
+function IconAlert() { return <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>; }
+function IconX() { return <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>; }
+function IconBarChart() { return <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>; }
+function IconTrending() { return <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>; }
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -91,7 +100,7 @@ export default function ProfitPage() {
     roiCumul >= 1 ? 'Orange' :
                     'Red';
 
-  const verdictIcon = verdictColor === 'Green' ? '💰' : verdictColor === 'Orange' ? '⚠️' : '❌';
+  const VerdictIcon = verdictColor === 'Green' ? IconCheck : verdictColor === 'Orange' ? IconAlert : IconX;
   const verdictText =
     roiCumul >= 5
       ? `ROI excellent — ${roiCumul.toFixed(1)}x sur 3 ans. Investissement ${fmt(investPerAssoc)}/associé, retour cumulé ${fmt(cumAdj)}.`
@@ -106,10 +115,12 @@ export default function ProfitPage() {
   return (
     <div>
 
+      <PageHeader title="Rentabilité par associé" subtitle="ROI, payback et rémunération nette sur 3 ans" />
+
       {/* Verdict */}
       <div className={`${styles.verdict} ${styles[`verdict${verdictColor}`]}`}>
-        <div className={styles.verdictIc}>{verdictIcon}</div>
-        <div><strong>Analyse de rentabilité.</strong>{' '}{verdictText}</div>
+        <div className={styles.ic}><VerdictIcon /></div>
+        <div className={styles.verdictBody}><strong>Analyse de rentabilité.</strong>{' '}{verdictText}</div>
       </div>
 
       {/* Sliders */}
@@ -160,21 +171,21 @@ export default function ProfitPage() {
         </div>
         <div className={`${styles.kpi} ${adjY3 >= 0 ? styles.kpiGreen : styles.kpiRed}`}>
           <div className={styles.kpiLabel}>Résultat / associé Y3</div>
-          <div className={`${styles.kpiValue} ${adjY3 >= 0 ? styles.kpiValueGreen : styles.kpiValueRed}`}>
+          <div className={`${styles.kpiValue} ${adjY3 >= 0 ? styles.kpiValueGreen : styles.kpiValueRed}`} title={fmt(adjY3)}>
             {fmt(adjY3)}
           </div>
           <div className={styles.kpiSub}>Après {fmt(chargesPerAssoc)} charges</div>
         </div>
         <div className={`${styles.kpi} ${styles.kpiBlue}`}>
           <div className={styles.kpiLabel}>Investissement / associé</div>
-          <div className={styles.kpiValue}>{fmt(investPerAssoc)}</div>
+          <div className={styles.kpiValue} title={fmt(investPerAssoc)}>{fmt(investPerAssoc)}</div>
           <div className={styles.kpiSub}>Part du CAPEX ({fmt(planData.capex)})</div>
         </div>
       </div>
 
       {/* Year timeline */}
       <div className={styles.card}>
-        <div className={styles.cardTitle}>💵 Résultat net — Part par associé</div>
+        <div className={styles.cardTitle}><IconBarChart /> Résultat net — Part par associé</div>
         <div className={styles.timeline}>
           {[
             { label: 'Année 1', res: D.resY1, per: perY1, adj: adjY1 },
@@ -207,7 +218,7 @@ export default function ProfitPage() {
       {/* Breakdown: médecin vs non-médecin */}
       <div className={styles.breakdown}>
         <div className={styles.breakdownCard}>
-          <div className={styles.breakdownHeader}>🩺 Associé médecin</div>
+          <div className={styles.breakdownHeader}>Associé médecin</div>
           <div className={styles.breakdownBody}>
             <div className={styles.bdRow}>
               <span className={styles.bdLabel}>Rétrocession propre CA ({inputs.retro}%)</span>
@@ -233,7 +244,7 @@ export default function ProfitPage() {
         </div>
 
         <div className={styles.breakdownCard}>
-          <div className={styles.breakdownHeader}>💼 Associé non-médecin</div>
+          <div className={styles.breakdownHeader}>Associé non-médecin</div>
           <div className={styles.breakdownBody}>
             <div className={styles.bdRow}>
               <span className={styles.bdLabel}>Rétrocession propre CA</span>
@@ -261,7 +272,7 @@ export default function ProfitPage() {
 
       {/* Bar chart */}
       <div className={styles.card}>
-        <div className={styles.cardTitle}>📊 Résultat par associé — vue annuelle</div>
+        <div className={styles.cardTitle}><IconBarChart /> Résultat par associé — vue annuelle</div>
         <div className={styles.chartBox}>
           <ProfitBarChart
             perY1={perY1} perY2={perY2} perY3={perY3}
@@ -273,7 +284,7 @@ export default function ProfitPage() {
 
       {/* Cumulative line chart */}
       <div className={styles.card}>
-        <div className={styles.cardTitle}>📈 Profit cumulé sur 36 mois</div>
+        <div className={styles.cardTitle}><IconTrending /> Profit cumulé sur 36 mois</div>
         <div className={styles.chartBoxLg}>
           <ProfitCumulChart
             result={planData.result}

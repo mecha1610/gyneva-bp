@@ -6,8 +6,15 @@ import { useSimStore, useSimResult } from '@/stores/useSimStore';
 import { computeDerived } from '@lib/compute';
 import type { SimulatorParams } from '@lib/types';
 import styles from './page.module.css';
+import PageHeader from '@/components/PageHeader';
 
-const SimulatorCharts = dynamic(() => import('./SimulatorCharts'), { ssr: false });
+const SimulatorCharts = dynamic(() => import('./SimulatorCharts'), { ssr: false, loading: () => <div className={styles.chartSkeleton} /> });
+
+// ── SVG icons ──────────────────────────────────────────────────────────────
+
+function IconCheck() { return <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 11 4 16"/></svg>; }
+function IconAlert() { return <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>; }
+function IconX() { return <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>; }
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -48,6 +55,8 @@ function SliderRow({ label, paramKey, value, min, max, step = 1, display, onChan
         step={step}
         value={value}
         style={{ background: gradient }}
+        aria-label={label}
+        aria-valuetext={displayVal}
         onChange={e => onChange(paramKey, Number(e.target.value))}
       />
     </div>
@@ -96,7 +105,7 @@ export default function SimulatorPage() {
   score += payback <= 12 ? 3 : payback <= 18 ? 2 : payback <= 24 ? 1 : 0;
 
   const verdictColor = score >= 9 ? 'Green' : score >= 5 ? 'Orange' : 'Red';
-  const verdictIcon  = score >= 9 ? '✅' : score >= 5 ? '⚠️' : '❌';
+  const VerdictIcon  = score >= 9 ? IconCheck : score >= 5 ? IconAlert : IconX;
   const verdictText  =
     score >= 9
       ? `Scénario solide — marge Y3 ${margin3}%, BFR min ${fmt(sim.bfrMin)}, payback ${payback} mois.`
@@ -157,7 +166,7 @@ export default function SimulatorPage() {
         {/* Activité */}
         <div className={styles.sliderGroup}>
           <button className={styles.groupHeader} onClick={() => toggleGroup('activite')}>
-            📊 Activité
+            Activité
             <span className={`${styles.groupChevron} ${openGroups.activite ? styles.groupChevronOpen : ''}`}>▼</span>
           </button>
           {openGroups.activite && (
@@ -173,7 +182,7 @@ export default function SimulatorPage() {
         {/* Équipe */}
         <div className={styles.sliderGroup}>
           <button className={styles.groupHeader} onClick={() => toggleGroup('equipe')}>
-            👥 Équipe
+            Équipe
             <span className={`${styles.groupChevron} ${openGroups.equipe ? styles.groupChevronOpen : ''}`}>▼</span>
           </button>
           {openGroups.equipe && (
@@ -188,7 +197,7 @@ export default function SimulatorPage() {
         {/* Démarrage */}
         <div className={styles.sliderGroup}>
           <button className={styles.groupHeader} onClick={() => toggleGroup('demarrage')}>
-            🚀 Démarrage
+            Démarrage
             <span className={`${styles.groupChevron} ${openGroups.demarrage ? styles.groupChevronOpen : ''}`}>▼</span>
           </button>
           {openGroups.demarrage && (
@@ -202,7 +211,7 @@ export default function SimulatorPage() {
         {/* Trésorerie */}
         <div className={styles.sliderGroup}>
           <button className={styles.groupHeader} onClick={() => toggleGroup('tresorerie')}>
-            💰 Trésorerie
+            Trésorerie
             <span className={`${styles.groupChevron} ${openGroups.tresorerie ? styles.groupChevronOpen : ''}`}>▼</span>
           </button>
           {openGroups.tresorerie && (
@@ -238,7 +247,7 @@ export default function SimulatorPage() {
         {/* Charges */}
         <div className={styles.sliderGroup}>
           <button className={styles.groupHeader} onClick={() => toggleGroup('charges')}>
-            ⚖️ Charges
+            Charges
             <span className={`${styles.groupChevron} ${openGroups.charges ? styles.groupChevronOpen : ''}`}>▼</span>
           </button>
           {openGroups.charges && (
@@ -253,10 +262,12 @@ export default function SimulatorPage() {
       {/* ── RIGHT: Content ── */}
       <div className={styles.content}>
 
+        <PageHeader title="Simulateur de scénarios" subtitle="Ajustez les paramètres pour projeter l'impact sur 36 mois" />
+
         {/* Verdict */}
         <div className={`${styles.verdict} ${styles[`verdict${verdictColor}`]}`}>
-          <div className={styles.verdictIc}>{verdictIcon}</div>
-          <div>
+          <div className={styles.ic}><VerdictIcon /></div>
+          <div className={styles.verdictBody}>
             <strong>Analyse du scénario.</strong>{' '}{verdictText}
           </div>
         </div>
@@ -284,7 +295,7 @@ export default function SimulatorPage() {
         {/* Year navigator */}
         <div className={styles.yearNav}>
           <div className={styles.yearNavHeader}>
-            <span className={styles.yearNavTitle}>📆 Vue par année</span>
+            <span className={styles.yearNavTitle}>Vue par année</span>
             <div className={styles.yearBtns}>
               {(['all', '1', '2', '3'] as const).map(y => (
                 <button
@@ -394,14 +405,14 @@ export default function SimulatorPage() {
 
         {/* Charts */}
         <div className={styles.chartCard}>
-          <div className={styles.chartCardTitle}>📈 CA & Résultat sur 3 ans</div>
+          <div className={styles.chartCardTitle}>CA &amp; Résultat sur 3 ans</div>
           <div className={styles.chartBox}>
             <SimulatorCharts sim={sim} activeYear={activeYear} chartType="bar" />
           </div>
         </div>
         <div className={styles.chartCard}>
           <div className={styles.chartCardTitle}>
-            💹 Trésorerie cumulée {activeYear !== 'all' ? `— Année ${activeYear}` : '— 36 mois'}
+            Trésorerie cumulée {activeYear !== 'all' ? `— Année ${activeYear}` : '— 36 mois'}
           </div>
           <div className={styles.chartBox}>
             <SimulatorCharts sim={sim} activeYear={activeYear} chartType="cashflow" />
@@ -412,7 +423,7 @@ export default function SimulatorPage() {
         {(Math.abs(dCa) > 1 || Math.abs(dRes) > 1 || Math.abs(dTres) > 1) && (
           <div className={styles.compareCard}>
             <div className={styles.compareHeader}>
-              🔄 Comparaison scénario vs plan initial
+              Comparaison scénario vs plan initial
             </div>
             <div className={styles.compareGrid}>
               {[

@@ -4,9 +4,17 @@ import dynamic from 'next/dynamic';
 import { useSimStore } from '@/stores/useSimStore';
 import { computeDerived } from '@lib/compute';
 import styles from './page.module.css';
+import PageHeader from '@/components/PageHeader';
 
-const ScenarioChart  = dynamic(() => import('./CashflowChart').then(m => ({ default: m.ScenarioChart })),  { ssr: false });
-const MonthlyNetChart = dynamic(() => import('./CashflowChart').then(m => ({ default: m.MonthlyNetChart })), { ssr: false });
+const ScenarioChart  = dynamic(() => import('./CashflowChart').then(m => ({ default: m.ScenarioChart })),  { ssr: false, loading: () => <div className={styles.chartSkeleton} /> });
+const MonthlyNetChart = dynamic(() => import('./CashflowChart').then(m => ({ default: m.MonthlyNetChart })), { ssr: false, loading: () => <div className={styles.chartSkeleton} /> });
+
+// ── SVG Icons ───────────────────────────────────────────────────────────────
+
+function IconCheck() { return <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 11 4 16"/></svg>; }
+function IconAlert() { return <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>; }
+function IconX() { return <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>; }
+function IconActivity() { return <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>; }
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -74,7 +82,7 @@ export default function CashflowPage() {
   // ── Verdict ──────────────────────────────────────────────────────────────
 
   const verdictColor = bfrWorst >= -50_000 ? 'Green' : bfrWorst >= -150_000 ? 'Orange' : 'Red';
-  const verdictIcon  = bfrWorst >= -50_000 ? '✅' : bfrWorst >= -150_000 ? '⚠️' : '❌';
+  const VerdictIcon  = bfrWorst >= -50_000 ? IconCheck : bfrWorst >= -150_000 ? IconAlert : IconX;
   const verdictText  =
     bfrWorst >= -50_000
       ? `Trésorerie maîtrisée — BFR minimum ${fmt(bfrWorst)}, premier mois négatif : ${critMonth}.`
@@ -87,10 +95,12 @@ export default function CashflowPage() {
   return (
     <div>
 
+      <PageHeader title="Trésorerie & Cashflow" subtitle="Scénarios de liquidité sur 36 mois" />
+
       {/* Verdict */}
       <div className={`${styles.verdict} ${styles[`verdict${verdictColor}`]}`}>
-        <div className={styles.verdictIc}>{verdictIcon}</div>
-        <div><strong>Analyse de trésorerie.</strong>{' '}{verdictText}</div>
+        <div className={styles.ic}><VerdictIcon /></div>
+        <div className={styles.verdictBody}><strong>Analyse de trésorerie.</strong>{' '}{verdictText}</div>
       </div>
 
       {/* Year tabs */}
@@ -112,14 +122,14 @@ export default function CashflowPage() {
       <div className={styles.kpiGrid}>
         <div className={`${styles.kpi} ${tresoFin >= 0 ? styles.kpiGreen : styles.kpiRed}`}>
           <div className={styles.kpiLabel}>Trésorerie finale</div>
-          <div className={`${styles.kpiValue} ${tresoFin >= 0 ? styles.kpiValueGreen : styles.kpiValueRed}`}>
+          <div className={`${styles.kpiValue} ${tresoFin >= 0 ? styles.kpiValueGreen : styles.kpiValueRed}`} title={fmt(tresoFin)}>
             {fmt(tresoFin)}
           </div>
           <div className={styles.kpiSub}>Fin de période (baseline)</div>
         </div>
         <div className={`${styles.kpi} ${bfrWorst >= -50_000 ? styles.kpiGreen : bfrWorst >= -150_000 ? styles.kpiOrange : styles.kpiRed}`}>
           <div className={styles.kpiLabel}>BFR minimum</div>
-          <div className={`${styles.kpiValue} ${bfrColor(bfrWorst)}`}>{fmt(bfrWorst)}</div>
+          <div className={`${styles.kpiValue} ${bfrColor(bfrWorst)}`} title={fmt(bfrWorst)}>{fmt(bfrWorst)}</div>
           <div className={styles.kpiSub}>Pire scénario (LAMal 3 mois)</div>
         </div>
         <div className={`${styles.kpi} ${critMonth === 'Aucun' ? styles.kpiGreen : styles.kpiOrange}`}>
@@ -175,7 +185,7 @@ export default function CashflowPage() {
       {/* Scenario line chart */}
       <div className={styles.card}>
         <div className={styles.cardTitle}>
-          📈 Trésorerie cumulée — comparaison scénarios
+          <IconActivity /> Trésorerie cumulée — comparaison scénarios
           {activeYear !== 'all' && ` · Année ${activeYear}`}
         </div>
         <div className={styles.chartBox}>
@@ -192,7 +202,7 @@ export default function CashflowPage() {
       {/* Monthly net bar chart */}
       <div className={styles.card}>
         <div className={styles.cardTitle}>
-          📊 Flux net mensuel (CA − charges)
+          <IconActivity /> Flux net mensuel (CA − charges)
           {activeYear !== 'all' && ` · Année ${activeYear}`}
         </div>
         <div className={styles.chartBoxSm}>

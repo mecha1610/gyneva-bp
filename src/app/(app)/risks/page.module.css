@@ -1,18 +1,31 @@
-/* ── Verdict ── */
-.verdict {
-  border-radius: var(--r);
-  padding: 1rem 1.2rem;
-  display: flex;
-  align-items: flex-start;
-  gap: .8rem;
-  font-size: .85rem;
-  line-height: 1.55;
-  margin-bottom: 1.2rem;
+/* ── Page header ── */
+.pageHeader {
+  margin-bottom: 1.5rem;
 }
-.verdictIc { font-size: 1.4rem; flex-shrink: 0; }
-.verdictGreen  { background: rgba(0,184,148,.08);  border: 1px solid rgba(0,184,148,.2);  color: #00755a; }
-.verdictOrange { background: rgba(245,158,11,.1);   border: 1px solid rgba(245,158,11,.25); color: #7d5a12; }
-.verdictRed    { background: rgba(239,68,68,.08);   border: 1px solid rgba(239,68,68,.2);  color: #8b2020; }
+.pageTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--p);
+  margin: 0 0 .25rem;
+  line-height: 1.2;
+}
+.pageSubtitle {
+  font-size: .875rem;
+  color: var(--txtL);
+  margin: 0;
+}
+
+/* ── Verdict ── */
+.verdict { border-radius: var(--r); padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem; font-size: .875rem; line-height: 1.6; border: 1px solid; box-shadow: var(--sh); }
+.verdict .ic { flex-shrink: 0; display: flex; align-items: center; width: 36px; height: 36px; border-radius: 50%; justify-content: center; }
+.verdictGreen  { background: rgba(16,185,129,.06); border-color: rgba(16,185,129,.2);  color: var(--acc); }
+.verdictGreen .ic  { background: rgba(16,185,129,.12); }
+.verdictOrange { background: rgba(245,158,11,.06);  border-color: rgba(245,158,11,.25); color: var(--warn); }
+.verdictOrange .ic { background: rgba(245,158,11,.12); }
+.verdictRed    { background: rgba(239,68,68,.06);   border-color: rgba(239,68,68,.2);   color: var(--danger); }
+.verdictRed .ic    { background: rgba(239,68,68,.1); }
+.verdictBody { color: var(--txt); font-size: .875rem; line-height: 1.65; }
+.verdictBody strong { color: inherit; }
 
 /* ── Top row (gauge + scenarios) ── */
 .topRow {
@@ -47,7 +60,7 @@
   text-align: center;
   pointer-events: none;
 }
-.gaugeScore    { font-size: 2rem; font-weight: 800; line-height: 1; }
+.gaugeScore    { font-size: 2rem; font-weight: 800; line-height: 1; font-family: var(--font-mono); }
 .gaugeSubtitle { font-size: .7rem; color: var(--txtL); font-weight: 600; }
 .gaugeBreakdown { margin-top: .7rem; border-top: 1px solid var(--brd); padding-top: .6rem; }
 .gbRow {
@@ -113,8 +126,10 @@
   margin-bottom: 1rem;
   display: flex;
   align-items: center;
+  gap: .4rem;
   justify-content: space-between;
 }
+.cardTitle svg { color: var(--pl); flex-shrink: 0; }
 
 /* ── Chart boxes ── */
 .chartBox   { height: 200px; position: relative; }
@@ -209,9 +224,9 @@
   font-size: .78rem;
   font-weight: 800;
 }
-.expLow  { background: rgba(16,185,129,.12); color: #00755a; }
-.expMed  { background: rgba(245,158,11,.12); color: #7d5a12; }
-.expHigh { background: rgba(239,68,68,.12);  color: #8b2020; }
+.expLow  { background: rgba(16,185,129,.12); color: var(--acc); }
+.expMed  { background: rgba(245,158,11,.12); color: var(--warn); }
+.expHigh { background: rgba(239,68,68,.12);  color: var(--danger); }
 
 /* ── Charges breakdown ── */
 .breakdown {
@@ -260,7 +275,7 @@
 }
 .chargesRow:last-of-type { border-bottom: none; }
 .chLabel { color: var(--txtL); }
-.chVal   { font-weight: 700; font-family: monospace; font-size: .74rem; color: var(--txt); }
+.chVal   { font-weight: 700; font-family: var(--font-mono); font-size: .74rem; color: var(--txt); }
 .chargesTotal {
   display: grid;
   grid-template-columns: 1fr 80px 80px 72px;
@@ -273,7 +288,7 @@
   color: var(--p);
 }
 .chargesTotal span:nth-child(2),
-.chargesTotal span:nth-child(3) { font-family: monospace; font-size: .76rem; color: var(--acc); }
+.chargesTotal span:nth-child(3) { font-family: var(--font-mono); font-size: .76rem; color: var(--acc); }
 .critBadge {
   display: inline-block;
   border-radius: 3px;
@@ -283,6 +298,11 @@
   text-transform: uppercase;
   letter-spacing: .3px;
 }
-.critcritique  { background: rgba(239,68,68,.1);  color: #8b2020; }
-.critimportant { background: rgba(245,158,11,.1); color: #7d5a12; }
-.critmoyen     { background: rgba(37,99,235,.1);  color: #1a4a7a; }
+.critcritique  { background: rgba(239,68,68,.1);  color: var(--danger); }
+.critimportant { background: rgba(245,158,11,.1); color: var(--warn); }
+.critmoyen     { background: rgba(37,99,235,.1);  color: var(--pl); }
+
+/* ── Chart skeleton ── */
+.chartSkeleton { height: 100%; background: linear-gradient(90deg, var(--s2) 25%, var(--brd) 50%, var(--s2) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: var(--r-sm); }
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .chartSkeleton { animation: none; background: var(--s2); } }

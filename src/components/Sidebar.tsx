@@ -136,7 +136,7 @@ export default function Sidebar({ isAdmin = false }: Props) {
   }, [collapsed]);
 
   return (
-    <aside className={`${styles.sidebar} ${collapsed ? styles.collapsed : ''}`}>
+    <aside className={`${styles.sidebar} ${collapsed ? styles.collapsed : ''} ${!collapsed ? styles.mobileOpen : ''}`}>
       {/* Toggle button */}
       <button
         className={styles.toggleBtn}
@@ -172,8 +172,8 @@ export default function Sidebar({ isAdmin = false }: Props) {
 
       {/* Nav */}
       <nav className={styles.nav}>
-        {NAV_ITEMS.map(item => {
-          if (item.adminOnly && !isAdmin) return null;
+        <div className={styles.navGroup}>Analyse</div>
+        {NAV_ITEMS.filter(i => !i.adminOnly && i.href !== '/admin').map(item => {
           const isActive = item.href === '/'
             ? pathname === '/'
             : pathname.startsWith(item.href);
@@ -189,11 +189,33 @@ export default function Sidebar({ isAdmin = false }: Props) {
             </Link>
           );
         })}
+        {isAdmin && (
+          <>
+            <div className={styles.navDivider} />
+            <div className={styles.navGroup}>Administration</div>
+            <Link
+              href="/admin"
+              className={`${styles.navItem} ${pathname.startsWith('/admin') ? styles.active : ''}`}
+              title={collapsed ? 'Admin' : undefined}
+            >
+              <span className={styles.navIcon}>
+                {NAV_ITEMS.find(i => i.href === '/admin')?.icon}
+              </span>
+              <span className={styles.navLabel}>Admin</span>
+            </Link>
+          </>
+        )}
       </nav>
 
       <div className={styles.footer}>
         <span>Analyse confidentielle · 2025</span>
       </div>
+      {/* Mobile backdrop */}
+      <div
+        className={`${styles.backdrop} ${!collapsed ? styles.backdropVisible : ''}`}
+        onClick={toggleSidebar}
+        aria-hidden="true"
+      />
     </aside>
   );
 }

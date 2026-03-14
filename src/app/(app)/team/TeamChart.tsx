@@ -11,6 +11,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Bar, Line } from 'react-chartjs-2';
+import { brandedTooltip, brandedTooltipCount } from '@/lib/chartTooltip';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Tooltip, Legend);
 
@@ -47,12 +48,7 @@ export function EtpChart({ fteAssoc, fteIndep, fteInterne, fteAdmin, activeYear 
     maintainAspectRatio: false,
     plugins: {
       legend: { position: 'top' as const, labels: { usePointStyle: true, padding: 12, font: { size: 11 } } },
-      tooltip: {
-        callbacks: {
-          label: (ctx: { dataset: { label?: string }; parsed: { y: number | null } }) =>
-            ` ${ctx.dataset.label}: ${ctx.parsed.y ?? 0} ETP`,
-        },
-      },
+      tooltip: { enabled: false, external: brandedTooltipCount },
     },
     scales: {
       x: { stacked: true, grid: { display: false }, ticks: { font: { size: 10 }, maxTicksLimit: 12 } },
@@ -125,12 +121,7 @@ export function ProductivityChart({ ca, fteTotal, activeYear }: ProdProps) {
     maintainAspectRatio: false,
     plugins: {
       legend: { position: 'top' as const, labels: { usePointStyle: true, padding: 12, font: { size: 11 } } },
-      tooltip: {
-        callbacks: {
-          label: (ctx: { dataset: { label?: string }; parsed: { y: number | null } }) =>
-            ` ${ctx.dataset.label}: ${fmt(ctx.parsed.y ?? 0)}`,
-        },
-      },
+      tooltip: { enabled: false, external: brandedTooltip },
     },
     scales: {
       x: { grid: { display: false }, ticks: { font: { size: 10 }, maxTicksLimit: 12 } },

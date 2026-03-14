@@ -12,6 +12,7 @@ import {
   Filler,
 } from 'chart.js';
 import { Line, Bar } from 'react-chartjs-2';
+import { brandedTooltip } from '@/lib/chartTooltip';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Tooltip, Legend, Filler);
 
@@ -90,12 +91,7 @@ export function ScenarioChart({ baseline, tresoCash1m, tresoCash3m, tresoFact, a
     interaction: { mode: 'index' as const, intersect: false },
     plugins: {
       legend: { position: 'top' as const, labels: { usePointStyle: true, padding: 12, font: { size: 11 } } },
-      tooltip: {
-        callbacks: {
-          label: (ctx: { dataset: { label?: string }; parsed: { y: number | null } }) =>
-            ` ${ctx.dataset.label}: ${fmt(ctx.parsed.y ?? 0)}`,
-        },
-      },
+      tooltip: { enabled: false, external: brandedTooltip },
     },
     scales: {
       x: { grid: { display: false }, ticks: { font: { size: 10 }, maxTicksLimit: 12 } },
@@ -149,12 +145,7 @@ export function MonthlyNetChart({ ca, admin, opex, lab, activeYear }: NetProps) 
     maintainAspectRatio: false,
     plugins: {
       legend: { display: false },
-      tooltip: {
-        callbacks: {
-          label: (ctx: { parsed: { y: number | null } }) =>
-            ` Flux net: ${fmt(ctx.parsed.y ?? 0)}`,
-        },
-      },
+      tooltip: { enabled: false, external: brandedTooltip },
     },
     scales: {
       x: { grid: { display: false }, ticks: { font: { size: 10 }, maxTicksLimit: 12 } },

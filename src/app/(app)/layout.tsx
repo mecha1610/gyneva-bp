@@ -5,9 +5,11 @@ import type { NextRequest } from 'next/server';
 import Sidebar from '@/components/Sidebar';
 import Topbar from '@/components/Topbar';
 import AppStoreInitializer from '@/components/AppStoreInitializer';
+import ScrollToTop from '@/components/ScrollToTop';
 import styles from './layout.module.css';
 import { prisma } from '@/lib/server/db';
 import type { ApiBusinessPlan } from '@lib/types';
+import type { Metadata } from 'next';
 
 async function getCurrentUser() {
   const cookieStore = await cookies();
@@ -42,6 +44,14 @@ async function getUserPlans(userId: string): Promise<ApiBusinessPlan[]> {
   }));
 }
 
+export const metadata: Metadata = {
+  title: {
+    default: 'GYNEVA Business Plan',
+    template: '%s — GYNEVA BP',
+  },
+  description: 'Analyse financière et plan d\'affaires — Clinique GynEva Genève',
+};
+
 export default async function AppLayout({
   children,
 }: {
@@ -57,6 +67,7 @@ export default async function AppLayout({
 
   return (
     <div className={styles.layout}>
+      <ScrollToTop />
       {/* Initialize client-side stores from server data */}
       <AppStoreInitializer
         plans={plans}

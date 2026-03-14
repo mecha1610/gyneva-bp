@@ -5,11 +5,21 @@ import { useState } from 'react';
 import { useSimStore } from '@/stores/useSimStore';
 import { FACT_COST } from '@lib/constants';
 import styles from './page.module.css';
+import PageHeader from '@/components/PageHeader';
 
 const OptimizeChart = dynamic(
   () => import('./OptimizeChart').then(m => ({ default: m.OptimizeChart })),
-  { ssr: false },
+  { ssr: false, loading: () => <div className={styles.chartSkeleton} /> },
 );
+
+// ── SVG Icons ──────────────────────────────────────────────────────────────
+
+function IconLightbulb() { return <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="9" y1="18" x2="15" y2="18"/><line x1="10" y1="22" x2="14" y2="22"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg>; }
+function IconAlert() { return <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>; }
+function IconX() { return <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>; }
+function IconTrending() { return <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>; }
+function IconLightbulbSm() { return <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="9" y1="18" x2="15" y2="18"/><line x1="10" y1="22" x2="14" y2="22"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg>; }
+function IconAlertSm() { return <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>; }
 
 // ── cashflow scenario engine (mirrors computeOptScenario in index.html) ────
 
@@ -92,7 +102,7 @@ export default function OptimizePage() {
     cashPct >= 10                             ? 'Orange' :
     delay >= 3                                ? 'Red'    : 'Orange';
 
-  const verdictIcon = verdictColor === 'Green' ? '💡' : verdictColor === 'Orange' ? '⚠️' : '❌';
+  const VerdictIcon = verdictColor === 'Green' ? IconLightbulb : verdictColor === 'Orange' ? IconAlert : IconX;
   const verdictText =
     factoring && cashPct >= 10
       ? `Configuration optimale — factoring actif + ${cashPct}% cash. BFR réduit de ${fmt(Math.abs(saved))}.`
@@ -156,10 +166,12 @@ export default function OptimizePage() {
   return (
     <div>
 
+      <PageHeader title="Optimisation trésorerie" subtitle="Comparaison des scénarios de recouvrement LAMal sur 36 mois" />
+
       {/* Verdict */}
       <div className={`${styles.verdict} ${styles[`verdict${verdictColor}`]}`}>
-        <div className={styles.verdictIc}>{verdictIcon}</div>
-        <div><strong>Optimisation trésorerie.</strong>{' '}{verdictText}</div>
+        <div className={styles.ic}><VerdictIcon /></div>
+        <div className={styles.verdictBody}><strong>Optimisation trésorerie.</strong>{' '}{verdictText}</div>
       </div>
 
       {/* Controls */}
@@ -171,6 +183,7 @@ export default function OptimizePage() {
               type="checkbox"
               checked={factoring}
               onChange={e => setFactoring(e.target.checked)}
+              aria-label="Activer le factoring"
             />
             <span className={styles.toggleSlider} />
           </label>
@@ -186,6 +199,7 @@ export default function OptimizePage() {
             value={cashPct}
             style={{ background: sliderGradient(cashPct, 0, 30) }}
             onChange={e => setCashPct(Number(e.target.value))}
+            aria-label="Pourcentage de paiements cash OI/ONU"
           />
           <span className={styles.ctrlVal}>{cashPct}%</span>
         </div>
@@ -196,6 +210,7 @@ export default function OptimizePage() {
             className={styles.select}
             value={delay}
             onChange={e => setDelay(Number(e.target.value) as 0 | 1 | 3)}
+            aria-label="Délai de recouvrement LAMal"
           >
             <option value={0}>Sans délai</option>
             <option value={1}>1 mois</option>
@@ -208,12 +223,12 @@ export default function OptimizePage() {
       <div className={styles.kpiGrid}>
         <div className={`${styles.kpi} ${styles.kpiRed}`}>
           <div className={styles.kpiLabel}>BFR pire cas</div>
-          <div className={`${styles.kpiValue} ${styles.kpiValueRed}`}>{fmt(bfrWorst)}</div>
+          <div className={`${styles.kpiValue} ${styles.kpiValueRed}`} title={fmt(bfrWorst)}>{fmt(bfrWorst)}</div>
           <div className={styles.kpiSub}>Sans aucune optimisation</div>
         </div>
         <div className={`${styles.kpi} ${bfrCurrent < -150_000 ? styles.kpiRed : bfrCurrent < -50_000 ? styles.kpiNeutral : styles.kpiGreen}`}>
           <div className={styles.kpiLabel}>BFR config actuelle</div>
-          <div className={`${styles.kpiValue} ${bfrCurrent < -50_000 ? styles.kpiValueRed : styles.kpiValueGreen}`}>{fmt(bfrCurrent)}</div>
+          <div className={`${styles.kpiValue} ${bfrCurrent < -50_000 ? styles.kpiValueRed : styles.kpiValueGreen}`} title={fmt(bfrCurrent)}>{fmt(bfrCurrent)}</div>
           <div className={styles.kpiSub}>
             {factoring
               ? `Factoring + ${cashPct}% cash`
@@ -222,7 +237,7 @@ export default function OptimizePage() {
         </div>
         <div className={`${styles.kpi} ${styles.kpiBlue}`}>
           <div className={styles.kpiLabel}>BFR économisé</div>
-          <div className={`${styles.kpiValue} ${styles.kpiValueBlue}`}>
+          <div className={`${styles.kpiValue} ${styles.kpiValueBlue}`} title={fmt(saved)}>
             {saved >= 0 ? '+' : ''}{fmt(saved)}
           </div>
           <div className={styles.kpiSub}>
@@ -244,7 +259,7 @@ export default function OptimizePage() {
 
       {/* Recommendation */}
       <div className={`${styles.reco} ${recoPositive ? styles.recoPositive : styles.recoWarning}`}>
-        <div className={styles.recoIc}>{recoPositive ? '💡' : '⚠️'}</div>
+        <div className={styles.recoIc}>{recoPositive ? <IconLightbulbSm /> : <IconAlertSm />}</div>
         <div>{recoText}</div>
       </div>
 
@@ -274,7 +289,7 @@ export default function OptimizePage() {
 
       {/* Cashflow comparison chart */}
       <div className={styles.card}>
-        <div className={styles.cardTitle}>📈 Impact sur la trésorerie (36 mois)</div>
+        <div className={styles.cardTitle}><IconTrending /> Impact sur la trésorerie (36 mois)</div>
         <div className={styles.chartBox}>
           <OptimizeChart
             worstData={worstData}

@@ -1,3 +1,21 @@
+/* ── Page header ── */
+.pageHeader {
+  margin-bottom: 1.4rem;
+}
+.pageTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--p);
+  margin: 0 0 .25rem;
+  line-height: 1.2;
+}
+.pageSubtitle {
+  font-size: .83rem;
+  color: var(--txtL);
+  margin: 0;
+  line-height: 1.5;
+}
+
 /* ── Verdict ── */
 .verdict {
   border-radius: var(--r);
@@ -9,10 +27,20 @@
   line-height: 1.55;
   margin-bottom: 1.2rem;
 }
-.verdictIc { font-size: 1.4rem; flex-shrink: 0; }
-.verdictGreen  { background: rgba(0,184,148,.08);  border: 1px solid rgba(0,184,148,.2);  color: #00755a; }
-.verdictOrange { background: rgba(245,158,11,.1);   border: 1px solid rgba(245,158,11,.25); color: #7d5a12; }
-.verdictRed    { background: rgba(239,68,68,.08);   border: 1px solid rgba(239,68,68,.2);  color: #8b2020; }
+.ic {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: rgba(0,0,0,.06);
+}
+.verdictBody { flex: 1; }
+.verdictGreen  { background: rgba(0,184,148,.08);  border: 1px solid rgba(0,184,148,.2);  color: var(--c-green-txt, #00755a); }
+.verdictOrange { background: rgba(245,158,11,.1);   border: 1px solid rgba(245,158,11,.25); color: var(--c-orange-txt, #7d5a12); }
+.verdictRed    { background: rgba(239,68,68,.08);   border: 1px solid rgba(239,68,68,.2);  color: var(--c-red-txt, #8b2020); }
 
 /* ── Controls ── */
 .controls {
@@ -66,7 +94,7 @@
   position: absolute;
   width: 14px; height: 14px;
   border-radius: 50%;
-  background: #fff;
+  background: var(--card);
   top: 3px; left: 3px;
   transition: transform .2s;
   box-shadow: 0 1px 3px rgba(0,0,0,.2);
@@ -88,14 +116,14 @@
   width: 14px; height: 14px;
   border-radius: 50%;
   background: var(--pl);
-  border: 2px solid #fff;
+  border: 2px solid var(--card);
   box-shadow: 0 1px 4px rgba(0,0,0,.2);
 }
 .slider::-moz-range-thumb {
   width: 14px; height: 14px;
   border-radius: 50%;
   background: var(--pl);
-  border: 2px solid #fff;
+  border: 2px solid var(--card);
 }
 
 /* Select */
@@ -140,7 +168,15 @@
 .kpiNeutral::before { background: var(--brd2); }
 
 .kpiLabel { font-size: .68rem; font-weight: 600; color: var(--txtL); text-transform: uppercase; letter-spacing: .5px; }
-.kpiValue { font-size: 1.3rem; font-weight: 800; color: var(--p); margin: .3rem 0 .1rem; }
+.kpiValue {
+  font-family: var(--font-mono);
+  font-size: 1.7rem;
+  font-weight: 700;
+  letter-spacing: -.04em;
+  line-height: 1.1;
+  color: var(--p);
+  margin: .3rem 0 .1rem;
+}
 .kpiValueRed    { color: var(--danger); }
 .kpiValueGreen  { color: var(--acc); }
 .kpiValueBlue   { color: var(--pl); }
@@ -157,9 +193,14 @@
   line-height: 1.5;
   margin-bottom: 1.2rem;
 }
-.recoIc { font-size: 1.2rem; flex-shrink: 0; }
-.recoPositive { background: rgba(16,185,129,.07); border: 1px solid rgba(16,185,129,.2); color: #00755a; }
-.recoWarning  { background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.22); color: #7d5a12; }
+.recoIc {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.recoPositive { background: rgba(16,185,129,.07); border: 1px solid rgba(16,185,129,.2); color: var(--c-green-txt, #00755a); }
+.recoWarning  { background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.22); color: var(--c-orange-txt, #7d5a12); }
 
 /* ── Comparison grid ── */
 .compareGrid {
@@ -204,9 +245,9 @@
   text-transform: uppercase;
   letter-spacing: .3px;
 }
-.scTagRed    { background: rgba(239,68,68,.1);  color: #8b2020; }
-.scTagOrange { background: rgba(245,158,11,.1); color: #7d5a12; }
-.scTagGreen  { background: rgba(16,185,129,.1); color: #00755a; }
+.scTagRed    { background: rgba(239,68,68,.1);  color: var(--c-red-txt, #8b2020); }
+.scTagOrange { background: rgba(245,158,11,.1); color: var(--c-orange-txt, #7d5a12); }
+.scTagGreen  { background: rgba(16,185,129,.1); color: var(--c-green-txt, #00755a); }
 .scActiveBadge {
   display: block;
   margin-top: .4rem;
@@ -230,7 +271,25 @@
   font-weight: 700;
   color: var(--p);
   margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: .4rem;
 }
+.cardTitle svg { color: var(--pl); flex-shrink: 0; }
 
 /* ── Chart ── */
 .chartBox { height: 240px; position: relative; }
+
+/* ── Chart skeleton ── */
+.chartSkeleton {
+  height: 240px;
+  border-radius: var(--r-sm);
+  background: linear-gradient(90deg, var(--s2) 25%, var(--brd) 50%, var(--s2) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

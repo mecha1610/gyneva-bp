@@ -1,6 +1,6 @@
 .sidebar {
   width: var(--sidebar-w);
-  background: linear-gradient(180deg, #0F2340 0%, #091829 100%);
+  background: linear-gradient(180deg, #0B1120 0%, #060C18 100%);
   color: #fff;
   padding: 0;
   position: fixed;
@@ -12,6 +12,7 @@
   flex-direction: column;
   transition: width .2s cubic-bezier(.4,0,.2,1);
   overflow: hidden;
+  border-right: 1px solid rgba(255,255,255,.05);
 }
 
 .sidebar.collapsed {
@@ -19,52 +20,55 @@
 }
 
 [data-theme="dark"] .sidebar {
-  background: linear-gradient(180deg, #111 0%, #080808 100%);
+  background: linear-gradient(180deg, #070D1A 0%, #030810 100%);
+  border-right-color: rgba(255,255,255,.04);
 }
 
-/* Toggle button */
+/* ── Toggle button ── */
 .toggleBtn {
   position: absolute;
-  top: 1.2rem;
-  right: -13px;
-  width: 26px;
-  height: 26px;
+  top: 1.25rem;
+  right: -12px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  background: var(--pl);
+  background: var(--pl-grad);
   border: 2px solid var(--bg);
   color: #fff;
   cursor: pointer;
-  font-size: .7rem;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 201;
   transition: var(--trans);
-  box-shadow: 0 2px 8px rgba(37,99,235,.3);
+  box-shadow: var(--sh-blue);
   line-height: 1;
 }
 
 .toggleBtn:hover {
-  background: var(--acc);
+  filter: brightness(1.15);
+  transform: scale(1.08);
 }
 
-/* Logo */
+/* ── Logo ── */
 .logo {
-  padding: 1.2rem 1rem;
-  border-bottom: 1px solid rgba(255,255,255,.07);
+  padding: 1.3rem 1.1rem 1.1rem;
+  border-bottom: 1px solid rgba(255,255,255,.06);
   display: flex;
   align-items: center;
   gap: .75rem;
-  min-height: 62px;
+  min-height: 64px;
   overflow: hidden;
 }
 
+/* Accent mark — gradient pill instead of plain dot */
 .logoDot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--acc);
+  width: 6px;
+  height: 28px;
+  border-radius: 3px;
+  background: var(--pl-grad);
   flex-shrink: 0;
+  box-shadow: 0 0 10px rgba(37,99,235,.5);
 }
 
 .logoText {
@@ -81,21 +85,42 @@
 }
 
 .logoName {
-  font-size: 1.05rem;
-  font-weight: 700;
-  letter-spacing: -.3px;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: .04em;
+  color: #fff;
+  text-transform: uppercase;
 }
 
 .logoSub {
-  font-size: .62rem;
-  opacity: .45;
+  font-size: .6rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.35);
   margin-top: 2px;
+  font-weight: 500;
 }
 
-/* Nav */
+/* ── Nav group label ── */
+.navGroup {
+  padding: 1.2rem 1.1rem .3rem;
+  font-size: .58rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.2);
+  white-space: nowrap;
+  transition: opacity .15s;
+}
+
+.sidebar.collapsed .navGroup {
+  opacity: 0;
+}
+
+/* ── Nav ── */
 .nav {
   flex: 1;
-  padding: .5rem 0;
+  padding: .35rem 0;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -105,31 +130,52 @@
   display: flex;
   align-items: center;
   gap: .75rem;
-  padding: .65rem 1rem;
-  color: rgba(255,255,255,.55);
+  padding: .6rem .95rem;
+  margin: .1rem .55rem;
+  color: rgba(255,255,255,.45);
   text-decoration: none;
   font-size: .8rem;
   font-weight: 500;
   white-space: nowrap;
-  border-left: 3px solid transparent;
+  border-radius: var(--r-sm);
+  border: 1px solid transparent;
   transition: var(--trans);
   position: relative;
 }
 
 .navItem:hover {
-  color: #fff;
-  background: rgba(255,255,255,.05);
+  color: rgba(255,255,255,.85);
+  background: rgba(255,255,255,.06);
 }
 
 .navItem.active {
   color: #fff;
-  background: rgba(37,99,235,.15);
-  border-left-color: var(--pl);
+  background: rgba(37,99,235,.2);
+  border-color: rgba(37,99,235,.3);
+  box-shadow: inset 0 0 0 1px rgba(37,99,235,.15);
+}
+
+/* Active left indicator */
+.navItem.active::before {
+  content: '';
+  position: absolute;
+  left: -8px; /* account for .55rem margin */
+  top: 25%;
+  height: 50%;
+  width: 3px;
+  border-radius: 0 2px 2px 0;
+  background: var(--pl-grad);
 }
 
 .sidebar.collapsed .navItem {
-  padding: .65rem 0;
+  padding: .6rem 0;
+  margin: .1rem auto;
   justify-content: center;
+  width: 40px;
+}
+
+.sidebar.collapsed .navItem.active::before {
+  display: none;
 }
 
 .navIcon {
@@ -139,7 +185,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: .7;
+  opacity: .6;
   transition: opacity .2s;
 }
 
@@ -160,16 +206,62 @@
   pointer-events: none;
 }
 
-/* Footer */
+/* ── Sidebar divider ── */
+.navDivider {
+  height: 1px;
+  background: rgba(255,255,255,.06);
+  margin: .5rem .95rem;
+}
+
+/* ── Footer ── */
 .footer {
-  padding: .9rem 1rem;
-  border-top: 1px solid rgba(255,255,255,.07);
-  font-size: .65rem;
-  opacity: .35;
+  padding: 1rem 1.1rem;
+  border-top: 1px solid rgba(255,255,255,.06);
+  font-size: .6rem;
+  letter-spacing: .04em;
+  color: rgba(255,255,255,.2);
   white-space: nowrap;
   transition: opacity .15s;
+  text-transform: uppercase;
 }
 
 .sidebar.collapsed .footer {
   opacity: 0;
+}
+
+/* ── Mobile ── */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform .25s cubic-bezier(.4,0,.2,1), width .2s cubic-bezier(.4,0,.2,1);
+    width: var(--sidebar-w) !important;
+    z-index: 300;
+  }
+  .sidebar.mobileOpen {
+    transform: translateX(0);
+  }
+  .toggleBtn {
+    display: none;
+  }
+}
+
+/* ── Mobile backdrop ── */
+.backdrop {
+  display: none;
+}
+@media (max-width: 768px) {
+  .backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.45);
+    z-index: 299;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s;
+  }
+  .backdropVisible {
+    opacity: 1;
+    pointer-events: auto;
+  }
 }
